@@ -1,0 +1,40 @@
+{% extends "form.html" %}
+
+{% set formSubmitButtonText = "Save" %}
+
+{% block beforeForm %}
+  <span class="govuk-caption-l">{{ user.givenName }} {{ user.surname }} - {{ user.organisation }}</span>
+  <h1 class="govuk-heading-l">Your details</h1>
+  <p>
+  You will get alerts to <strong>{{ data.phoneNumber.number }}</strong> for the below office locations:
+  </p>
+{% endblock %}
+
+{% block form %}
+  {% for area in data.areas %}
+    <p class="govuk-body-m govuk-!-margin-bottom-0">
+      <strong>{{area.areaName}}</strong>
+    </p>
+    {{
+      govukCheckboxes({
+        idPrefix: "officeLocations_" + area.areaCode,
+        name: "officeLocations",
+        classes: "govuk-checkboxes--small",
+        items: area.officeLocations
+      })
+    }}
+  {% endfor %}
+{% endblock %}
+
+{% block afterForm %}
+  {% if not data.isCorporate %}
+    {{
+      govukButton({
+        classes: 'govuk-button--danger',
+        disabled: data.isCorporate,
+        href: '/remove-contact/' + data.phoneNumber.id,
+        text: 'Remove this contact'
+      })
+    }}
+  {% endif %}
+{% endblock %}

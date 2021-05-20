@@ -1,0 +1,64 @@
+{
+  "name": "gwa-web",
+  "version": "0.1.0",
+  "description": "GWA web app",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "bin/build-css",
+    "build": "bin/build",
+    "lint": "standard",
+    "start": "node index.js",
+    "start:watch": "nodemon index.js",
+    "test": "jest",
+    "test:watch": "jest --coverage=false --onlyChanged --watch"
+  },
+  "author": "Defra",
+  "license": "OGL-UK-3.0",
+  "dependencies": {
+    "@azure/cosmos": "^3.11.2",
+    "@hapi/bell": "12.1.1",
+    "@hapi/boom": "9.1.0",
+    "@hapi/cookie": "11.0.2",
+    "@hapi/hapi": "20.0.1",
+    "@hapi/hoek": "9.1.0",
+    "@hapi/inert": "6.0.3",
+    "@hapi/vision": "6.0.1",
+    "@hapi/yar": "10.1.1",
+    "blipp": "4.0.1",
+    "dayjs": "1.9.4",
+    "dotenv": "^9.0.2",
+    "google-libphonenumber": "^3.2.21",
+    "govuk-frontend": "3.11.0",
+    "hapi-pino": "8.3.0",
+    "joi": "^17.4.0",
+    "nunjucks": "3.2.2",
+    "uuid": "^8.3.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DEFRA/gwa-web.git"
+  },
+  "contributors": [
+    "Steve Hunt <steven.hunt@defra.gov.uk>"
+  ],
+  "devDependencies": {
+    "@jest/types": "^26.6.2",
+    "jest": "^26.6.3",
+    "node-sass": "5.0.0",
+    "nodemon": "^2.0.7",
+    "standard": "16.0.1"
+  },
+  "homepage": "https://github.com/DEFRA/gwa-web",
+  "standard": {
+    "globals": [
+      "describe",
+      "beforeEach",
+      "expect",
+      "test",
+      "afterEach",
+      "jest",
+      "beforeAll",
+      "afterAll"
+    ]
+  }
+}

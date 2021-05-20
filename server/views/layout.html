@@ -1,0 +1,159 @@
+{% extends "govuk/template.njk" %}
+
+{% from "govuk/components/accordion/macro.njk"        import govukAccordion %}
+{% from "govuk/components/back-link/macro.njk"        import govukBackLink %}
+{% from "govuk/components/breadcrumbs/macro.njk"      import govukBreadcrumbs %}
+{% from "govuk/components/button/macro.njk"           import govukButton %}
+{% from "govuk/components/character-count/macro.njk"  import govukCharacterCount %}
+{% from "govuk/components/checkboxes/macro.njk"       import govukCheckboxes %}
+{% from "govuk/components/date-input/macro.njk"       import govukDateInput %}
+{% from "govuk/components/details/macro.njk"          import govukDetails %}
+{% from "govuk/components/error-message/macro.njk"    import govukErrorMessage %}
+{% from "govuk/components/error-summary/macro.njk"    import govukErrorSummary %}
+{% from "govuk/components/fieldset/macro.njk"         import govukFieldset %}
+{% from "govuk/components/file-upload/macro.njk"      import govukFileUpload %}
+{% from "govuk/components/footer/macro.njk"           import govukFooter %}
+{% from "govuk/components/input/macro.njk"            import govukInput %}
+{% from "govuk/components/inset-text/macro.njk"       import govukInsetText %}
+{% from "govuk/components/panel/macro.njk"            import govukPanel %}
+{% from "govuk/components/phase-banner/macro.njk"     import govukPhaseBanner %}
+{% from "govuk/components/radios/macro.njk"           import govukRadios %}
+{% from "govuk/components/select/macro.njk"           import govukSelect %}
+{% from "govuk/components/skip-link/macro.njk"        import govukSkipLink %}
+{% from "govuk/components/summary-list/macro.njk"     import govukSummaryList %}
+{% from "govuk/components/table/macro.njk"            import govukTable %}
+{% from "govuk/components/tabs/macro.njk"             import govukTabs %}
+{% from "govuk/components/tag/macro.njk"              import govukTag %}
+{% from "govuk/components/textarea/macro.njk"         import govukTextarea %}
+{% from "govuk/components/warning-text/macro.njk"     import govukWarningText %}
+
+{%
+  set govukComponents = {
+    govukAccordion: govukAccordion,
+    govukBackLink: govukBackLink,
+    govukBreadcrumbs: govukBreadcrumbs,
+    govukButton: govukButton,
+    govukCharacterCount: govukCharacterCount,
+    govukCheckboxes: govukCheckboxes,
+    govukDateInput: govukDateInput,
+    govukDetails: govukDetails,
+    govukErrorMessage: govukErrorMessage,
+    govukErrorSummary: govukErrorSummary,
+    govukFieldset: govukFieldset,
+    govukFileUpload: govukFileUpload,
+    govukFooter: govukFooter,
+    govukInput: govukInput,
+    govukInsetText: govukInsetText,
+    govukPanel: govukPanel,
+    govukPhaseBanner: govukPhaseBanner,
+    govukRadios: govukRadios,
+    govukSelect: govukSelect,
+    govukSkipLink: govukSkipLink,
+    govukSummaryList: govukSummaryList,
+    govukTable: govukTable,
+    govukTabs: govukTabs,
+    govukTag: govukTag,
+    govukTextarea: govukTextarea,
+    govukWarningText: govukWarningText
+  }
+%}
+{% block head %}
+  <!--[if !IE 8]><!-->
+  <link href="{{ assetPath }}/stylesheets/application.css" rel="stylesheet" />
+  <!--<![endif]-->
+
+  {# For Internet Explorer 8, you need to compile specific stylesheet #}
+  {# see https://github.com/alphagov/govuk-frontend/blob/master/docs/installation/supporting-internet-explorer-8.md #}
+  <!--[if IE 8]>
+      <link href="{{ assetPath }}/govuk-frontend/all-ie8.css" rel="stylesheet" />
+    <![endif]-->
+
+  {# For older browsers to allow them to recognise HTML5 elements such as `<header>` #}
+  <!--[if lt IE 9]>
+      <script src="/html5-shiv/html5shiv.js"></script>
+    <![endif]-->
+
+  {% block styles %}
+  {% endblock %}
+{% endblock %}
+
+{% block header %}
+  {{
+    govukHeader({
+      homepageUrl: "https://www.gov.uk",
+      containerClasses: "govuk-width-container",
+      serviceName: serviceName,
+      serviceUrl: "/",
+      navigation: navigation
+    })
+  }}
+{% endblock %}
+
+{% block pageTitle %}
+  {{ pageTitle }}
+{% endblock %}
+
+{% block beforeContent %}
+  {{
+    govukPhaseBanner({
+      tag: {
+        text: phaseBannerTag
+      },
+      html: phaseBannerHtml
+    })
+  }}
+  <div class="no">
+    {{ govukBackLink({ text: "Back", href: "javascript:history.back()" }) }}
+  </div>
+{% endblock %}
+
+{% block content %}
+  <h1 class="govuk-heading-xl">Default page template</h1>
+{% endblock %}
+
+{% block footer %}
+  {{
+    govukFooter({
+      meta: {
+        items: [
+          {
+            href: "https://docs.staff-alerts.environment-agency.gov.uk/support/",
+            text: "Contact support"
+          },
+          {
+            href: "https://staff-alerts.instatus.com/",
+            text: "Service status"
+          },
+          {
+            href: "https://forms.office.com/Pages/ResponsePage.aspx?id=UCQKdycCYkyQx044U38RAttYaNd3MKZInNSwqAbeGTpUNEpZSjlVOUlTUksyMDJXSlBaMUxFMDhXNyQlQCN0PWcu",
+            text: "Provide feedback"
+          },
+          {
+            href: "https://www.gov.uk/government/organisations/environment-agency",
+            text: "Built by the Environment Agency"
+          }
+        ]
+     }
+    })
+  }}
+{% endblock %}
+
+{% block bodyEnd %}
+{# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
+<script src="{{ assetPath }}/all.js"></script>
+<script>window.GOVUKFrontend.initAll()</script>
+
+{% if analyticsAccountId %}
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ analyticsAccountId }}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', '{{ analyticsAccountId }}');
+</script>
+{% endif %}
+
+{% block scripts %}
+{% endblock %}
+{% endblock %}

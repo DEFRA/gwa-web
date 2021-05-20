@@ -1,0 +1,38 @@
+const BaseModel = require('../lib/model')
+const { getUser } = require('../lib/db')
+const { maxPersonalPhoneNumbers } = require('../config')
+
+class Model extends BaseModel {}
+
+function getPhoneNumbersForView (contact) {
+  return [
+    {
+      text: contact.number
+    },
+    {
+      html: `member of <b>${contact.subscribedTo?.length}</b> ${contact.subscribedTo?.length === 1 ? 'group' : 'groups'}`
+    },
+    {
+      html: `<a class="govuk-button govuk-button--secondary"
+          href="/edit-contact/${encodeURIComponent(contact.id)}"
+          style="margin-bottom: 0">Edit</a>`
+    }
+  ]
+}
+
+module.exports = [
+  {
+    method: 'GET',
+    path: '/account',
+    handler: async (request, h) => {
+      const { credentials } = request.auth
+      const { roles, user: { id: userId } } = credentials
+      // const user = request.yar.get(userId)
+      const user = await getUser(userId)
+      const corporatePhoneNumbers = user.phoneNumbers.filter(x => x.type === 'corporate').map(getPhoneNumbersForView)
+      const personalPhoneNumbers = user.phoneNumbers.filter(x => x.type === 'personal').map(getPhoneNumbersForView)
+
+      return h.view('account', new Model({ corporatePhoneNumbers, maxPersonalPhoneNumbers, personalPhoneNumbers, roles, user }))
+    }
+  }
+]

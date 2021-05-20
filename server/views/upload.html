@@ -1,0 +1,39 @@
+{% extends "form.html" %}
+
+{% set formSubmitButtonText = "Upload" %}
+{% set formEncType = "multipart/form-data" %}
+
+{% block beforeForm %}
+  <h1 class="govuk-heading-l">Upload</h1>
+
+{% endblock %}
+
+{% block form %}
+  {{
+    govukFileUpload({
+      id: "file",
+      name: "file",
+      label: {
+        text: "Choose a CSV file (.csv)"
+      },
+      attributes: {
+        accept: ["text/csv"],
+        required: "required"
+      },
+      errorMessage: errors.file
+    })
+  }}
+{% endblock %}
+
+{% block afterForm %}
+  <img id="spinner" src="/assets/loading.gif" alt="Loading..." style="display: none;" />
+  <script>
+    var form = document.getElementById('form')
+
+    form.addEventListener('submit', function () {
+      form.style.display = 'none'
+      var spinner = document.getElementById('spinner')
+      spinner.style.display = 'inline'
+    }, false)
+  </script>
+{% endblock %}

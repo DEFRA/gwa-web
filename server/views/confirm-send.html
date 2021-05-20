@@ -1,0 +1,21 @@
+{% extends "form.html" %}
+
+{% block beforeForm %}
+  <h1 class="govuk-heading-l">Send message</h1>
+  {{
+    govukWarningText({
+      html: "Are you sure you would like to send this message for the " + data.message.group_name + " group?" + (("<br>The message will be sent to approximately " + data.contactsCount.count + " contacts") if data.hasText else ""),
+      iconFallbackText: "Warning"
+    })
+  }}
+{% endblock %}
+
+{% block form %}
+  {{ 
+    govukButton({
+      text: "Cancel",
+      href: "/message/" + data.message.id,
+      classes: "govuk-button--secondary"
+    })
+  }}
+{% endblock %}

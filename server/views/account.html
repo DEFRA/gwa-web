@@ -1,0 +1,51 @@
+{% extends "two-thirds.html" %}
+
+{% block twoThirds %}
+  <h2 class="govuk-heading-l">Account</h2>
+  {% set user = data.user %}
+  <p>Name: <strong>{{ user.givenName }} {{ user.surname }}</strong></p>
+  <p>Email: <strong>{{ user.id }}</strong></p>
+  <p>Office Location: <strong>{{ user.officeLocation }}</strong></p>
+  <p>Organisation: <strong>{{ user.organisation }}</strong></p>
+  <p>Role: <strong>{{ data.roles.join(', ') }}</strong></p>
+
+  {% if data.corporatePhoneNumbers.length %}
+    {{
+      govukTable({
+        caption: 'Corporate phone number(s)',
+        captionClasses: "govuk-table__caption--m",
+        firstCellIsHeader: true,
+        rows: data.corporatePhoneNumbers
+      })
+    }}
+  {% endif %}
+
+  {% if data.personalPhoneNumbers.length %}
+    {{
+      govukTable({
+        caption: 'Personal phone number(s)',
+        captionClasses: "govuk-table__caption--m",
+        firstCellIsHeader: true,
+        rows: data.personalPhoneNumbers
+      })
+    }}
+  {% endif %}
+
+  {% if data.personalPhoneNumbers.length < data.maxPersonalPhoneNumbers %}
+    {{
+      govukButton({
+        disabled: false,
+        href: '/add-contact',
+        text: 'Add new contact'
+      })
+    }}
+  {% endif %}
+
+  <br>
+  {{
+    govukButton({
+      href: '/logout',
+      text: 'Sign out'
+    })
+  }}
+{% endblock %}

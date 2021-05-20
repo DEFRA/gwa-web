@@ -1,0 +1,21 @@
+{% extends "form.html" %}
+
+{% block beforeForm %}
+  <h1 class="govuk-heading-l">Are you sure?</h1>
+  {{
+    govukWarningText({
+      text: "You will no longer receive staff alerts for " + data.phoneNumber.number,
+      iconFallbackText: "Warning"
+    })
+  }}
+{% endblock %}
+
+{% block form %}
+  {{
+    govukButton({
+      text: "Cancel",
+      href: "/edit-contact/" + data.phoneNumber.id,
+      classes: "govuk-button--secondary"
+    })
+  }}
+{% endblock %}

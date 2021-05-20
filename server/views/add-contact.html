@@ -1,0 +1,36 @@
+{% extends "form.html" %}
+
+{% block form %}
+  {{
+    govukInput({
+      id: "mobile",
+      name: "mobile",
+      label: {
+        text: "What is your telephone number?",
+        classes: "govuk-label--l",
+        isPageHeading: true
+      },
+      hint: {
+        html: "Any mobile number can be registered as long as it hasn't already been registered.<br>By default, your phone number will be subscribed to your office location."
+      },
+      classes: "govuk-input--width-20",
+      type: "tel",
+      autocomplete: "tel",
+      attributes: {
+        spellcheck: "false"
+      },
+      value: data.mobile,
+      errorMessage: errors.mobile
+    })
+  }}
+{% endblock %}
+
+{% block afterForm %}
+  {{
+    govukButton({
+      text: "Cancel",
+      href: "/account",
+      classes: "govuk-button--secondary"
+    })
+  }}
+{% endblock %}

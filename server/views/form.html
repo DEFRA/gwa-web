@@ -1,0 +1,28 @@
+{% extends "two-thirds.html" %}
+
+{% block twoThirds %}
+  {% if errorList.length %}
+    {{
+      govukErrorSummary({
+        titleText: "There is a problem",
+        errorList: errorList
+      })
+    }}
+  {% endif %}
+
+  {% block beforeForm %}
+  {% endblock %}
+
+  <form id="form" method="post" action="{{formAction | default('')}}"
+    novalidate enctype="{{formEncType | default('application/x-www-form-urlencoded')}}">
+    {% block form %}
+    {% endblock %}
+
+    {% block button %}
+      {{ govukButton({ text: formSubmitButtonText | default("Continue") }) }}
+    {% endblock %}
+  </form>
+
+  {% block afterForm %}
+  {% endblock %}
+{% endblock %}

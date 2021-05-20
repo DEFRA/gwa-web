@@ -1,0 +1,8 @@
+.env
+.DS_Store
+.vscode
+lcov.info
+node_modules
+npm-debug.log
+server/config*.json
+server/public/build
