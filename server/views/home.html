@@ -5,11 +5,11 @@
 {% block content %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-xl">Group Wide Alerting</h1>
+    <h1 class="govuk-heading-xl">Group Wide Alerts</h1>
     <p>There are two functions provided by this website.</p>
     <h2 class="govuk-heading-m">Service adminstrators can use this service to:</h2>
     <ul class="govuk-list govuk-list--bullet">
-      <li>inform Defra staff of business disruptions</li>
+      <li>Inform Defra staff of business disruptions</li>
     </ul>
 
     {{
@@ -20,22 +20,23 @@
       })
     }}
 
-    <h2 class="govuk-heading-m">Users can use this service to:</h2>
+    <h2 class="govuk-heading-m">All users can use this service to:</h2>
     <ul class="govuk-list govuk-list--bullet">
-      <li>View their corporate mobile phone number</li>
-      <li>Add, edit and remove additional phone numbers</li>
+      <li>Edit the groups their corporate mobile phone number(s) are subscribed to</li>
+      <li>Add, edit and remove additional mobile phone numbers</li>
     </ul>
 
     {{
       govukButton({
-        text: "Users",
-        href: "/users",
+        text: "Account",
+        href: "/account",
         isStartButton: true
       })
     }}
 
     <h2 class="govuk-heading-m">Before you start</h2>
-    <p class="govuk-body">Only employees with an active Azure Active Directory account have access to this service.</p>
+    <p class="govuk-body">Only employees with an active Azure Active Directory account on the Defra Azure tenant have access to this service.</p>
+    <p class="govuk-body">If you have an email address ending in <a class="govuk-link" href="mailto:@defra.gov.uk">@defra.gov.uk</a> you should be good to go.</p>
     <p class="govuk-body">If you require access, you must aquire an Azure Active Directory account.</p>
 
   </div>

@@ -3,7 +3,7 @@ const nunjucks = require('nunjucks')
 const config = require('../config')
 const pkg = require('../../package.json')
 const analyticsAccountId = config.analyticsAccountId
-const serviceName = 'Send staff alerts'
+const serviceName = 'Group wide alert'
 
 module.exports = {
   plugin: require('@hapi/vision'),
