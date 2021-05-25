@@ -6,7 +6,7 @@
   <p>Name: <strong>{{ user.givenName }} {{ user.surname }}</strong></p>
   <p>Email: <strong>{{ user.id }}</strong></p>
   <p>Office Location: <strong>{{ user.officeLocation }}</strong></p>
-  <p>Organisation: <strong>{{ user.organisation }}</strong></p>
+  <p>Organisation: <strong>{{ user.companyName }}</strong></p>
   <p>Role: <strong>{{ data.roles.join(', ') }}</strong></p>
 
   {% if data.corporatePhoneNumbers.length %}

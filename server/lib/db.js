@@ -6,13 +6,12 @@ async function getUser (id) {
 }
 
 async function updateUser (user) {
-  const response = await usersContainer.item(user.id, user.id).replace(user)
-  return response.resource
+  return await usersContainer.item(user.id, user.id).replace(user)
 }
 
+// TODO: This should be stored in cache
 async function getAreaToOfficeMap () {
-  const response = await refDataContainer.item('areaToOfficeMap', 'areaToOfficeMap').read()
-  return response.resource
+  return (await refDataContainer.item('areaToOfficeMap', 'areaToOfficeMap').read())?.resource?.data
 }
 
 module.exports = {

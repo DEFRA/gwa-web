@@ -15,6 +15,10 @@ module.exports = [
 
       const user = await getUser(userId)
       const phoneNumber = user.phoneNumbers.find(x => x.id === phoneNumberId)
+
+      if (!phoneNumber) {
+        return boom.notFound('Phone number not found.')
+      }
       const isCorporate = phoneNumber.type === 'corporate'
 
       return h.view('remove-contact', new Model({ isCorporate, phoneNumber }))

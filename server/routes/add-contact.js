@@ -1,5 +1,7 @@
-const joi = require('joi')
+const boom = require('@hapi/boom')
+const Joi = require('joi')
 const { v4: uuid } = require('uuid')
+
 const BaseModel = require('../lib/model')
 const { getUser, updateUser } = require('../lib/db')
 const { parsePhoneNumber, types } = require('../lib/phone-number')
@@ -64,7 +66,7 @@ module.exports = [
         return h.view('add-contact', new Model(request.payload, errors))
       }
 
-      // check there aren't too many personal phone numbers already
+      // Check there aren't too many personal phone numbers already
       if (user.phoneNumbers.filter(x => x.type === 'personal').length >= maxPersonalPhoneNumbers) {
         const errors = { mobile: errorMessages.mobile.tooMany }
         // Potentially return the account view
@@ -77,14 +79,18 @@ module.exports = [
         number: e164,
         subscribedTo: [user.officeLocation]
       })
-      await updateUser(user)
+
+      const response = await updateUser(user)
+      if (response.statusCode !== 200) {
+        boom.internal('Error updating user.', response)
+      }
 
       return h.redirect('/account')
     },
     options: {
       validate: {
-        payload: joi.object().keys({
-          mobile: joi.string().required()
+        payload: Joi.object().keys({
+          mobile: Joi.string().required()
         }),
         failAction: (request, h, err) => {
           const errors = getMappedErrors(err, errorMessages)

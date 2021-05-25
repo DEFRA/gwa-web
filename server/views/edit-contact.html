@@ -3,7 +3,7 @@
 {% set formSubmitButtonText = "Save" %}
 
 {% block beforeForm %}
-  <span class="govuk-caption-l">{{ user.givenName }} {{ user.surname }} - {{ user.organisation }}</span>
+  <span class="govuk-caption-l">{{ user.givenName }} {{ user.surname }} - {{ user.companyName }}</span>
   <h1 class="govuk-heading-l">Your details</h1>
   <p>
   You will get alerts to <strong>{{ data.phoneNumber.number }}</strong> for the below office locations:
