@@ -5,10 +5,12 @@ const { getUser, updateUser } = require('../lib/db')
 
 class Model extends BaseModel {}
 
+const routeId = 'contact-remove'
+
 module.exports = [
   {
     method: 'GET',
-    path: '/remove-contact/{phoneNumberId}',
+    path: `/${routeId}/{phoneNumberId}`,
     handler: async (request, h) => {
       const { id: userId } = request.auth.credentials.user
       const { phoneNumberId } = request.params
@@ -21,7 +23,7 @@ module.exports = [
       }
       const isCorporate = phoneNumber.type === 'corporate'
 
-      return h.view('remove-contact', new Model({ isCorporate, phoneNumber }))
+      return h.view(routeId, new Model({ isCorporate, phoneNumber }))
     },
     options: {
       validate: {
@@ -33,7 +35,7 @@ module.exports = [
   },
   {
     method: 'POST',
-    path: '/remove-contact/{phoneNumberId}',
+    path: `/${routeId}/{phoneNumberId}`,
     handler: async (request, h) => {
       const { phoneNumberId } = request.params
       const { id: userId } = request.auth.credentials.user

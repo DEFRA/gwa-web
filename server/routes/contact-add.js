@@ -31,17 +31,19 @@ class Model extends BaseModel {
   }
 }
 
+const routeId = 'contact-add'
+
 module.exports = [
   {
     method: 'GET',
-    path: '/add-contact',
+    path: `/${routeId}`,
     handler: async (request, h) => {
-      return h.view('add-contact')
+      return h.view(routeId)
     }
   },
   {
     method: 'POST',
-    path: '/add-contact',
+    path: `/${routeId}`,
     handler: async (request, h) => {
       const { mobile } = request.payload
       const { id: userId } = request.auth.credentials.user
@@ -54,7 +56,7 @@ module.exports = [
 
       if (!isCorrectType) {
         const errors = { mobile: errorMessages.mobile['*'] }
-        return h.view('add-contact', new Model(request.payload, errors))
+        return h.view(routeId, new Model(request.payload, errors))
       }
 
       const user = await getUser(userId)
@@ -63,14 +65,14 @@ module.exports = [
       const existingPhoneNumber = user.phoneNumbers.find(x => x.number === e164)
       if (existingPhoneNumber) {
         const errors = { mobile: errorMessages.mobile.unique }
-        return h.view('add-contact', new Model(request.payload, errors))
+        return h.view(routeId, new Model(request.payload, errors))
       }
 
       // Check there aren't too many personal phone numbers already
       if (user.phoneNumbers.filter(x => x.type === 'personal').length >= maxPersonalPhoneNumbers) {
         const errors = { mobile: errorMessages.mobile.tooMany }
         // Potentially return the account view
-        return h.view('add-contact', new Model(request.payload, errors))
+        return h.view(routeId, new Model(request.payload, errors))
       }
 
       user.phoneNumbers.push({
@@ -94,7 +96,7 @@ module.exports = [
         }),
         failAction: (request, h, err) => {
           const errors = getMappedErrors(err, errorMessages)
-          return h.view('add-contact', new Model(request.payload, errors)).takeover()
+          return h.view(routeId, new Model(request.payload, errors)).takeover()
         }
       }
     }

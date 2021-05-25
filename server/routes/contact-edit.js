@@ -12,11 +12,12 @@ class Model extends BaseModel {
     super(data, err, errorMessages)
   }
 }
+const routeId = 'contact-edit'
 
 module.exports = [
   {
     method: 'GET',
-    path: '/edit-contact/{phoneNumberId}',
+    path: `/${routeId}/{phoneNumberId}`,
     handler: async (request, h) => {
       const { phoneNumberId } = request.params
       const userId = request.auth.credentials.user.id
@@ -49,7 +50,7 @@ module.exports = [
       })
       const isCorporate = phoneNumber.type === 'corporate'
 
-      return h.view('edit-contact', new Model({ areas: areaToOfficeMap, isCorporate, phoneNumber, user }))
+      return h.view(routeId, new Model({ areas: areaToOfficeMap, isCorporate, phoneNumber, user }))
     },
     options: {
       validate: {
@@ -61,7 +62,7 @@ module.exports = [
   },
   {
     method: 'POST',
-    path: '/edit-contact/{phoneNumberId}',
+    path: `/${routeId}/{phoneNumberId}`,
     handler: async (request, h) => {
       const { phoneNumberId } = request.params
       const { id: userId } = request.auth.credentials.user
@@ -98,7 +99,7 @@ module.exports = [
         //     // const items = await getCheckboxItems(userId, contactId)
         //     const errors = getMappedErrors(err, errorMessages)
 
-        //     return h.view('edit-contact', new Model({ contact, items }, errors)).takeover()
+        //     return h.view(routeId, new Model({ contact, items }, errors)).takeover()
         //   }
       }
     }

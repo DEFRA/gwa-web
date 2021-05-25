@@ -14,7 +14,7 @@ function getPhoneNumbersForView (contact) {
     },
     {
       html: `<a class="govuk-button govuk-button--secondary"
-          href="/edit-contact/${encodeURIComponent(contact.id)}"
+          href="/contact-edit/${encodeURIComponent(contact.id)}"
           style="margin-bottom: 0">Edit</a>`
     }
   ]
