@@ -27,7 +27,7 @@ module.exports = [
         [{ text: 'To' }, { text: message.officeLocations.join(', ') }],
         [{ text: 'Text message' }, { text: message.text }],
         [{ text: 'Additional information' }, { text: message.info }],
-        [{ text: 'Created at' }, { text: new Date(message.createdAt * 1000).toLocaleString() }],
+        [{ text: 'Created at' }, { text: new Date(message.createdAt).toLocaleString() }],
         [{ text: 'Created by' }, { text: 'pending' }],
         [{ text: 'Last updated at' }, { text: 'pending' }],
         [{ text: 'Last updated by' }, { text: 'pending' }],
