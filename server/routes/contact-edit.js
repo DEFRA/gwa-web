@@ -1,5 +1,5 @@
-const Joi = require('joi')
 const boom = require('@hapi/boom')
+const Joi = require('joi')
 
 const BaseModel = require('../lib/model')
 const { getAreaToOfficeMap, getUser, updateUser } = require('../lib/db')
@@ -34,23 +34,39 @@ module.exports = [
         return boom.notFound('Phone number not found.')
       }
 
-      areaToOfficeMap.forEach(area => {
-        area.officeLocations.forEach(ol => {
+      // TODO: refactor to function
+      const items = areaToOfficeMap.map(area => {
+        const checkboxes = area.officeLocations.map(ol => {
           const officeCode = ol.officeCode
-          // Disable office location for corporate numbers
+          let checked
+          let disabled
           if (phoneNumber.type === 'corporate' && officeCode === user.officeCode) {
-            ol.disabled = true
-            ol.checked = true
+            disabled = true
+            checked = true
           } else if (phoneNumber?.subscribedTo?.includes(officeCode)) {
-            ol.checked = true
+            checked = true
           }
-          ol.text = ol.officeLocation
-          ol.value = officeCode
+          return `<div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" id="officeLocations_${officeCode}" name="officeLocations" type="checkbox" value="${officeCode}" ${checked ? 'checked=""' : ''} ${disabled ? 'disabled=""' : ''}>
+              <label class="govuk-label govuk-checkboxes__label" for="officeLocations_${officeCode}">${ol.officeLocation}</label>
+          </div>`
         })
+        return {
+          heading: {
+            text: area.areaName
+          },
+          content: {
+            html: `<div class="govuk-form-group">
+              <div class="govuk-checkboxes govuk-checkboxes--small">
+                ${checkboxes.join('')}
+              </div>
+            </div>`
+          }
+        }
       })
       const isCorporate = phoneNumber.type === 'corporate'
 
-      return h.view(routeId, new Model({ areas: areaToOfficeMap, isCorporate, phoneNumber, user }))
+      return h.view(routeId, new Model({ items, isCorporate, phoneNumber, user }))
     },
     options: {
       validate: {
@@ -72,7 +88,7 @@ module.exports = [
 
       const phoneNumber = user.phoneNumbers.find(x => x.id === phoneNumberId)
       if (phoneNumber.type === 'corporate') {
-        officeLocations.push(user.officeLocation)
+        officeLocations.push(user.officeCode)
       }
       phoneNumber.subscribedTo = officeLocations
 

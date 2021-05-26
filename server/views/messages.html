@@ -1,45 +1,15 @@
 {% extends "layout.html" %}
 
 {% block content %}
-  {{ 
+  {{
     govukButton({
       text: "Create message",
-      href: "/create-message",
+      href: "/message-create",
       classes: "govuk-button pull-right"
     })
   }}
   <h1 class="govuk-heading-l">Messages</h1>
-  <h3 class="govuk-heading-m">Messages ready for approval</h3>
-  {{
-    govukTable({
-      firstCellIsHeader: true,
-      classes: "govuk-!-margin-bottom-9 govuk-!-font-size-16",
-      head: [
-        { text: "To" },
-        { text: "Text" },
-        { text: "Additional info" },
-        { text: "Created" },
-        { text: "" }
-      ],
-      rows: data.readyForApprovalRows
-    })
-  }}
-  <h3 class="govuk-heading-m">Messages ready for sending</h3>
-  {{
-    govukTable({
-      firstCellIsHeader: true,
-      classes: "govuk-!-margin-bottom-9 govuk-!-font-size-16",
-      head: [
-        { text: "To" },
-        { text: "Text" },
-        { text: "Additional info" },
-        { text: "Approved" },
-        { text: "" }
-      ],
-      rows: data.readyForSendingRows
-    })
-  }}
-  <h3 class="govuk-heading-m">Messages recently sent</h3>
+  <h3 class="govuk-heading-m">Messages recently sent (last 10)</h3>
   {{
     govukTable({
       firstCellIsHeader: true,

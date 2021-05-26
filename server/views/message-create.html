@@ -1,0 +1,46 @@
+{% extends "form.html" %}
+
+{% set formSubmitButtonText = "Save message" %}
+
+{% block beforeForm %}
+  <h1 class="govuk-heading-l">Create message</h1>
+{% endblock %}
+
+{% block form %}
+  {{
+    govukCharacterCount({
+      id: "text",
+      name: "text",
+      label: {
+        text: "Text message"
+      },
+      hint: {
+        text: "Enter the message you wish to send."
+      },
+      maxlength: data.maxMsgLength,
+      value: data.text,
+      errorMessage: errors.text
+    })
+  }}
+  {{
+    govukCharacterCount({
+      id: "info",
+      name: "info",
+      label: {
+        text: "Additional information"
+      },
+      hint: {
+        text: "Use this as an aide memoire relating to the message. It is optional, feel free to leave empty."
+      },
+      maxlength: 2000,
+      value: data.info,
+      errorMessage: errors.info
+    })
+  }}
+  {{
+    govukAccordion({
+      id: "message-create-areas",
+      items: data.items
+    })
+  }}
+{% endblock %}

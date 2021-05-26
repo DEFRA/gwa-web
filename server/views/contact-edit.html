@@ -11,19 +11,12 @@
 {% endblock %}
 
 {% block form %}
-  {% for area in data.areas %}
-    <p class="govuk-body-m govuk-!-margin-bottom-0">
-      <strong>{{area.areaName}}</strong>
-    </p>
-    {{
-      govukCheckboxes({
-        idPrefix: "officeLocations_" + area.areaCode,
-        name: "officeLocations",
-        classes: "govuk-checkboxes--small",
-        items: area.officeLocations
-      })
-    }}
-  {% endfor %}
+  {{
+    govukAccordion({
+      id: "contact-edit-areas",
+      items: data.items
+    })
+  }}
 {% endblock %}
 
 {% block afterForm %}
