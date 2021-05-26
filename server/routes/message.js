@@ -1,6 +1,5 @@
 const joi = require('joi')
 const boom = require('@hapi/boom')
-const date = require('../lib/date')
 const BaseModel = require('../lib/model')
 const { getMessage } = require('../lib/db')
 

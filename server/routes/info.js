@@ -1,6 +1,4 @@
-const date = require('../lib/date')
 const BaseModel = require('../lib/model')
-// const { getAllInfoActiveMessages } = require('../lib/db')
 
 class Model extends BaseModel {}
 
