@@ -3,6 +3,7 @@ const boom = require('@hapi/boom')
 
 const BaseModel = require('../lib/model')
 const { deleteMessage, getMessage } = require('../lib/db')
+const getMessageRows = require('../lib/get-message-rows')
 const { messageStates } = require('../constants')
 
 class Model extends BaseModel {}
@@ -26,19 +27,9 @@ module.exports = [
         return boom.unauthorized('Sent messages can not be deleted.')
       }
 
-      const rows = [
-        [{ text: 'To' }, { text: message.officeLocations.join(', ') }],
-        [{ text: 'Text message' }, { text: message.text }],
-        [{ text: 'Additional information' }, { text: message.info }],
-        [{ text: 'Created at' }, { text: new Date(message.createdAt).toLocaleString() }],
-        [{ text: 'Created by' }, { text: 'pending' }],
-        [{ text: 'Last updated at' }, { text: 'pending' }],
-        [{ text: 'Last updated by' }, { text: 'pending' }],
-        [{ text: 'Sent at' }, { text: 'pending' }],
-        [{ text: 'Sent by' }, { text: 'pending' }]
-      ]
+      const messageRows = getMessageRows(message)
 
-      return h.view(routeId, new Model({ message, rows }))
+      return h.view(routeId, new Model({ message, messageRows }))
     },
     options: {
       validate: {
