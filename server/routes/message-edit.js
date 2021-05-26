@@ -8,7 +8,7 @@ const { textMessages: { maxMsgLength }, messageStates } = require('../constants'
 const officeCheckboxes = require('../lib/office-checkboxes')
 
 const errorMessages = {
-  officeLocations: 'Select at least one office location',
+  officeCodes: 'Select at least one office location',
   text: 'Enter the text message',
   info: 'Enter the additional information'
 }
@@ -44,7 +44,7 @@ module.exports = [
         return boom.internal('Office to location map not found.')
       }
 
-      const checked = [...new Set(message.officeLocations.flat())]
+      const checked = [...new Set(message.officeCodes.flat())]
       const items = officeCheckboxes(areaToOfficeMap, checked)
 
       return h.view(routeId, new Model({ ...message, maxMsgLength, items }))
@@ -63,7 +63,7 @@ module.exports = [
     handler: async (request, h) => {
       const { messageId } = request.params
       const { user } = request.auth.credentials
-      const { info, officeLocations, text } = request.payload
+      const { info, officeCodes, text } = request.payload
 
       const message = await getMessage(messageId)
 
@@ -77,7 +77,7 @@ module.exports = [
 
       message.text = text
       message.info = info
-      message.officeLocations = [officeLocations].flat()
+      message.officeCodes = [officeCodes].flat()
       message.editedBy = user.id
       message.state = messageStates.edited
       message.audit.push({
@@ -101,16 +101,16 @@ module.exports = [
           messageId: Joi.string().guid().required()
         }),
         payload: Joi.object().keys({
-          officeLocations: Joi.alternatives().try(Joi.string().pattern(/^[A-Z]{3}:/), Joi.array().min(1).items(Joi.string().pattern(/^[A-Z]{3}:/))).required(),
+          officeCodes: Joi.alternatives().try(Joi.string().pattern(/^[A-Z]{3}:/), Joi.array().min(1).items(Joi.string().pattern(/^[A-Z]{3}:/))).required(),
           text: Joi.string().max(maxMsgLength).required(),
           info: Joi.string().max(2000).allow('').empty('')
         }),
         failAction: async (request, h, err) => {
           const errors = getMappedErrors(err, errorMessages)
 
-          const { officeLocations } = request.payload
+          const { officeCodes } = request.payload
           const areaToOfficeMap = await getAreaToOfficeMap()
-          const items = officeCheckboxes(areaToOfficeMap, officeLocations)
+          const items = officeCheckboxes(areaToOfficeMap, officeCodes)
 
           return h.view(routeId, new Model({ ...request.payload, items, maxMsgLength }, errors)).takeover()
         }

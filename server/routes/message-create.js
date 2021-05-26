@@ -9,7 +9,7 @@ const { getMappedErrors } = require('../lib/errors')
 const { textMessages: { maxMsgLength }, messageStates } = require('../constants')
 
 const errorMessages = {
-  officeLocations: 'Select at least one office location',
+  officeCodes: 'Select at least one office location',
   text: 'Enter the text message',
   info: 'Enter the additional information'
 }
@@ -43,13 +43,13 @@ module.exports = [
     path,
     handler: async (request, h) => {
       const { user } = request.auth.credentials
-      const { info, officeLocations, text } = request.payload
+      const { info, officeCodes, text } = request.payload
       const createdAt = Date.now()
 
       const msg = {
         id: uuid(),
         info,
-        officeLocations: [officeLocations].flat(),
+        officeCodes: [officeCodes].flat(),
         text,
         createdAt,
         editedBy: user.id,
@@ -75,16 +75,16 @@ module.exports = [
     options: {
       validate: {
         payload: Joi.object().keys({
-          officeLocations: Joi.alternatives().try(Joi.string().pattern(/^[A-Z]{3}:/), Joi.array().min(1).items(Joi.string().pattern(/^[A-Z]{3}:/))).required(),
+          officeCodes: Joi.alternatives().try(Joi.string().pattern(/^[A-Z]{3}:/), Joi.array().min(1).items(Joi.string().pattern(/^[A-Z]{3}:/))).required(),
           text: Joi.string().max(maxMsgLength).required(),
           info: Joi.string().max(2000).allow('').empty('')
         }),
         failAction: async (request, h, err) => {
           const errors = getMappedErrors(err, errorMessages)
 
-          const { officeLocations } = request.payload
+          const { officeCodes } = request.payload
           const areaToOfficeMap = await getAreaToOfficeMap()
-          const items = officeCheckboxes(areaToOfficeMap, officeLocations)
+          const items = officeCheckboxes(areaToOfficeMap, officeCodes)
 
           return h.view(routeId, new Model({ ...request.payload, items, maxMsgLength }, errors)).takeover()
         }

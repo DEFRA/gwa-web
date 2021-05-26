@@ -58,15 +58,15 @@ module.exports = [
     handler: async (request, h) => {
       const { phoneNumberId } = request.params
       const { id: userId } = request.auth.credentials.user
-      const { officeLocations = [] } = request.payload
+      const { officeCodes = [] } = request.payload
 
       const user = await getUser(userId)
 
       const phoneNumber = user.phoneNumbers.find(x => x.id === phoneNumberId)
       if (phoneNumber.type === phoneNumberTypes.corporate) {
-        officeLocations.push(user.officeCode)
+        officeCodes.push(user.officeCode)
       }
-      phoneNumber.subscribedTo = officeLocations
+      phoneNumber.subscribedTo = officeCodes
 
       const response = await updateUser(user)
       if (response.statusCode !== 200) {
@@ -81,7 +81,7 @@ module.exports = [
           phoneNumberId: Joi.string().guid().required()
         }),
         payload: Joi.object().keys({
-          officeLocations: Joi.array().items(Joi.string().required()).single().default([])
+          officeCodes: Joi.array().items(Joi.string().required()).single().default([])
         })
       }
     }
