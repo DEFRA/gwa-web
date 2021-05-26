@@ -81,7 +81,7 @@ module.exports = [
       message.editedBy = user.id
       message.state = messageStates.edited
       message.audit.push({
-        event: messageStates.created,
+        event: messageStates.edited,
         time: Date.now(),
         user: {
           id: user.id,
