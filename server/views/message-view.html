@@ -15,5 +15,21 @@
         text: 'Edit message'
       })
     }}
+
+    {{
+      govukButton({
+        classes: "govuk-button--danger",
+        href: '/message-delete/' + data.messageId,
+        text: 'Delete message'
+      })
+    }}
+
+    {{
+      govukButton({
+        classes: "govuk-button--warning",
+        href: '/message-send/' + data.messageId,
+        text: 'Send message'
+      })
+    }}
   {% endif %}
 {% endblock %}
