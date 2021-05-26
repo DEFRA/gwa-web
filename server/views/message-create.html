@@ -1,6 +1,6 @@
 {% extends "form.html" %}
 
-{% set formSubmitButtonText = "Save message" %}
+{% set formSubmitButtonText = "Create message" %}
 
 {% block beforeForm %}
   <h1 class="govuk-heading-l">Create message</h1>
@@ -37,7 +37,7 @@
       errorMessage: errors.info
     })
   }}
-  <h2 class="govuk-heading-m">Notifcation areas</h2>
+  <h2 class="govuk-heading-m" id="officeLocations">Office locations</h2>
   {{
     govukAccordion({
       id: "message-create-areas",

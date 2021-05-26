@@ -10,6 +10,7 @@ const schema = Joi.object().keys({
   db: Joi.object().keys({
     connectionString: Joi.string().required(),
     name: Joi.string().required(),
+    messagesContainerName: Joi.string().default('messages'),
     refDataContainerName: Joi.string().default('reference-data'),
     usersContainerName: Joi.string().default('users')
   }).required(),
@@ -36,6 +37,7 @@ const config = {
   db: {
     connectionString: process.env.COSMOS_DB_CONNECTION_STRING,
     name: process.env.COSMOS_DB_NAME,
+    messagesContainerName: process.env.COSMOS_DB_MESSAGES_CONTAINER,
     refDataContainerName: process.env.COSMOS_DB_REFDATA_CONTAINER,
     usersContainerName: process.env.COSMOS_DB_USERS_CONTAINER
   },

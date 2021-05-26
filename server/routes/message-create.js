@@ -1,14 +1,15 @@
 const boom = require('@hapi/boom')
 const Joi = require('joi')
+const { v4: uuid } = require('uuid')
 
 const officeCheckboxes = require('../lib/office-checkboxes')
-const { getAreaToOfficeMap } = require('../lib/db')
+const { getAreaToOfficeMap, saveMessage } = require('../lib/db')
 const BaseModel = require('../lib/model')
 const { getMappedErrors } = require('../lib/errors')
 const { maxMsgLength } = require('../constants').textMessages
 
 const errorMessages = {
-  groupId: 'Select a group',
+  officeLocations: 'Select at least one office location',
   text: 'Enter the text message',
   info: 'Enter the additional information'
 }
@@ -32,12 +33,6 @@ module.exports = [
         return boom.internal('Office to location map not found.')
       }
 
-      areaToOfficeMap.forEach(area => {
-        area.officeLocations.forEach(ol => {
-          ol.text = ol.officeLocation
-          ol.value = ol.officeCode
-        })
-      })
       const items = officeCheckboxes(areaToOfficeMap)
       return h.view(routeId, new Model({ items, maxMsgLength }))
     }
@@ -46,39 +41,53 @@ module.exports = [
     method: 'POST',
     path: `/${routeId}`,
     handler: async (request, h) => {
-      // create the message item in the DB
-      // redirect to some page = TBD
-      const { credentials } = request.auth
-      const {
-        groupId,
-        text,
-        info
-      } = request.payload
+      const { user } = request.auth.credentials
+      const { info, officeLocations, text } = request.payload
 
-      // await insertMessage(credentials.user.id, groupId, text, info)
+      const msg = {
+        id: uuid(),
+        info,
+        officeLocations: [officeLocations].flat(),
+        text,
+        audit: [{
+          event: 'creation',
+          time: Date.now(),
+          user: {
+            id: user.id,
+            surname: user.surname,
+            givenName: user.givenName,
+            companyName: user.companyName
+          }
+        }]
+      }
+      const res = await saveMessage(msg)
+      if (res.statusCode !== 201) {
+        return boom.internal('Problem creating message.', res)
+      }
 
       return h.redirect('/messages')
     },
     options: {
       validate: {
         payload: Joi.object().keys({
-          groupId: Joi.number().integer().required(),
-          text: Joi.string().max(maxMsgLength).empty('').when('info', {
-            is: Joi.exist(),
-            otherwise: Joi.required()
-          }),
+          officeLocations: Joi.alternatives().try(Joi.string().pattern(/^[A-Z]{3}:/), Joi.array().min(1).items(Joi.string().pattern(/^[A-Z]{3}:/))).required(),
+          text: Joi.string().max(maxMsgLength).required(),
           info: Joi.string().max(2000).allow('').empty('')
-        })
-        // failAction: async (request, h, err) => {
-        //   const errors = getMappedErrors(err, errorMessages)
-        //   const { groupId } = request.payload
+        }),
+        failAction: async (request, h, err) => {
+          const errors = getMappedErrors(err, errorMessages)
 
-        //   return h.view(routeId, new Model({
-        //     ...request.payload,
-        //     items,
-        //     maxMsgLength
-        //   }, errors)).takeover()
-        // }
+          const { officeLocations } = request.payload
+          console.log(request.payload)
+
+          const areaToOfficeMap = await getAreaToOfficeMap()
+          const items = officeCheckboxes(areaToOfficeMap, officeLocations)
+          return h.view(routeId, new Model({
+            ...request.payload,
+            items,
+            maxMsgLength
+          }, errors)).takeover()
+        }
       }
     }
   }

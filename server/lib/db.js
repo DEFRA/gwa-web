@@ -1,4 +1,4 @@
-const { refDataContainer, usersContainer } = require('../db/client')
+const { messagesContainer, refDataContainer, usersContainer } = require('../db/client')
 
 async function getUser (id) {
   const response = await usersContainer.item(id, id).read()
@@ -14,8 +14,13 @@ async function getAreaToOfficeMap () {
   return (await refDataContainer.item('areaToOfficeMap', 'areaToOfficeMap').read())?.resource?.data
 }
 
+async function saveMessage (msg) {
+  return await messagesContainer.items.upsert(msg)
+}
+
 module.exports = {
   getAreaToOfficeMap,
   getUser,
+  saveMessage,
   updateUser
 }
