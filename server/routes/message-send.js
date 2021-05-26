@@ -1,15 +1,21 @@
-const joi = require('joi')
+const Joi = require('joi')
 const boom = require('@hapi/boom')
-const { scopes } = require('../permissions')
+
 const BaseModel = require('../lib/model')
-const { sendMessage, getMessage, getGroupContactsCount, enqueueMessageJobs } = require('../lib/db')
+const { getMessage } = require('../lib/db')
+const getMessageRows = require('../lib/get-message-rows')
+const { messageStates } = require('../constants')
+const { scopes } = require('../permissions')
 
 class Model extends BaseModel {}
+
+const routeId = 'message-send'
+const path = `/${routeId}/{messageId}`
 
 module.exports = [
   {
     method: 'GET',
-    path: '/message/{messageId}/confirm-send',
+    path,
     handler: async (request, h) => {
       const { messageId } = request.params
       const message = await getMessage(messageId)
@@ -18,13 +24,18 @@ module.exports = [
         return boom.notFound()
       }
 
-      if (!message.approved_at || message.sent_at) {
-        return h.redirect(`/message/${message.id}`)
+      if (message.state === messageStates.sent) {
+        return boom.unauthorized('Sent messages can not be sent again.')
       }
 
-      const contactsCount = message.text ? await getGroupContactsCount(message) : '0'
+      // TODO: calculate number of contacts
+      const contactsCount = 100
+      // TODO: calculate cost
+      const cost = 13
 
-      return h.view('confirm-send', new Model({ message, hasText: !!message.text, contactsCount }))
+      const messageRows = getMessageRows(message)
+
+      return h.view(routeId, new Model({ contactsCount, cost, message, messageRows }))
     },
     options: {
       auth: {
@@ -33,15 +44,15 @@ module.exports = [
         }
       },
       validate: {
-        params: joi.object().keys({
-          messageId: joi.number().integer().required()
+        params: Joi.object().keys({
+          messageId: Joi.string().guid().required()
         })
       }
     }
   },
   {
     method: 'POST',
-    path: '/message/{messageId}/confirm-send',
+    path,
     handler: async (request, h) => {
       const { messageId } = request.params
       const { credentials } = request.auth
@@ -71,8 +82,8 @@ module.exports = [
         }
       },
       validate: {
-        params: joi.object().keys({
-          messageId: joi.number().integer().required()
+        params: Joi.object().keys({
+          messageId: Joi.string().guid().required()
         })
       }
     }

@@ -1,0 +1,29 @@
+{% extends "form.html" %}
+
+{% block beforeForm %}
+  <h1 class="govuk-heading-l">Send message</h1>
+  {{
+    govukWarningText({
+      html: "Are you sure you would like to send this message? It will be sent to approximately " + data.contactsCount + " contacts at an approximate cost of £" + data.cost,
+      iconFallbackText: "Warning"
+    })
+  }}
+
+  {{
+    govukTable({
+      caption: "Message details",
+      firstCellIsHeader: true,
+      rows: data.messageRows
+    })
+  }}
+{% endblock %}
+
+{% block form %}
+  {{
+    govukButton({
+      text: "Cancel",
+      href: "/message-view/" + data.message.id,
+      classes: "govuk-button--secondary"
+    })
+  }}
+{% endblock %}

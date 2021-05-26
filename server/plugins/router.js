@@ -9,6 +9,7 @@ const routes = [].concat(
   require('../routes/message-create'),
   require('../routes/message-delete'),
   require('../routes/message-edit'),
+  require('../routes/message-send'),
   require('../routes/message-view'),
   require('../routes/messages'),
   // require('../routes/upload'),
