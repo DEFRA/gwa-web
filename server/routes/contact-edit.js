@@ -1,10 +1,11 @@
 const boom = require('@hapi/boom')
 const Joi = require('joi')
 
-const officeCheckboxes = require('../lib/office-checkboxes')
 const BaseModel = require('../lib/model')
 const { getAreaToOfficeMap, getUser, updateUser } = require('../lib/db')
 const { getMappedErrors } = require('../lib/errors')
+const officeCheckboxes = require('../lib/office-checkboxes')
+const { phoneNumberTypes } = require('../constants')
 
 const errorMessages = {}
 
@@ -37,7 +38,7 @@ module.exports = [
         return boom.notFound('Phone number not found.')
       }
 
-      const isCorporate = phoneNumber.type === 'corporate'
+      const isCorporate = phoneNumber.type === phoneNumberTypes.corporate
       const checked = [...new Set(phoneNumber.subscribedTo.flat())]
       const disabled = isCorporate ? [user.officeCode] : []
       const items = officeCheckboxes(areaToOfficeMap, checked, disabled)
@@ -63,7 +64,7 @@ module.exports = [
       const user = await getUser(userId)
 
       const phoneNumber = user.phoneNumbers.find(x => x.id === phoneNumberId)
-      if (phoneNumber.type === 'corporate') {
+      if (phoneNumber.type === phoneNumberTypes.corporate) {
         officeLocations.push(user.officeCode)
       }
       phoneNumber.subscribedTo = officeLocations

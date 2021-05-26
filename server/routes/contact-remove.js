@@ -1,7 +1,9 @@
 const boom = require('@hapi/boom')
 const Joi = require('joi')
+
 const BaseModel = require('../lib/model')
 const { getUser, updateUser } = require('../lib/db')
+const { phoneNumberTypes } = require('../constants')
 
 class Model extends BaseModel {}
 
@@ -22,7 +24,7 @@ module.exports = [
       if (!phoneNumber) {
         return boom.notFound('Phone number not found.')
       }
-      const isCorporate = phoneNumber.type === 'corporate'
+      const isCorporate = phoneNumber.type === phoneNumberTypes.corporate
 
       return h.view(routeId, new Model({ isCorporate, phoneNumber }))
     },
@@ -43,8 +45,8 @@ module.exports = [
 
       const user = await getUser(userId)
       const phoneNumber = user.phoneNumbers.find(x => x.id === phoneNumberId)
-      if (phoneNumber.type === 'corporate') {
-        return boom.forbidden('Unable to remove corporate phone number.')
+      if (phoneNumber.type === phoneNumberTypes.corporate) {
+        return boom.forbidden(`Unable to remove ${phoneNumberTypes.corporate} phone number.`)
       }
 
       user.phoneNumbers = user.phoneNumbers.filter(x => x.id !== phoneNumberId)

@@ -1,6 +1,7 @@
 const BaseModel = require('../lib/model')
 const { getUser } = require('../lib/db')
 const { maxPersonalPhoneNumbers } = require('../config')
+const { phoneNumberTypes } = require('../constants')
 
 class Model extends BaseModel {}
 
@@ -29,8 +30,8 @@ module.exports = [
       const { roles, user: { id: userId } } = credentials
       // const user = request.yar.get(userId)
       const user = await getUser(userId)
-      const corporatePhoneNumbers = user.phoneNumbers.filter(x => x.type === 'corporate').map(getPhoneNumbersForView)
-      const personalPhoneNumbers = user.phoneNumbers.filter(x => x.type === 'personal').map(getPhoneNumbersForView)
+      const corporatePhoneNumbers = user.phoneNumbers.filter(x => x.type === phoneNumberTypes.corporate).map(getPhoneNumbersForView)
+      const personalPhoneNumbers = user.phoneNumbers.filter(x => x.type === phoneNumberTypes.personal).map(getPhoneNumbersForView)
 
       return h.view('account', new Model({ corporatePhoneNumbers, maxPersonalPhoneNumbers, personalPhoneNumbers, roles, user }))
     }

@@ -3,9 +3,10 @@ const Joi = require('joi')
 const { v4: uuid } = require('uuid')
 
 const BaseModel = require('../lib/model')
+const { getMappedErrors } = require('../lib/errors')
 const { getUser, updateUser } = require('../lib/db')
 const { parsePhoneNumber, types } = require('../lib/phone-number')
-const { getMappedErrors } = require('../lib/errors')
+const { phoneNumberTypes } = require('../constants')
 
 const maxPersonalPhoneNumbers = 2
 const errorMessages = {
@@ -70,7 +71,7 @@ module.exports = [
       }
 
       // Check there aren't too many personal phone numbers already
-      if (user.phoneNumbers.filter(x => x.type === 'personal').length >= maxPersonalPhoneNumbers) {
+      if (user.phoneNumbers.filter(x => x.type === phoneNumberTypes.personal).length >= maxPersonalPhoneNumbers) {
         const errors = { mobile: errorMessages.mobile.tooMany }
         // Potentially return the account view
         return h.view(routeId, new Model(request.payload, errors))
@@ -78,7 +79,7 @@ module.exports = [
 
       user.phoneNumbers.push({
         id: uuid(),
-        type: 'personal',
+        type: phoneNumberTypes.personal,
         number: e164,
         subscribedTo: [user.officeLocation]
       })

@@ -4,6 +4,10 @@ module.exports = {
     edited: 'edited',
     sent: 'sent'
   },
+  phoneNumberTypes: {
+    corporate: 'corporate',
+    personal: 'personal'
+  },
   textMessages: {
     oneMsgLength: 160,
     twoMsgLength: 306,
