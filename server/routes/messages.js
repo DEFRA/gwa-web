@@ -11,7 +11,7 @@ async function getRecentMessages (state) {
     const date = new Date(message._ts * 1000)
     return [
       { text: date.toLocaleString() },
-      { text: message.text.slice(0, 50) },
+      { text: message.text.slice(0, 47) + (message.text.length > 47 ? ' ...' : '') },
       { html: message.editedBy ? `<a href="mailto:${message.editedBy}">${message.editedBy}</a>` : '' },
       { html: `<a href='/message-view/${message.id}'>View</a>` }
     ]
