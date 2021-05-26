@@ -11,7 +11,7 @@ async function getRecentMessageRows (type) {
       state: messageStates.created
     },
     sent: {
-      link: id => `<a href='/message/${id}'>View</a>`,
+      link: id => `<a href='/message-view/${id}'>View</a>`,
       state: messageStates.sent
     }
   }

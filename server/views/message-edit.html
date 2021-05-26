@@ -20,7 +20,7 @@
       value: data.groupId,
       errorMessage: errors.groupId,
       items: data.items
-    }) 
+    })
   }}
   {{
     govukCharacterCount({
@@ -32,10 +32,10 @@
       hint: {
         text: "If you do not want to send a text message, leave this blank. This ensures texts are not sent to staff."
       },
-      maxlength: data.MAX_MESSAGE_TEXT_LENGTH,
+      maxlength: data.maxMsgLength,
       value: data.text,
       errorMessage: errors.text
-    }) 
+    })
   }}
   {{
     govukCharacterCount({
@@ -50,6 +50,6 @@
       maxlength: 2000,
       value: data.info,
       errorMessage: errors.info
-    }) 
+    })
   }}
 {% endblock %}

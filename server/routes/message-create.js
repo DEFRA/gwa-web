@@ -21,11 +21,12 @@ class Model extends BaseModel {
 }
 
 const routeId = 'message-create'
+const path = `/${routeId}`
 
 module.exports = [
   {
     method: 'GET',
-    path: `/${routeId}`,
+    path,
     handler: async (request, h) => {
       const areaToOfficeMap = await getAreaToOfficeMap()
 
@@ -39,7 +40,7 @@ module.exports = [
   },
   {
     method: 'POST',
-    path: `/${routeId}`,
+    path,
     handler: async (request, h) => {
       const { user } = request.auth.credentials
       const { info, officeLocations, text } = request.payload

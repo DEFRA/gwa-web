@@ -1,5 +1,6 @@
-const joi = require('joi')
+const Joi = require('joi')
 const boom = require('@hapi/boom')
+
 const BaseModel = require('../lib/model')
 const { getMessage } = require('../lib/db')
 
@@ -21,10 +22,12 @@ class Model extends BaseModel {
   }
 }
 
+const routeId = 'message-view'
+
 module.exports = [
   {
     method: 'GET',
-    path: '/message/{messageId}',
+    path: `/${routeId}/{messageId}`,
     handler: async (request, h) => {
       const { messageId } = request.params
       const message = await getMessage(messageId)
@@ -52,12 +55,12 @@ module.exports = [
         [{ text: 'Sent by' }, { text: message.sent_by }]
       ]
 
-      return h.view('message', new Model({ message, rows }))
+      return h.view(routeId, new Model({ message, rows }))
     },
     options: {
       validate: {
-        params: joi.object().keys({
-          messageId: joi.number().integer().required()
+        params: Joi.object().keys({
+          messageId: Joi.number().integer().required()
         })
       }
     }

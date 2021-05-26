@@ -1,9 +1,10 @@
-const joi = require('@hapi/joi')
 const boom = require('@hapi/boom')
+const Joi = require('joi')
+
 const BaseModel = require('../lib/model')
 const { updateMessage, getAllGroups, getMessage } = require('../lib/db')
 const { getMappedErrors } = require('../lib/errors')
-const { MAX_MESSAGE_TEXT_LENGTH } = require('../constants')
+const { textMessages: { maxMsgLength } } = require('../constants')
 
 const errorMessages = {
   groupId: 'Select a group',
@@ -27,10 +28,13 @@ async function getSelectItems (selectedGroup) {
   })))
 }
 
+const routeId = 'message-edit'
+const path = `/${routeId}/{messageId}`
+
 module.exports = [
   {
     method: 'GET',
-    path: '/message/{messageId}/edit',
+    path,
     handler: async (request, h) => {
       const { messageId } = request.params
       const message = await getMessage(messageId)
@@ -45,24 +49,24 @@ module.exports = [
 
       const items = await getSelectItems(message.group_id)
 
-      return h.view('edit-message', new Model({
+      return h.view(routeId, new Model({
         ...message,
         has_info: !!message.info,
-        MAX_MESSAGE_TEXT_LENGTH,
+        maxMsgLength,
         items
       }))
     },
     options: {
       validate: {
-        params: joi.object().keys({
-          messageId: joi.number().integer().required()
+        params: Joi.object().keys({
+          messageId: Joi.number().integer().required()
         })
       }
     }
   },
   {
     method: 'POST',
-    path: '/message/{messageId}/edit',
+    path,
     handler: async (request, h) => {
       const { messageId } = request.params
       const { credentials } = request.auth
@@ -78,16 +82,16 @@ module.exports = [
     },
     options: {
       validate: {
-        params: joi.object().keys({
-          messageId: joi.number().integer().required()
+        params: Joi.object().keys({
+          messageId: Joi.number().integer().required()
         }),
-        payload: joi.object().keys({
-          groupId: joi.number().integer().required(),
-          text: joi.string().max(MAX_MESSAGE_TEXT_LENGTH).empty('').when('info', {
-            is: joi.exist(),
-            otherwise: joi.required()
+        payload: Joi.object().keys({
+          groupId: Joi.number().integer().required(),
+          text: Joi.string().max(maxMsgLength).empty('').when('info', {
+            is: Joi.exist(),
+            otherwise: Joi.required()
           }),
-          info: joi.string().max(2000).allow('').empty('')
+          info: Joi.string().max(2000).allow('').empty('')
         }),
         failAction: async (request, h, err) => {
           const errors = getMappedErrors(err, errorMessages)
@@ -97,7 +101,7 @@ module.exports = [
           return h.view('create-message', new Model({
             ...request.payload,
             items,
-            MAX_MESSAGE_TEXT_LENGTH
+            maxMsgLength
           }, errors)).takeover()
         }
       }
