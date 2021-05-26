@@ -7,46 +7,4 @@
     firstCellIsHeader: true,
     rows: data.rows
   }) }}
-
-  {% if not data.message.sent_at %}
-    {{
-      govukButton({
-        text: "Edit",
-        href: "/message/" + data.message.id + "/edit",
-        classes: "govuk-button"
-      })
-    }}
-    {% if not data.message.approved_at and credentials.scope.includes(scopes.message.approve) %}
-      {{
-        govukButton({
-          text: "Approve",
-          href: "/message/" + data.message.id + "/confirm-approve",
-          classes: "govuk-button--warning"
-        })
-      }}
-    {% elif not data.message.sent_at and credentials.scope.includes(scopes.message.send) %}
-      {{
-        govukButton({
-          text: "Send",
-          href: "/message/" + data.message.id + "/confirm-send",
-          classes: "govuk-button--warning"
-        })
-      }}
-    {% endif %}
-    {{
-      govukButton({
-        text: "Delete",
-        href: "/message/" + data.message.id + "/confirm-delete",
-        classes: "govuk-button--danger"
-      })
-    }}
-  {% elif data.message.info_active and credentials.scope.includes(scopes.message.send) %}
-    {{
-      govukButton({
-        text: "Deactivate",
-        href: "/message/" + data.message.id + "/confirm-deactivate",
-        classes: "govuk-button--warning"
-      })
-    }}
-  {% endif %}
 {% endblock %}
