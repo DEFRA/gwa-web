@@ -37,9 +37,8 @@ module.exports = [
 
       const isCorporate = phoneNumber.type === 'corporate'
       const checked = [...new Set(phoneNumber.subscribedTo.flat())]
-      const areas = checked.map(c => c.split(':')[0])
       const disabled = isCorporate ? [user.officeCode] : []
-      const items = officeCheckboxes(areaToOfficeMap, checked, disabled, areas)
+      const items = officeCheckboxes(areaToOfficeMap, checked, disabled)
 
       return h.view(routeId, new Model({ items, isCorporate, phoneNumber, user }))
     },

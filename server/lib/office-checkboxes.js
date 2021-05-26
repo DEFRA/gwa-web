@@ -1,11 +1,16 @@
 /**
- * Generates [GOV.UK checkboxes](https://design-system.service.gov.uk/components/checkboxes/) to be used within a [GOV.UK accordion](https://design-system.service.gov.uk/components/accordion/).
+ * Generates [GOV.UK
+ * checkboxes](https://design-system.service.gov.uk/components/checkboxes/) to
+ * be used within a [GOV.UK
+ * accordion](https://design-system.service.gov.uk/components/accordion/).
+ * Area sections will initially be expanded if they contain a checked option.
+ *
  * @param {Array} areaToOfficeMap - array of areas containing an array of officeLocations
  * @param {Array} [checked=[]] - array of office codes to be checked
  * @param {Array} [disabled=[]] - array of office codes to be disabled
- * @param {Array} [areasToExpand=[]] - array of area codes to be expanded
  */
-module.exports = (areaToOfficeMap, checked = [], disabled = [], areasToExpand = []) => {
+module.exports = (areaToOfficeMap, checked = [], disabled = []) => {
+  const areasToExpand = checked.map(c => c.split(':')[0])
   return areaToOfficeMap.map(area => {
     const checkboxes = area.officeLocations.map(ol => {
       const officeCode = ol.officeCode
