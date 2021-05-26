@@ -1,6 +1,7 @@
 const boom = require('@hapi/boom')
 const Joi = require('joi')
 
+const officeCheckboxes = require('../lib/office-checkboxes')
 const BaseModel = require('../lib/model')
 const { getAreaToOfficeMap, getUser, updateUser } = require('../lib/db')
 const { getMappedErrors } = require('../lib/errors')
@@ -34,37 +35,11 @@ module.exports = [
         return boom.notFound('Phone number not found.')
       }
 
-      // TODO: refactor to function
-      const items = areaToOfficeMap.map(area => {
-        const checkboxes = area.officeLocations.map(ol => {
-          const officeCode = ol.officeCode
-          let checked
-          let disabled
-          if (phoneNumber.type === 'corporate' && officeCode === user.officeCode) {
-            disabled = true
-            checked = true
-          } else if (phoneNumber?.subscribedTo?.includes(officeCode)) {
-            checked = true
-          }
-          return `<div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input" id="officeLocations_${officeCode}" name="officeLocations" type="checkbox" value="${officeCode}" ${checked ? 'checked=""' : ''} ${disabled ? 'disabled=""' : ''}>
-              <label class="govuk-label govuk-checkboxes__label" for="officeLocations_${officeCode}">${ol.officeLocation}</label>
-          </div>`
-        })
-        return {
-          heading: {
-            text: area.areaName
-          },
-          content: {
-            html: `<div class="govuk-form-group">
-              <div class="govuk-checkboxes govuk-checkboxes--small">
-                ${checkboxes.join('')}
-              </div>
-            </div>`
-          }
-        }
-      })
       const isCorporate = phoneNumber.type === 'corporate'
+      const checked = [...new Set(phoneNumber.subscribedTo.flat())]
+      const areas = checked.map(c => c.split(':')[0])
+      const disabled = isCorporate ? [user.officeCode] : []
+      const items = officeCheckboxes(areaToOfficeMap, checked, disabled, areas)
 
       return h.view(routeId, new Model({ items, isCorporate, phoneNumber, user }))
     },

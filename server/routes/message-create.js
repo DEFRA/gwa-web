@@ -1,6 +1,7 @@
 const boom = require('@hapi/boom')
 const Joi = require('joi')
 
+const officeCheckboxes = require('../lib/office-checkboxes')
 const { getAreaToOfficeMap } = require('../lib/db')
 const BaseModel = require('../lib/model')
 const { getMappedErrors } = require('../lib/errors')
@@ -37,30 +38,8 @@ module.exports = [
           ol.value = ol.officeCode
         })
       })
-      // TODO: Look to share the one from contact-edit
-      const items = areaToOfficeMap.map(area => {
-        const checkboxes = area.officeLocations.map(ol => {
-          const officeCode = ol.officeCode
-          return `<div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input" id="officeLocations_${officeCode}" name="officeLocations" type="checkbox" value="${officeCode}">
-              <label class="govuk-label govuk-checkboxes__label" for="officeLocations_${officeCode}">${ol.officeLocation}</label>
-          </div>`
-        })
-        return {
-          heading: {
-            text: area.areaName
-          },
-          content: {
-            html: `
-            <div class="govuk-form-group">
-              <div class="govuk-checkboxes govuk-checkboxes--small">
-                ${checkboxes.join('')}
-              </div>
-            </div>`
-          }
-        }
-      })
-      return h.view(routeId, new Model({ areaToOfficeMap, items, maxMsgLength }))
+      const items = officeCheckboxes(areaToOfficeMap)
+      return h.view(routeId, new Model({ items, maxMsgLength }))
     }
   },
   {
