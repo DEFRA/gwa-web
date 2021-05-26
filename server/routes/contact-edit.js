@@ -3,7 +3,6 @@ const Joi = require('joi')
 
 const BaseModel = require('../lib/model')
 const { getAreaToOfficeMap, getUser, updateUser } = require('../lib/db')
-const { getMappedErrors } = require('../lib/errors')
 const officeCheckboxes = require('../lib/office-checkboxes')
 const { phoneNumberTypes } = require('../constants')
 
@@ -84,16 +83,6 @@ module.exports = [
         payload: Joi.object().keys({
           officeLocations: Joi.array().items(Joi.string().required()).single().default([])
         })
-        //   failAction: async (request, h, err) => {
-        //     const { phoneNumberId } = request.params
-        //     const { credentials } = request.auth
-        //     const userId = credentials.user.id
-        //     // const contact = await getContact(userId, contactId)
-        //     // const items = await getCheckboxItems(userId, contactId)
-        //     const errors = getMappedErrors(err, errorMessages)
-
-        //     return h.view(routeId, new Model({ contact, items }, errors)).takeover()
-        //   }
       }
     }
   }
