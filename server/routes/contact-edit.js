@@ -13,12 +13,14 @@ class Model extends BaseModel {
     super(data, err, errorMessages)
   }
 }
+
 const routeId = 'contact-edit'
+const path = `/${routeId}/{phoneNumberId}`
 
 module.exports = [
   {
     method: 'GET',
-    path: `/${routeId}/{phoneNumberId}`,
+    path,
     handler: async (request, h) => {
       const { phoneNumberId } = request.params
       const userId = request.auth.credentials.user.id
@@ -52,7 +54,7 @@ module.exports = [
   },
   {
     method: 'POST',
-    path: `/${routeId}/{phoneNumberId}`,
+    path,
     handler: async (request, h) => {
       const { phoneNumberId } = request.params
       const { id: userId } = request.auth.credentials.user

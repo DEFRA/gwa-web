@@ -1,16 +1,17 @@
 const boom = require('@hapi/boom')
-const joi = require('joi')
+const Joi = require('joi')
 const BaseModel = require('../lib/model')
 const { getUser, updateUser } = require('../lib/db')
 
 class Model extends BaseModel {}
 
 const routeId = 'contact-remove'
+const path = `/${routeId}/{phoneNumberId}`
 
 module.exports = [
   {
     method: 'GET',
-    path: `/${routeId}/{phoneNumberId}`,
+    path,
     handler: async (request, h) => {
       const { id: userId } = request.auth.credentials.user
       const { phoneNumberId } = request.params
@@ -27,15 +28,15 @@ module.exports = [
     },
     options: {
       validate: {
-        params: joi.object().keys({
-          phoneNumberId: joi.string().guid().required()
+        params: Joi.object().keys({
+          phoneNumberId: Joi.string().guid().required()
         })
       }
     }
   },
   {
     method: 'POST',
-    path: `/${routeId}/{phoneNumberId}`,
+    path,
     handler: async (request, h) => {
       const { phoneNumberId } = request.params
       const { id: userId } = request.auth.credentials.user
@@ -53,8 +54,8 @@ module.exports = [
     },
     options: {
       validate: {
-        params: joi.object().keys({
-          phoneNumberId: joi.string().guid().required()
+        params: Joi.object().keys({
+          phoneNumberId: Joi.string().guid().required()
         })
       }
     }

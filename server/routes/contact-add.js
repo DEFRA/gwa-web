@@ -32,18 +32,19 @@ class Model extends BaseModel {
 }
 
 const routeId = 'contact-add'
+const path = `/${routeId}`
 
 module.exports = [
   {
     method: 'GET',
-    path: `/${routeId}`,
+    path,
     handler: async (request, h) => {
       return h.view(routeId)
     }
   },
   {
     method: 'POST',
-    path: `/${routeId}`,
+    path,
     handler: async (request, h) => {
       const { mobile } = request.payload
       const { id: userId } = request.auth.credentials.user
