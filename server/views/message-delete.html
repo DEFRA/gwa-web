@@ -4,17 +4,25 @@
   <h1 class="govuk-heading-l">Delete message</h1>
   {{
     govukWarningText({
-      text: "Are you sure you would like to delete this message for the " + data.message.group_name + " group?",
+      text: "Are you sure you would like to delete this message?",
       iconFallbackText: "Warning"
+    })
+  }}
+
+  {{
+    govukTable({
+      caption: "Message details",
+      firstCellIsHeader: true,
+      rows: data.rows
     })
   }}
 {% endblock %}
 
 {% block form %}
-  {{ 
+  {{
     govukButton({
       text: "Cancel",
-      href: "/message/" + data.message.id,
+      href: "/message-view/" + data.message.id,
       classes: "govuk-button--secondary"
     })
   }}
