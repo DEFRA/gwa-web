@@ -25,7 +25,6 @@
     "@hapi/vision": "6.0.1",
     "@hapi/yar": "10.1.1",
     "blipp": "4.0.1",
-    "dayjs": "1.9.4",
     "dotenv": "^9.0.2",
     "google-libphonenumber": "^3.2.21",
     "govuk-frontend": "3.11.0",
