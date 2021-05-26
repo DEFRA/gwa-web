@@ -8,21 +8,6 @@
 
 {% block form %}
   {{
-    govukSelect({
-      id: "groupId",
-      name: "groupId",
-      label: {
-        text: "To"
-      },
-      hint: {
-        text: "Select a group from the list."
-      },
-      value: data.groupId,
-      errorMessage: errors.groupId,
-      items: data.items
-    })
-  }}
-  {{
     govukCharacterCount({
       id: "text",
       name: "text",
@@ -30,7 +15,7 @@
         text: "Text message"
       },
       hint: {
-        text: "If you do not want to send a text message, leave this blank. This ensures texts are not sent to staff."
+        text: "Enter the message you wish to send."
       },
       maxlength: data.maxMsgLength,
       value: data.text,
@@ -45,11 +30,18 @@
         text: "Additional information"
       },
       hint: {
-        text: "This information will be used to update the staff information website and helpline. If you do not want to update these, leave this blank."
+        text: "Use this as an aide memoire relating to the message. It is optional, feel free to leave empty."
       },
       maxlength: 2000,
       value: data.info,
       errorMessage: errors.info
+    })
+  }}
+  <h2 class="govuk-heading-m" id="officeLocations">Office locations</h2>
+  {{
+    govukAccordion({
+    id: "message-edit-" + data.id,
+      items: data.items
     })
   }}
 {% endblock %}

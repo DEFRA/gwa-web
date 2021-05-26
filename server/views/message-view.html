@@ -7,4 +7,13 @@
     firstCellIsHeader: true,
     rows: data.rows
   }) }}
+
+  {% if data.isEditable %}
+    {{
+      govukButton({
+        href: '/message-edit/' + data.messageId,
+        text: 'Edit message'
+      })
+    }}
+  {% endif %}
 {% endblock %}

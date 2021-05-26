@@ -3,6 +3,7 @@ const boom = require('@hapi/boom')
 
 const BaseModel = require('../lib/model')
 const { getMessage } = require('../lib/db')
+const { messageStates } = require('../constants')
 
 class Model extends BaseModel {}
 
@@ -22,7 +23,6 @@ module.exports = [
 
       // TODO: The rows with 'pending' below can all come from message.audit
       // which is an array of different events
-
       const rows = [
         [{ text: 'To' }, { text: message.officeLocations.join(', ') }],
         [{ text: 'Text message' }, { text: message.text }],
@@ -34,8 +34,9 @@ module.exports = [
         [{ text: 'Sent at' }, { text: 'pending' }],
         [{ text: 'Sent by' }, { text: 'pending' }]
       ]
+      const isEditable = message.state !== messageStates.sent
 
-      return h.view(routeId, new Model({ rows }))
+      return h.view(routeId, new Model({ isEditable, messageId, rows }))
     },
     options: {
       validate: {

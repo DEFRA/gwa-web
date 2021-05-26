@@ -2,12 +2,13 @@ const boom = require('@hapi/boom')
 const Joi = require('joi')
 
 const BaseModel = require('../lib/model')
-const { updateMessage, getAllGroups, getMessage } = require('../lib/db')
+const { getAreaToOfficeMap, getMessage, updateMessage } = require('../lib/db')
 const { getMappedErrors } = require('../lib/errors')
-const { textMessages: { maxMsgLength } } = require('../constants')
+const { textMessages: { maxMsgLength }, messageStates } = require('../constants')
+const officeCheckboxes = require('../lib/office-checkboxes')
 
 const errorMessages = {
-  groupId: 'Select a group',
+  officeLocations: 'Select at least one office location',
   text: 'Enter the text message',
   info: 'Enter the additional information'
 }
@@ -16,16 +17,6 @@ class Model extends BaseModel {
   constructor (data, err) {
     super(data, err, errorMessages)
   }
-}
-
-async function getSelectItems (selectedGroup) {
-  const groups = await getAllGroups()
-
-  return [{}].concat(groups.map(group => ({
-    text: `${group.name} (${group.code})`,
-    value: group.id,
-    selected: group.id === selectedGroup
-  })))
 }
 
 const routeId = 'message-edit'
@@ -43,23 +34,25 @@ module.exports = [
         return boom.notFound()
       }
 
-      if (message.sent_at) {
-        return h.redirect(`/message/${message.id}`)
+      if (message.state === messageStates.sent) {
+        return boom.unauthorized('Sent messages can not be edited.')
       }
 
-      const items = await getSelectItems(message.group_id)
+      const areaToOfficeMap = await getAreaToOfficeMap()
 
-      return h.view(routeId, new Model({
-        ...message,
-        has_info: !!message.info,
-        maxMsgLength,
-        items
-      }))
+      if (!areaToOfficeMap) {
+        return boom.internal('Office to location map not found.')
+      }
+
+      const checked = [...new Set(message.officeLocations.flat())]
+      const items = officeCheckboxes(areaToOfficeMap, checked)
+
+      return h.view(routeId, new Model({ ...message, maxMsgLength, items }))
     },
     options: {
       validate: {
         params: Joi.object().keys({
-          messageId: Joi.number().integer().required()
+          messageId: Joi.string().guid().required()
         })
       }
     }
@@ -69,40 +62,57 @@ module.exports = [
     path,
     handler: async (request, h) => {
       const { messageId } = request.params
-      const { credentials } = request.auth
-      const {
-        groupId,
-        text,
-        info
-      } = request.payload
+      const { user } = request.auth.credentials
+      const { info, officeLocations, text } = request.payload
 
-      await updateMessage(credentials.user.id, messageId, groupId, text, info)
+      const message = await getMessage(messageId)
 
-      return h.redirect(`/message/${messageId}`)
+      if (!message) {
+        return boom.notFound()
+      }
+
+      if (message.state === messageStates.sent) {
+        return boom.unauthorized('Sent messages can not be edited.')
+      }
+
+      message.text = text
+      message.info = info
+      message.officeLocations = [officeLocations].flat()
+      message.editedBy = user.id
+      message.state = messageStates.edited
+      message.audit.push({
+        event: messageStates.created,
+        time: Date.now(),
+        user: {
+          id: user.id,
+          surname: user.surname,
+          givenName: user.givenName,
+          companyName: user.companyName
+        }
+      })
+      const res = await updateMessage(message)
+      console.log(res)
+
+      return h.redirect(`/message-view/${messageId}`)
     },
     options: {
       validate: {
         params: Joi.object().keys({
-          messageId: Joi.number().integer().required()
+          messageId: Joi.string().guid().required()
         }),
         payload: Joi.object().keys({
-          groupId: Joi.number().integer().required(),
-          text: Joi.string().max(maxMsgLength).empty('').when('info', {
-            is: Joi.exist(),
-            otherwise: Joi.required()
-          }),
+          officeLocations: Joi.alternatives().try(Joi.string().pattern(/^[A-Z]{3}:/), Joi.array().min(1).items(Joi.string().pattern(/^[A-Z]{3}:/))).required(),
+          text: Joi.string().max(maxMsgLength).required(),
           info: Joi.string().max(2000).allow('').empty('')
         }),
         failAction: async (request, h, err) => {
           const errors = getMappedErrors(err, errorMessages)
-          const { groupId } = request.payload
-          const items = await getSelectItems(+groupId)
 
-          return h.view('create-message', new Model({
-            ...request.payload,
-            items,
-            maxMsgLength
-          }, errors)).takeover()
+          const { officeLocations } = request.payload
+          const areaToOfficeMap = await getAreaToOfficeMap()
+          const items = officeCheckboxes(areaToOfficeMap, officeLocations)
+
+          return h.view(routeId, new Model({ ...request.payload, items, maxMsgLength }, errors)).takeover()
         }
       }
     }

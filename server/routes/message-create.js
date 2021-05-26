@@ -83,15 +83,10 @@ module.exports = [
           const errors = getMappedErrors(err, errorMessages)
 
           const { officeLocations } = request.payload
-          console.log(request.payload)
-
           const areaToOfficeMap = await getAreaToOfficeMap()
           const items = officeCheckboxes(areaToOfficeMap, officeLocations)
-          return h.view(routeId, new Model({
-            ...request.payload,
-            items,
-            maxMsgLength
-          }, errors)).takeover()
+
+          return h.view(routeId, new Model({ ...request.payload, items, maxMsgLength }, errors)).takeover()
         }
       }
     }

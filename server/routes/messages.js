@@ -1,21 +1,11 @@
-const { messageStates } = require('../constants')
 const BaseModel = require('../lib/model')
 const { getMessages } = require('../lib/db')
+const { messageStates } = require('../constants')
 
 class Model extends BaseModel {}
 
-async function getRecentMessageRows (type) {
-  const config = {
-    edited: {
-      link: id => `<a href='/message-edit/${id}'>Edit</a>`,
-      state: messageStates.created
-    },
-    sent: {
-      link: id => `<a href='/message-view/${id}'>View</a>`,
-      state: messageStates.sent
-    }
-  }
-  const messages = await getMessages(`SELECT TOP 10 * FROM c WHERE c.state = "${config[type].state}" ORDER BY c._ts DESC`)
+async function getRecentMessages (state) {
+  const messages = await getMessages(`SELECT TOP 10 * FROM c WHERE c.state = "${state}" ORDER BY c._ts DESC`)
 
   return messages.map(message => {
     const date = new Date(message._ts * 1000)
@@ -23,7 +13,7 @@ async function getRecentMessageRows (type) {
       { text: date.toLocaleString() },
       { text: message.text.slice(0, 50) },
       { html: message.editedBy ? `<a href="mailto:${message.editedBy}">${message.editedBy}</a>` : '' },
-      { html: config[type].link(message.id) }
+      { html: `<a href='/message-view/${message.id}'>View</a>` }
     ]
   })
 }
@@ -33,10 +23,11 @@ module.exports = [
     method: 'GET',
     path: '/messages',
     handler: async (request, h) => {
-      const recentlySentRows = await getRecentMessageRows('sent')
-      const recentlyEditedRows = await getRecentMessageRows('edited')
+      const recentlyCreated = await getRecentMessages(messageStates.created)
+      const recentlyEdited = await getRecentMessages(messageStates.edited)
+      const recentlySent = await getRecentMessages(messageStates.sent)
 
-      return h.view('messages', new Model({ recentlyEditedRows, recentlySentRows }))
+      return h.view('messages', new Model({ recentlyCreated, recentlyEdited, recentlySent }))
     }
   }
 ]

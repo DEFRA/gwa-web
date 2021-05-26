@@ -1,6 +1,7 @@
 module.exports = {
   messageStates: {
     created: 'created',
+    edited: 'edited',
     sent: 'sent'
   },
   textMessages: {

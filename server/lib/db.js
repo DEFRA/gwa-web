@@ -18,6 +18,10 @@ async function saveMessage (msg) {
   return await messagesContainer.items.upsert(msg)
 }
 
+async function updateMessage (msg) {
+  return await messagesContainer.item(msg.id, msg.id).replace(msg)
+}
+
 async function getMessage (id) {
   const response = await messagesContainer.item(id, id).read()
   return response.resource
@@ -33,5 +37,6 @@ module.exports = {
   getMessages,
   getUser,
   saveMessage,
+  updateMessage,
   updateUser
 }

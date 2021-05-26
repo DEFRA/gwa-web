@@ -34,7 +34,6 @@
   {% if data.personalPhoneNumbers.length < data.maxPersonalPhoneNumbers %}
     {{
       govukButton({
-        disabled: false,
         href: '/contact-add',
         text: 'Add new contact'
       })
