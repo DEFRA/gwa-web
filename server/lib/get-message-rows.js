@@ -2,11 +2,13 @@
  * Generates rows to display a message in the form of a [GOV.UK
  * table](https://design-system.service.gov.uk/components/table/).
  *
- * @param {Object} message - object with message details
+ * @param {object} message - object with message details
  */
 module.exports = (message) => {
+  // TODO: The rows with 'pending' below can all come from message.audit
+  // which is an array of different events
   return [
-    [{ text: 'To' }, { text: message.officeLocations.join(', ') }],
+    [{ text: 'To' }, { text: message.officeCodes.join(', ') }],
     [{ text: 'Text message' }, { text: message.text }],
     [{ text: 'Additional information' }, { text: message.info }],
     [{ text: 'Created at' }, { text: new Date(message.createdAt).toLocaleString() }],

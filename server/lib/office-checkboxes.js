@@ -15,7 +15,7 @@ module.exports = (areaToOfficeMap, checked = [], disabled = []) => {
     const checkboxes = area.officeLocations.map(ol => {
       const officeCode = ol.officeCode
       return `<div class="govuk-checkboxes__item">
-        <input class="govuk-checkboxes__input" id="officeLocations_${officeCode}" name="officeLocations" type="checkbox" value="${officeCode}" ${checked.includes(officeCode) ? 'checked=""' : ''} ${disabled.includes(officeCode) ? 'disabled=""' : ''}>
+        <input class="govuk-checkboxes__input" id="officeLocations_${officeCode}" name="officeCodes" type="checkbox" value="${officeCode}" ${checked.includes(officeCode) ? 'checked=""' : ''} ${disabled.includes(officeCode) ? 'disabled=""' : ''}>
           <label class="govuk-label govuk-checkboxes__label" for="officeLocations_${officeCode}">${ol.officeLocation}</label>
       </div>`
     })

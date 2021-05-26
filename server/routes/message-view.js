@@ -22,8 +22,6 @@ module.exports = [
         return boom.notFound()
       }
 
-      // TODO: The rows with 'pending' below can all come from message.audit
-      // which is an array of different events
       const messageRows = getMessageRows(message)
       const isEditable = message.state !== messageStates.sent
 
