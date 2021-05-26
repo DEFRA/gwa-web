@@ -18,8 +18,13 @@ async function saveMessage (msg) {
   return await messagesContainer.items.upsert(msg)
 }
 
+async function getMessages (query) {
+  return (await messagesContainer.items.query(query).fetchAll()).resources
+}
+
 module.exports = {
   getAreaToOfficeMap,
+  getMessages,
   getUser,
   saveMessage,
   updateUser

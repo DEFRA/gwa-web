@@ -6,7 +6,7 @@ const officeCheckboxes = require('../lib/office-checkboxes')
 const { getAreaToOfficeMap, saveMessage } = require('../lib/db')
 const BaseModel = require('../lib/model')
 const { getMappedErrors } = require('../lib/errors')
-const { maxMsgLength } = require('../constants').textMessages
+const { textMessages: { maxMsgLength }, messageStates } = require('../constants')
 
 const errorMessages = {
   officeLocations: 'Select at least one office location',
@@ -43,15 +43,19 @@ module.exports = [
     handler: async (request, h) => {
       const { user } = request.auth.credentials
       const { info, officeLocations, text } = request.payload
+      const createdAt = Date.now()
 
       const msg = {
         id: uuid(),
         info,
         officeLocations: [officeLocations].flat(),
         text,
+        createdAt,
+        editedBy: user.id,
+        state: messageStates.created,
         audit: [{
-          event: 'creation',
-          time: Date.now(),
+          event: messageStates.created,
+          time: createdAt,
           user: {
             id: user.id,
             surname: user.surname,

@@ -1,4 +1,8 @@
 module.exports = {
+  messageStates: {
+    created: 'created',
+    sent: 'sent'
+  },
   textMessages: {
     oneMsgLength: 160,
     twoMsgLength: 306,

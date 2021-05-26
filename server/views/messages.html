@@ -9,16 +9,31 @@
     })
   }}
   <h1 class="govuk-heading-l">Messages</h1>
+
+  <h3 class="govuk-heading-m">Messages recently edited (last 10)</h3>
+  {{
+    govukTable({
+      firstCellIsHeader: true,
+      classes: "govuk-!-font-size-16",
+      head: [
+        { text: "Last edited" },
+        { text: "Text" },
+        { text: "Edited by" },
+        { text: "" }
+      ],
+      rows: data.recentlyEditedRows
+    })
+  }}
+
   <h3 class="govuk-heading-m">Messages recently sent (last 10)</h3>
   {{
     govukTable({
       firstCellIsHeader: true,
       classes: "govuk-!-font-size-16",
       head: [
-        { text: "To" },
+        { text: "Last edited" },
         { text: "Text" },
-        { text: "Additional info" },
-        { text: "Sent" },
+        { text: "Sent by" },
         { text: "" }
       ],
       rows: data.recentlySentRows
