@@ -7,10 +7,8 @@ const { auditEventTypes, messageStates } = require('../constants')
  * @param {object} message - object with message details
  */
 module.exports = (message) => {
-  // TODO: The rows with 'pending' below can all come from message.auditEvents
-  // which is an array of different events
   const createEvent = message.auditEvents.filter(e => e.type === auditEventTypes.create)[0]
-  const lastEvent = message.auditEvents.sort((e1, e2) => e1.time - e2.time)[0]
+  const lastEvent = message.auditEvents.sort((e1, e2) => e2.time - e1.time)[0]
 
   const rows = [
     [{ text: 'Message state' }, { text: message.state }],

@@ -13,6 +13,7 @@ describe('Get message rows', () => {
     text: 'message text goes here'
   }
 
+  // TODO: test for sorting with multiple messages
   test('when message is not been sent, correct rows are returned', () => {
     const user = { id: 'create-user-id', companyName: 'companyName', givenName: 'givenName', surname: 'surname' }
     const message = { ...messageTemplate }

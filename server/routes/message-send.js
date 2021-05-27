@@ -47,17 +47,15 @@ module.exports = [
       const contactCount = phoneNumbersToSendTo.length
       const cost = contactCount * oneMessageCost
 
-      // update message with approximate cost and contact count
       message.cost = cost
       message.contactCount = contactCount
-      message.editedBy = user.id
       message.state = messageStates.edited
       addAuditEvent(message, user)
+
       const res = await updateMessage(message)
-      console.log(res)
-      // if (res.statusCode !== 201) {
-      //   return boom.internal('Problem creating message.', res)
-      // }
+      if (res.statusCode !== 200) {
+        return boom.internal('Problem updating message.', res)
+      }
 
       const messageRows = getMessageRows(message)
 
@@ -96,7 +94,6 @@ module.exports = [
       // TODO: Upload the message criteria to blob storage. If successful, continue else error
       // client.uploadData(message) - needs implementation
 
-      message.editedBy = user.id
       message.state = messageStates.sent
       addAuditEvent(message, user)
       const res = await updateMessage(message)

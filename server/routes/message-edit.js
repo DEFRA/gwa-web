@@ -79,13 +79,15 @@ module.exports = [
       message.text = text
       message.info = info
       message.officeCodes = [officeCodes].flat()
-      message.editedBy = user.id
       message.state = messageStates.edited
       addAuditEvent(message, user)
-      const res = await updateMessage(message)
-      console.log(res)
 
-      return h.redirect(`/message-view/${messageId}`)
+      const res = await updateMessage(message)
+      if (res.statusCode !== 200) {
+        return boom.internal('Problem updating message.', res)
+      }
+
+      return h.redirect('/messages')
     },
     options: {
       validate: {

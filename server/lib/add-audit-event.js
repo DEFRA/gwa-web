@@ -23,12 +23,15 @@ module.exports = (message, user) => {
       throw new Error(`Message state '${message.state}' does not have a matching audit event type.`)
   }
 
+  const time = Date.now()
+  message.lastUpdatedAt = time
+
   if (!message.auditEvents) {
     message.auditEvents = []
   }
   message.auditEvents.push({
     type,
-    time: Date.now(),
+    time,
     user: {
       id: user.id,
       surname: user.surname,

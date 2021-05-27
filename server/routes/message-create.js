@@ -51,7 +51,6 @@ module.exports = [
         info,
         officeCodes: [officeCodes].flat(),
         text,
-        editedBy: user.id,
         state: messageStates.created
       }
       addAuditEvent(message, user)
