@@ -2,6 +2,7 @@ const boom = require('@hapi/boom')
 const Joi = require('joi')
 const { v4: uuid } = require('uuid')
 
+const addAuditEvent = require('../lib/add-audit-event')
 const officeCheckboxes = require('../lib/office-checkboxes')
 const { getAreaToOfficeMap, saveMessage } = require('../lib/db')
 const BaseModel = require('../lib/model')
@@ -46,26 +47,17 @@ module.exports = [
       const { info, officeCodes, text } = request.payload
       const createdAt = Date.now()
 
-      const msg = {
+      const message = {
         id: uuid(),
         info,
         officeCodes: [officeCodes].flat(),
         text,
         createdAt,
         editedBy: user.id,
-        state: messageStates.created,
-        audit: [{
-          event: messageStates.created,
-          time: createdAt,
-          user: {
-            id: user.id,
-            surname: user.surname,
-            givenName: user.givenName,
-            companyName: user.companyName
-          }
-        }]
+        state: messageStates.created
       }
-      const res = await saveMessage(msg)
+      addAuditEvent(message, user)
+      const res = await saveMessage(message)
       if (res.statusCode !== 201) {
         return boom.internal('Problem creating message.', res)
       }

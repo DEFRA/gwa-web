@@ -1,6 +1,7 @@
 const Joi = require('joi')
 const boom = require('@hapi/boom')
 
+const addAuditEvent = require('../lib/add-audit-event')
 const BaseModel = require('../lib/model')
 const { getMessage, getUsers, updateMessage } = require('../lib/db')
 const getMessageRows = require('../lib/get-message-rows')
@@ -51,16 +52,7 @@ module.exports = [
       message.contactCount = contactCount
       message.editedBy = user.id
       message.state = messageStates.edited
-      message.audit.push({
-        event: messageStates.edited,
-        time: Date.now(),
-        user: {
-          id: user.id,
-          surname: user.surname,
-          givenName: user.givenName,
-          companyName: user.companyName
-        }
-      })
+      addAuditEvent(message, user)
       const res = await updateMessage(message)
       console.log(res)
       // if (res.statusCode !== 201) {
@@ -106,16 +98,7 @@ module.exports = [
 
       message.editedBy = user.id
       message.state = messageStates.sent
-      message.audit.push({
-        event: messageStates.sent,
-        time: Date.now(),
-        user: {
-          id: user.id,
-          surname: user.surname,
-          givenName: user.givenName,
-          companyName: user.companyName
-        }
-      })
+      addAuditEvent(message, user)
       const res = await updateMessage(message)
       if (res.statusCode !== 200) {
         return boom.internal('Problem sending message.', res)

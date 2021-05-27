@@ -1,6 +1,7 @@
 const boom = require('@hapi/boom')
 const Joi = require('joi')
 
+const addAuditEvent = require('../lib/add-audit-event')
 const BaseModel = require('../lib/model')
 const { getAreaToOfficeMap, getMessage, updateMessage } = require('../lib/db')
 const { getMappedErrors } = require('../lib/errors')
@@ -80,16 +81,7 @@ module.exports = [
       message.officeCodes = [officeCodes].flat()
       message.editedBy = user.id
       message.state = messageStates.edited
-      message.audit.push({
-        event: messageStates.edited,
-        time: Date.now(),
-        user: {
-          id: user.id,
-          surname: user.surname,
-          givenName: user.givenName,
-          companyName: user.companyName
-        }
-      })
+      addAuditEvent(message, user)
       const res = await updateMessage(message)
       console.log(res)
 

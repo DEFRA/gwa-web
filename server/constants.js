@@ -1,4 +1,9 @@
 module.exports = {
+  auditEventTypes: {
+    create: 'create',
+    edit: 'edit',
+    send: 'send'
+  },
   messageStates: {
     created: 'created',
     edited: 'edited',

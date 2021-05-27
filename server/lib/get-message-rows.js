@@ -7,7 +7,7 @@ const { messageStates } = require('../constants')
  * @param {object} message - object with message details
  */
 module.exports = (message) => {
-  // TODO: The rows with 'pending' below can all come from message.audit
+  // TODO: The rows with 'pending' below can all come from message.auditEvents
   // which is an array of different events
   const rows = [
     [{ text: 'Message state' }, { text: message.state }],
