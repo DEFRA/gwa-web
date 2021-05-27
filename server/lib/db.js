@@ -23,6 +23,17 @@ async function getUser (id) {
   return response.resource
 }
 
+// TODO: This query is expensive - needs thinking about, possibly caching regularly
+async function getUsers () {
+  // TODO: Remove metrics
+  console.time('getUsers')
+  const res = (await usersContainer.items.query('SELECT * FROM c', { populateQueryMetrics: true }).fetchAll()) // .resources
+  console.timeEnd('getUsers')
+  console.log(res)
+  console.log('QUERY METRICS', res.headers['x-ms-documentdb-query-metrics'])
+  return res.resources
+}
+
 async function saveMessage (msg) {
   return await messagesContainer.items.upsert(msg)
 }
@@ -41,6 +52,7 @@ module.exports = {
   getMessage,
   getMessages,
   getUser,
+  getUsers,
   saveMessage,
   updateMessage,
   updateUser

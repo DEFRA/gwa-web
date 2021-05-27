@@ -1,3 +1,5 @@
+const { messageStates } = require('../constants')
+
 /**
  * Generates rows to display a message in the form of a [GOV.UK
  * table](https://design-system.service.gov.uk/components/table/).
@@ -7,7 +9,8 @@
 module.exports = (message) => {
   // TODO: The rows with 'pending' below can all come from message.audit
   // which is an array of different events
-  return [
+  const rows = [
+    [{ text: 'Message state' }, { text: message.state }],
     [{ text: 'To' }, { text: message.officeCodes.join(', ') }],
     [{ text: 'Text message' }, { text: message.text }],
     [{ text: 'Additional information' }, { text: message.info }],
@@ -18,4 +21,11 @@ module.exports = (message) => {
     [{ text: 'Sent at' }, { text: 'pending' }],
     [{ text: 'Sent by' }, { text: 'pending' }]
   ]
+  if (message.state === messageStates.sent) {
+    rows.push(
+      [{ text: 'Approx cost' }, { text: `£${message.cost}` }],
+      [{ text: 'Approx message sent count' }, { text: message.contactCount }]
+    )
+  }
+  return rows
 }

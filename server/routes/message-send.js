@@ -2,12 +2,24 @@ const Joi = require('joi')
 const boom = require('@hapi/boom')
 
 const BaseModel = require('../lib/model')
-const { getMessage } = require('../lib/db')
+const { getMessage, getUsers, updateMessage } = require('../lib/db')
 const getMessageRows = require('../lib/get-message-rows')
-const { messageStates } = require('../constants')
+const { messageStates, textMessages: { oneMessageCost } } = require('../constants')
 const { scopes } = require('../permissions')
 
 class Model extends BaseModel {}
+
+function getPhoneNumbersToSendTo (users, message) {
+  const phoneNumbers = []
+  users.forEach(user => {
+    user.phoneNumbers?.forEach(pn => {
+      if (message.officeCodes.some(oc => pn.subscribedTo?.includes(oc))) {
+        phoneNumbers.push(pn.number)
+      }
+    })
+  })
+  return phoneNumbers
+}
 
 const routeId = 'message-send'
 const path = `/${routeId}/{messageId}`
@@ -18,6 +30,7 @@ module.exports = [
     path,
     handler: async (request, h) => {
       const { messageId } = request.params
+      const { user } = request.auth.credentials
       const message = await getMessage(messageId)
 
       if (!message) {
@@ -28,14 +41,35 @@ module.exports = [
         return boom.unauthorized('Sent messages can not be sent again.')
       }
 
-      // TODO: calculate number of contacts
-      const contactsCount = 100
-      // TODO: calculate cost
-      const cost = 13
+      const users = await getUsers()
+      const phoneNumbersToSendTo = getPhoneNumbersToSendTo(users, message)
+      const contactCount = phoneNumbersToSendTo.length
+      const cost = contactCount * oneMessageCost
+
+      // update message with approximate cost and contact count
+      message.cost = cost
+      message.contactCount = contactCount
+      message.editedBy = user.id
+      message.state = messageStates.edited
+      message.audit.push({
+        event: messageStates.edited,
+        time: Date.now(),
+        user: {
+          id: user.id,
+          surname: user.surname,
+          givenName: user.givenName,
+          companyName: user.companyName
+        }
+      })
+      const res = await updateMessage(message)
+      console.log(res)
+      // if (res.statusCode !== 201) {
+      //   return boom.internal('Problem creating message.', res)
+      // }
 
       const messageRows = getMessageRows(message)
 
-      return h.view(routeId, new Model({ contactsCount, cost, message, messageRows }))
+      return h.view(routeId, new Model({ contactCount, cost, message, messageRows }))
     },
     options: {
       auth: {
@@ -55,22 +89,36 @@ module.exports = [
     path,
     handler: async (request, h) => {
       const { messageId } = request.params
-      const { credentials } = request.auth
+      const { user } = request.auth.credentials
 
-      const message = await sendMessage(credentials.user.id, messageId)
+      const message = await getMessage(messageId)
 
-      // In the event the message id doesn't exist or it
-      // is already approved, the call will return null
       if (!message) {
-        return h.redirect('/messages')
+        return boom.notFound()
       }
 
-      // Note: No await so as to not delay the response
-      if (message.text) {
-        enqueueMessageJobs(message)
-          .catch(err => {
-            request.log(['error', 'job-error'], err)
-          })
+      if (message.state === messageStates.sent) {
+        return boom.unauthorized('Sent messages can not be sent again.')
+      }
+
+      // TODO: Upload the message criteria to blob storage. If successful, continue else error
+      // client.uploadData(message) - needs implementation
+
+      message.editedBy = user.id
+      message.state = messageStates.sent
+      message.audit.push({
+        event: messageStates.sent,
+        time: Date.now(),
+        user: {
+          id: user.id,
+          surname: user.surname,
+          givenName: user.givenName,
+          companyName: user.companyName
+        }
+      })
+      const res = await updateMessage(message)
+      if (res.statusCode !== 200) {
+        return boom.internal('Problem sending message.', res)
       }
 
       return h.redirect('/messages')

@@ -1,9 +1,8 @@
 {% extends "two-thirds.html" %}
 
 {% block twoThirds %}
-  <h1 class="govuk-heading-l">Message</h1>
+  <h1 class="govuk-heading-l">View message</h1>
   {{ govukTable({
-    caption: "Message details",
     firstCellIsHeader: true,
     rows: data.messageRows
   }) }}
