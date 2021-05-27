@@ -6,7 +6,7 @@ const officeCheckboxes = require('../lib/office-checkboxes')
 const { getAreaToOfficeMap, saveMessage } = require('../lib/db')
 const BaseModel = require('../lib/model')
 const { getMappedErrors } = require('../lib/errors')
-const { textMessages: { maxMsgLength }, messageStates } = require('../constants')
+const { textMessages: { maxMessageLength }, messageStates } = require('../constants')
 
 const errorMessages = {
   officeCodes: 'Select at least one office location',
@@ -35,7 +35,7 @@ module.exports = [
       }
 
       const items = officeCheckboxes(areaToOfficeMap)
-      return h.view(routeId, new Model({ items, maxMsgLength }))
+      return h.view(routeId, new Model({ items, maxMessageLength }))
     }
   },
   {
@@ -76,7 +76,7 @@ module.exports = [
       validate: {
         payload: Joi.object().keys({
           officeCodes: Joi.alternatives().try(Joi.string().pattern(/^[A-Z]{3}:/), Joi.array().min(1).items(Joi.string().pattern(/^[A-Z]{3}:/))).required(),
-          text: Joi.string().max(maxMsgLength).required(),
+          text: Joi.string().max(maxMessageLength).required(),
           info: Joi.string().max(2000).allow('').empty('')
         }),
         failAction: async (request, h, err) => {
@@ -86,7 +86,7 @@ module.exports = [
           const areaToOfficeMap = await getAreaToOfficeMap()
           const items = officeCheckboxes(areaToOfficeMap, officeCodes)
 
-          return h.view(routeId, new Model({ ...request.payload, items, maxMsgLength }, errors)).takeover()
+          return h.view(routeId, new Model({ ...request.payload, items, maxMessageLength }, errors)).takeover()
         }
       }
     }

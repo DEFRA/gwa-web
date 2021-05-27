@@ -9,9 +9,10 @@ module.exports = {
     personal: 'personal'
   },
   textMessages: {
-    oneMsgLength: 160,
-    twoMsgLength: 306,
-    additionalMsgIncrement: 153,
-    maxMsgLength: 918
+    oneMessageCost: 0.016,
+    oneMessageLength: 160,
+    twoMessageLength: 306,
+    additionalMessageIncrement: 153,
+    maxMessageLength: 918
   }
 }
