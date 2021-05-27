@@ -16,7 +16,7 @@
       firstCellIsHeader: true,
       classes: "govuk-!-font-size-16",
       head: [
-        { text: "Last edited", classes: 'govuk-!-width-one-quarter' },
+        { text: "Last updated", classes: 'govuk-!-width-one-quarter' },
         { text: "Text", classes: 'govuk-!-width-one-half'  },
         { text: "Created by" },
         { text: "View" }
@@ -25,15 +25,15 @@
     })
   }}
 
-  <h3 class="govuk-heading-m">Messages recently edited</h3>
+  <h3 class="govuk-heading-m">Messages recently updated</h3>
   {{
     govukTable({
       firstCellIsHeader: true,
       classes: "govuk-!-font-size-16",
       head: [
-        { text: "Last edited", classes: 'govuk-!-width-one-quarter'  },
+        { text: "Last updated", classes: 'govuk-!-width-one-quarter'  },
         { text: "Text", classes: 'govuk-!-width-one-half'  },
-        { text: "Edited by" },
+        { text: "Updated by" },
         { text: "View" }
       ],
       rows: data.recentlyEdited
@@ -46,7 +46,7 @@
       firstCellIsHeader: true,
       classes: "govuk-!-font-size-16",
       head: [
-        { text: "Last edited", classes: 'govuk-!-width-one-quarter'  },
+        { text: "Last updated", classes: 'govuk-!-width-one-quarter'  },
         { text: "Text", classes: 'govuk-!-width-one-half'  },
         { text: "Sent by" },
         { text: "View" }
