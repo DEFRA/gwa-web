@@ -8,7 +8,6 @@ describe('Get message rows', () => {
   Date.now = jest.fn(() => now)
 
   const messageTemplate = {
-    createdAt: Date.now(),
     info: 'info here',
     officeCodes: ['NOT:real-code', 'UNK:Unknown'],
     text: 'message text goes here'

@@ -45,14 +45,12 @@ module.exports = [
     handler: async (request, h) => {
       const { user } = request.auth.credentials
       const { info, officeCodes, text } = request.payload
-      const createdAt = Date.now()
 
       const message = {
         id: uuid(),
         info,
         officeCodes: [officeCodes].flat(),
         text,
-        createdAt,
         editedBy: user.id,
         state: messageStates.created
       }
