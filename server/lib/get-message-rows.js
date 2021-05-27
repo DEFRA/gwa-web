@@ -1,4 +1,4 @@
-const { messageStates } = require('../constants')
+const { auditEventTypes, messageStates } = require('../constants')
 
 /**
  * Generates rows to display a message in the form of a [GOV.UK
@@ -9,20 +9,24 @@ const { messageStates } = require('../constants')
 module.exports = (message) => {
   // TODO: The rows with 'pending' below can all come from message.auditEvents
   // which is an array of different events
+  const createEvent = message.auditEvents.filter(e => e.type === auditEventTypes.create)[0]
+  const lastEvent = message.auditEvents.sort((e1, e2) => e1.time - e2.time)[0]
+
   const rows = [
     [{ text: 'Message state' }, { text: message.state }],
-    [{ text: 'To' }, { text: message.officeCodes.join(', ') }],
-    [{ text: 'Text message' }, { text: message.text }],
+    [{ text: 'Recipients' }, { text: message.officeCodes.join(', ') }],
+    [{ text: 'Message text' }, { text: message.text }],
     [{ text: 'Additional information' }, { text: message.info }],
-    [{ text: 'Created at' }, { text: new Date(message.createdAt).toLocaleString() }],
-    [{ text: 'Created by' }, { text: 'pending' }],
-    [{ text: 'Last updated at' }, { text: 'pending' }],
-    [{ text: 'Last updated by' }, { text: 'pending' }],
-    [{ text: 'Sent at' }, { text: 'pending' }],
-    [{ text: 'Sent by' }, { text: 'pending' }]
+    [{ text: 'Created at' }, { text: new Date(createEvent.time).toLocaleString() }],
+    [{ text: 'Created by' }, { text: createEvent.user.id }],
+    [{ text: 'Last updated at' }, { text: new Date(lastEvent.time).toLocaleString() }],
+    [{ text: 'Last updated by' }, { text: lastEvent.user.id }]
   ]
   if (message.state === messageStates.sent) {
+    const sentEvent = message.auditEvents.filter(e => e.type === auditEventTypes.send)[0]
     rows.push(
+      [{ text: 'Sent at' }, { text: new Date(sentEvent.time).toLocaleString() }],
+      [{ text: 'Sent by' }, { text: sentEvent.user.id }],
       [{ text: 'Approx cost' }, { text: `£${message.cost}` }],
       [{ text: 'Approx message sent count' }, { text: message.contactCount }]
     )
