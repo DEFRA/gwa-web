@@ -1,11 +1,11 @@
-const addAuditEvent = require('./add-audit-event')
-const { auditEventTypes, messageStates } = require('../constants')
-
 describe('Get message rows', () => {
+  const { auditEventTypes, messageStates } = require('../constants')
+  const addAuditEvent = require('./add-audit-event')
   const getMessageRows = require('./get-message-rows')
 
   const now = Date.now()
-  Date.now = jest.fn(() => now)
+  Date.now = jest.fn()
+  Date.now.mockReturnValueOnce(now + 1000).mockReturnValueOnce(now + 2000).mockReturnValueOnce(now + 3000)
 
   const messageTemplate = {
     info: 'info here',
@@ -13,8 +13,7 @@ describe('Get message rows', () => {
     text: 'message text goes here'
   }
 
-  // TODO: test for sorting with multiple messages
-  test('when message is not been sent, correct rows are returned', () => {
+  test('when message has not been sent, correct rows are returned', () => {
     const user = { id: 'create-user-id', companyName: 'companyName', givenName: 'givenName', surname: 'surname' }
     const message = { ...messageTemplate }
     message.state = messageStates.created
@@ -79,7 +78,7 @@ describe('Get message rows', () => {
     expect(messageRows[4][1].text).toEqual(new Date(createEvent.time).toLocaleString())
     expect(messageRows[5][0].text).toEqual('Created by')
     expect(messageRows[5][1].text).toEqual(createEvent.user.id)
-    const lastEvent = message.auditEvents.sort((e1, e2) => e1.time - e2.time)[0]
+    const lastEvent = message.auditEvents.sort((e1, e2) => e2.time - e1.time)[0]
     expect(messageRows[6][0].text).toEqual('Last updated at')
     expect(messageRows[6][1].text).toEqual(new Date(lastEvent.time).toLocaleString())
     expect(messageRows[7][0].text).toEqual('Last updated by')
