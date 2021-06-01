@@ -4,7 +4,8 @@ const { v4: uuid } = require('uuid')
 
 const addAuditEvent = require('../lib/add-audit-event')
 const generateOfficeCheckboxes = require('../lib/office-checkboxes')
-const { getAreaToOfficeMap, saveMessage } = require('../lib/db')
+const generateOrganisationCheckboxes = require('../lib/organisation-checkboxes')
+const { getAreaToOfficeMap, getOrganisationList, saveMessage } = require('../lib/db')
 const BaseModel = require('../lib/model')
 const { getMappedErrors } = require('../lib/errors')
 const { textMessages: { maxMessageLength }, messageStates } = require('../constants')
@@ -30,13 +31,16 @@ module.exports = [
     path,
     handler: async (request, h) => {
       const areaToOfficeMap = await getAreaToOfficeMap()
+      const organisationList = await getOrganisationList()
 
-      if (!areaToOfficeMap) {
-        return boom.internal('Office to location map not found.')
+      if (!areaToOfficeMap || !organisationList) {
+        return boom.internal('Reference data not found.')
       }
 
       const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap)
-      return h.view(routeId, new Model({ officeCheckboxes, maxMessageLength }))
+      const orgCheckboxes = generateOrganisationCheckboxes(organisationList)
+
+      return h.view(routeId, new Model({ maxMessageLength, officeCheckboxes, orgCheckboxes }))
     }
   },
   {
@@ -71,11 +75,18 @@ module.exports = [
         failAction: async (request, h, err) => {
           const errors = getMappedErrors(err, errorMessages)
 
-          const { officeCodes } = request.payload
           const areaToOfficeMap = await getAreaToOfficeMap()
-          const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, officeCodes)
+          const organisationList = await getOrganisationList()
 
-          return h.view(routeId, new Model({ ...request.payload, officeCheckboxes, maxMessageLength }, errors)).takeover()
+          if (!areaToOfficeMap || !organisationList) {
+            return boom.internal('Reference data not found.')
+          }
+
+          const { officeCodes } = request.payload
+          const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, officeCodes)
+          const orgCheckboxes = generateOrganisationCheckboxes(organisationList)
+
+          return h.view(routeId, new Model({ maxMessageLength, officeCheckboxes, orgCheckboxes, ...request.payload }, errors)).takeover()
         }
       }
     }

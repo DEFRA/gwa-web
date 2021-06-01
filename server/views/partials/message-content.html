@@ -28,3 +28,17 @@
     errorMessage: errors.info
   })
 }}
+{{
+  govukCheckboxes({
+    name: 'orgCodes',
+    fieldset: {
+      legend: {
+        idPrefix: 'orgCodes',
+        text: 'Which organisations do you want to send the message to?',
+        classes: "govuk-fieldset__legend--m"
+      }
+    },
+    hint: 'Select all that apply.',
+    items: data.orgCheckboxes
+  })
+}}

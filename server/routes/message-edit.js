@@ -3,10 +3,11 @@ const Joi = require('joi')
 
 const addAuditEvent = require('../lib/add-audit-event')
 const BaseModel = require('../lib/model')
-const { getAreaToOfficeMap, getMessage, updateMessage } = require('../lib/db')
+const { getAreaToOfficeMap, getMessage, getOrganisationList, updateMessage } = require('../lib/db')
 const { getMappedErrors } = require('../lib/errors')
 const { textMessages: { maxMessageLength }, messageStates } = require('../constants')
 const generateOfficeCheckboxes = require('../lib/office-checkboxes')
+const generateOrganisationCheckboxes = require('../lib/organisation-checkboxes')
 
 const errorMessages = {
   officeCodes: 'Select at least one office location',
@@ -40,15 +41,17 @@ module.exports = [
       }
 
       const areaToOfficeMap = await getAreaToOfficeMap()
+      const organisationList = await getOrganisationList()
 
-      if (!areaToOfficeMap) {
-        return boom.internal('Office to location map not found.')
+      if (!areaToOfficeMap || !organisationList) {
+        return boom.internal('Reference data not found.')
       }
 
       const checked = [...new Set(message.officeCodes.flat())]
       const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, checked)
+      const orgCheckboxes = generateOrganisationCheckboxes(organisationList)
 
-      return h.view(routeId, new Model({ ...message, maxMessageLength, officeCheckboxes }))
+      return h.view(routeId, new Model({ ...message, maxMessageLength, officeCheckboxes, orgCheckboxes }))
     },
     options: {
       validate: {
@@ -102,11 +105,18 @@ module.exports = [
         failAction: async (request, h, err) => {
           const errors = getMappedErrors(err, errorMessages)
 
-          const { officeCodes } = request.payload
           const areaToOfficeMap = await getAreaToOfficeMap()
-          const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, officeCodes)
+          const organisationList = await getOrganisationList()
 
-          return h.view(routeId, new Model({ ...request.payload, officeCheckboxes, maxMessageLength }, errors)).takeover()
+          if (!areaToOfficeMap || !organisationList) {
+            return boom.internal('Reference data not found.')
+          }
+
+          const { officeCodes } = request.payload
+          const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, officeCodes)
+          const orgCheckboxes = generateOrganisationCheckboxes(organisationList)
+
+          return h.view(routeId, new Model({ ...request.payload, maxMessageLength, officeCheckboxes, orgCheckboxes }, errors)).takeover()
         }
       }
     }

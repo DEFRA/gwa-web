@@ -1,3 +1,4 @@
+const { referenceData } = require('../constants')
 const { messagesContainer, refDataContainer, usersContainer } = require('../db/client')
 
 async function deleteMessage (id) {
@@ -6,7 +7,7 @@ async function deleteMessage (id) {
 
 // TODO: This should be stored in cache
 async function getAreaToOfficeMap () {
-  return (await refDataContainer.item('areaToOfficeMap', 'areaToOfficeMap').read())?.resource?.data
+  return (await refDataContainer.item(referenceData.areaToOfficeMap, referenceData.areaToOfficeMap).read())?.resource?.data
 }
 
 async function getMessage (id) {
@@ -16,6 +17,11 @@ async function getMessage (id) {
 
 async function getMessages (query) {
   return (await messagesContainer.items.query(query).fetchAll()).resources
+}
+
+// TODO: This should be stored in cache
+async function getOrganisationList () {
+  return (await refDataContainer.item(referenceData.organisationList, referenceData.organisationList).read())?.resource?.data
 }
 
 async function getUser (id) {
@@ -51,6 +57,7 @@ module.exports = {
   getAreaToOfficeMap,
   getMessage,
   getMessages,
+  getOrganisationList,
   getUser,
   getUsers,
   saveMessage,

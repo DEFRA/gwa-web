@@ -13,6 +13,10 @@ module.exports = {
     corporate: 'corporate',
     personal: 'personal'
   },
+  referenceData: {
+    areaToOfficeMap: 'areaToOfficeMap',
+    organisationList: 'organisationList'
+  },
   textMessages: {
     oneMessageCost: 0.016,
     oneMessageLength: 160,
