@@ -17,7 +17,7 @@ describe('Get message rows', () => {
     const user = { id: 'create-user-id', companyName: 'companyName', givenName: 'givenName', surname: 'surname' }
     const message = { ...messageTemplate }
     message.state = messageStates.created
-    addAuditEvent(message, user) // use actual function to add audit events for simplicity
+    addAuditEvent(message, user) // use the actual function to add audit events for simplicity
 
     const messageRows = getMessageRows(message)
 
