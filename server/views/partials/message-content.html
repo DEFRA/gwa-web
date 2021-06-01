@@ -1,0 +1,30 @@
+{{
+  govukCharacterCount({
+    id: "text",
+    name: "text",
+    label: {
+      text: "Text message"
+    },
+    hint: {
+      text: "Enter the message you wish to send."
+    },
+    maxlength: data.maxMessageLength,
+    value: data.text,
+    errorMessage: errors.text
+  })
+}}
+{{
+  govukCharacterCount({
+    id: "info",
+    name: "info",
+    label: {
+      text: "Additional information"
+    },
+    hint: {
+      text: "Use this as an aide memoire relating to the message. It is optional, feel free to leave empty."
+    },
+    maxlength: 2000,
+    value: data.info,
+    errorMessage: errors.info
+  })
+}}

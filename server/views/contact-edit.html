@@ -11,12 +11,7 @@
 {% endblock %}
 
 {% block form %}
-  {{
-    govukAccordion({
-      id: 'contact-edit-areas-' + data.phoneNumber.id,
-      items: data.items
-    })
-  }}
+  {{ officeCheckboxes('contact-edit-areas-' + data.phoneNumber.id, data.items) }}
 {% endblock %}
 
 {% block afterForm %}
