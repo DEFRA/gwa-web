@@ -6,7 +6,7 @@ const BaseModel = require('../lib/model')
 const { getAreaToOfficeMap, getMessage, updateMessage } = require('../lib/db')
 const { getMappedErrors } = require('../lib/errors')
 const { textMessages: { maxMessageLength }, messageStates } = require('../constants')
-const officeCheckboxes = require('../lib/office-checkboxes')
+const generateOfficeCheckboxes = require('../lib/office-checkboxes')
 
 const errorMessages = {
   officeCodes: 'Select at least one office location',
@@ -46,9 +46,9 @@ module.exports = [
       }
 
       const checked = [...new Set(message.officeCodes.flat())]
-      const items = officeCheckboxes(areaToOfficeMap, checked)
+      const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, checked)
 
-      return h.view(routeId, new Model({ ...message, maxMessageLength, items }))
+      return h.view(routeId, new Model({ ...message, maxMessageLength, officeCheckboxes }))
     },
     options: {
       validate: {
@@ -104,9 +104,9 @@ module.exports = [
 
           const { officeCodes } = request.payload
           const areaToOfficeMap = await getAreaToOfficeMap()
-          const items = officeCheckboxes(areaToOfficeMap, officeCodes)
+          const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, officeCodes)
 
-          return h.view(routeId, new Model({ ...request.payload, items, maxMessageLength }, errors)).takeover()
+          return h.view(routeId, new Model({ ...request.payload, officeCheckboxes, maxMessageLength }, errors)).takeover()
         }
       }
     }

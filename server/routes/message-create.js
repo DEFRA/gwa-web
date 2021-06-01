@@ -3,7 +3,7 @@ const Joi = require('joi')
 const { v4: uuid } = require('uuid')
 
 const addAuditEvent = require('../lib/add-audit-event')
-const officeCheckboxes = require('../lib/office-checkboxes')
+const generateOfficeCheckboxes = require('../lib/office-checkboxes')
 const { getAreaToOfficeMap, saveMessage } = require('../lib/db')
 const BaseModel = require('../lib/model')
 const { getMappedErrors } = require('../lib/errors')
@@ -35,8 +35,8 @@ module.exports = [
         return boom.internal('Office to location map not found.')
       }
 
-      const items = officeCheckboxes(areaToOfficeMap)
-      return h.view(routeId, new Model({ items, maxMessageLength }))
+      const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap)
+      return h.view(routeId, new Model({ officeCheckboxes, maxMessageLength }))
     }
   },
   {
@@ -73,9 +73,9 @@ module.exports = [
 
           const { officeCodes } = request.payload
           const areaToOfficeMap = await getAreaToOfficeMap()
-          const items = officeCheckboxes(areaToOfficeMap, officeCodes)
+          const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, officeCodes)
 
-          return h.view(routeId, new Model({ ...request.payload, items, maxMessageLength }, errors)).takeover()
+          return h.view(routeId, new Model({ ...request.payload, officeCheckboxes, maxMessageLength }, errors)).takeover()
         }
       }
     }

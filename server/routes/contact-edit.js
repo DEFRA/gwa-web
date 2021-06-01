@@ -3,7 +3,7 @@ const Joi = require('joi')
 
 const BaseModel = require('../lib/model')
 const { getAreaToOfficeMap, getUser, updateUser } = require('../lib/db')
-const officeCheckboxes = require('../lib/office-checkboxes')
+const generateOfficeCheckboxes = require('../lib/office-checkboxes')
 const { phoneNumberTypes } = require('../constants')
 
 const errorMessages = {}
@@ -40,9 +40,9 @@ module.exports = [
       const isCorporate = phoneNumber.type === phoneNumberTypes.corporate
       const checked = [...new Set(phoneNumber.subscribedTo.flat())]
       const disabled = isCorporate ? [user.officeCode] : []
-      const items = officeCheckboxes(areaToOfficeMap, checked, disabled)
+      const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, checked, disabled)
 
-      return h.view(routeId, new Model({ items, isCorporate, phoneNumber, user }))
+      return h.view(routeId, new Model({ officeCheckboxes, isCorporate, phoneNumber, user }))
     },
     options: {
       validate: {
