@@ -30,6 +30,7 @@
 }}
 {{
   govukCheckboxes({
+    id: 'orgCodes',
     name: 'orgCodes',
     fieldset: {
       legend: {
@@ -39,6 +40,7 @@
       }
     },
     hint: 'Select all that apply.',
-    items: data.orgCheckboxes
+    items: data.orgCheckboxes,
+    errorMessage: errors.orgCodes
   })
 }}
