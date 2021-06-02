@@ -49,12 +49,13 @@ module.exports = [
     path,
     handler: async (request, h) => {
       const { user } = request.auth.credentials
-      const { info, officeCodes, text } = request.payload
+      const { info, officeCodes, orgCodes, text } = request.payload
 
       const message = {
         id: uuid(),
         info,
         officeCodes: [officeCodes].flat(),
+        orgCodes: [orgCodes].flat(),
         text,
         state: messageStates.created
       }

@@ -68,7 +68,7 @@ module.exports = [
     handler: async (request, h) => {
       const { messageId } = request.params
       const { user } = request.auth.credentials
-      const { info, officeCodes, text } = request.payload
+      const { info, officeCodes, orgCodes, text } = request.payload
 
       const message = await getMessage(messageId)
 
@@ -83,6 +83,7 @@ module.exports = [
       message.text = text
       message.info = info
       message.officeCodes = [officeCodes].flat()
+      message.orgCodes = [orgCodes].flat()
       message.state = messageStates.edited
       addAuditEvent(message, user)
 
