@@ -23,6 +23,9 @@
     hint: {
       text: "Use this as an aide memoire relating to the message. It is optional, feel free to leave empty."
     },
+    countMessage: {
+      classes: 'govuk-!-margin-bottom-9'
+    },
     maxlength: 2000,
     value: data.info,
     errorMessage: errors.info
@@ -39,6 +42,7 @@
         classes: "govuk-fieldset__legend--m"
       }
     },
+    classes: 'govuk-!-margin-bottom-9',
     hint: 'Select all that apply.',
     items: data.orgCheckboxes,
     errorMessage: errors.orgCodes
