@@ -48,9 +48,10 @@ module.exports = [
         return boom.internal('Reference data not found.')
       }
 
-      const checked = [...new Set(message.officeCodes.flat())]
+      const checked = message.officeCodes
+      const orgCodes = message.orgCodes
       const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, checked)
-      const orgCheckboxes = generateOrganisationCheckboxes(organisationList)
+      const orgCheckboxes = generateOrganisationCheckboxes(organisationList, orgCodes)
 
       return h.view(routeId, new Model({ ...message, maxMessageLength, officeCheckboxes, orgCheckboxes }))
     },
@@ -115,12 +116,15 @@ module.exports = [
             return boom.internal('Reference data not found.')
           }
 
-          let { officeCodes } = request.payload
+          let { officeCodes, orgCodes } = request.payload
           if (typeof (officeCodes) === 'string') {
             officeCodes = [officeCodes]
           }
+          if (typeof (orgCodes) === 'string') {
+            orgCodes = [orgCodes]
+          }
           const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, officeCodes)
-          const orgCheckboxes = generateOrganisationCheckboxes(organisationList)
+          const orgCheckboxes = generateOrganisationCheckboxes(organisationList, orgCodes)
 
           return h.view(routeId, new Model({ ...request.payload, maxMessageLength, officeCheckboxes, orgCheckboxes }, errors)).takeover()
         }

@@ -85,12 +85,15 @@ module.exports = [
             return boom.internal('Reference data not found.')
           }
 
-          let { officeCodes } = request.payload
+          let { officeCodes, orgCodes } = request.payload
           if (typeof (officeCodes) === 'string') {
             officeCodes = [officeCodes]
           }
+          if (typeof (orgCodes) === 'string') {
+            orgCodes = [orgCodes]
+          }
           const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, officeCodes)
-          const orgCheckboxes = generateOrganisationCheckboxes(organisationList)
+          const orgCheckboxes = generateOrganisationCheckboxes(organisationList, orgCodes)
 
           return h.view(routeId, new Model({ maxMessageLength, officeCheckboxes, orgCheckboxes, ...request.payload }, errors)).takeover()
         }
