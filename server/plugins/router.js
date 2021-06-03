@@ -5,7 +5,6 @@ const routes = [].concat(
   require('../routes/contact-edit'),
   require('../routes/contact-remove'),
   require('../routes/home'),
-  require('../routes/info'),
   require('../routes/message-create'),
   require('../routes/message-delete'),
   require('../routes/message-edit'),
