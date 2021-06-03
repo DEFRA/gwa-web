@@ -38,6 +38,18 @@ async function verifyRequest (request) {
   }
   return message
 }
+const options = {
+  auth: {
+    access: {
+      scope: [`+${scopes.message.approve}`]
+    }
+  },
+  validate: {
+    params: Joi.object().keys({
+      messageId: Joi.string().guid().required()
+    })
+  }
+}
 
 module.exports = [
   {
@@ -66,18 +78,7 @@ module.exports = [
 
       return h.view(routeId, new Model({ contactCount, cost, message, messageRows }))
     },
-    options: {
-      auth: {
-        access: {
-          scope: [`+${scopes.message.approve}`]
-        }
-      },
-      validate: {
-        params: Joi.object().keys({
-          messageId: Joi.string().guid().required()
-        })
-      }
-    }
+    options
   },
   {
     method: 'POST',
@@ -98,17 +99,6 @@ module.exports = [
 
       return h.redirect('/messages')
     },
-    options: {
-      auth: {
-        access: {
-          scope: [`+${scopes.message.approve}`]
-        }
-      },
-      validate: {
-        params: Joi.object().keys({
-          messageId: Joi.string().guid().required()
-        })
-      }
-    }
+    options
   }
 ]
