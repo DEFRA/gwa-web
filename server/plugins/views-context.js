@@ -47,7 +47,7 @@ module.exports = {
               {
                 href: config.websiteHomePage,
                 text: 'Website'
-              },
+              }
 
             )
 
