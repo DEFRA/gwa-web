@@ -42,7 +42,7 @@
   ],
   "devDependencies": {
     "@jest/types": "^26.6.2",
-    "cheerio": "*",
+    "cheerio": "^1.0.0-rc.9",
     "jest": "^26.6.3",
     "node-sass": "5.0.0",
     "nodemon": "^2.0.7",
