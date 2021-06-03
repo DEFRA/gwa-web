@@ -2,8 +2,8 @@ name: Build and Deploy Staging
 
 on:
   push:
-    branches-ignore:
-      - main
+    # branches-ignore:
+    #   - main
   workflow_dispatch:
 
 env:
