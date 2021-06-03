@@ -65,9 +65,14 @@ jobs:
       run: npm run test
 
     - name: Super Lint Code Base
-      uses: github/super-linter@v3
+      # Use slim image as no need for the linters that are not included
+      uses: docker://ghcr.io/github/super-linter:slim-v4
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # Nunjucks files are html causing many false positives, best to skip
+        VALIDATE_HTML: false
+        # TODO: Remove this once README has been sorted out
+        VALIDATE_MARKDOWN: false
 
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@master

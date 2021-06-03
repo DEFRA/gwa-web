@@ -1,7 +1,6 @@
 $govuk-global-styles: true;
 
 @import "node_modules/govuk-frontend/govuk/all";
-
 @import "related-items";
 
 .nojs-hidden {
@@ -28,13 +27,8 @@ $govuk-global-styles: true;
   background-color: govuk-shade($govuk-link-visited-colour, 10);
 }
 
-.button-container {
-  @include mq ($from: tablet) {
-    white-space: nowrap;
-  }
-}
-
-.govuk-header__logo, .govuk-footer__link.govuk-footer__copyright-logo {
+.govuk-header__logo,
+.govuk-footer__link.govuk-footer__copyright-logo {
   display: none;
 }
 
