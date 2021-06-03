@@ -5,11 +5,13 @@ const addAuditEvent = require('../lib/add-audit-event')
 const BaseModel = require('../lib/model')
 const { getAreaToOfficeMap, getMessage, getOrganisationList, updateMessage } = require('../lib/db')
 const { getMappedErrors } = require('../lib/errors')
-const { textMessages: { maxMessageLength }, messageStates } = require('../constants')
 const generateOfficeCheckboxes = require('../lib/office-checkboxes')
 const generateOrganisationCheckboxes = require('../lib/organisation-checkboxes')
+const generateSendToAllOrgsRadios = require('../lib/send-to-all-radios')
+const { textMessages: { maxMessageLength }, messageStates } = require('../constants')
 
 const errorMessages = {
+  allOffices: 'Select whether to send the message to all office locations',
   officeCodes: 'Select at least one office location',
   orgCodes: 'Select at least one organisation',
   text: 'Enter the text message',
@@ -52,8 +54,9 @@ module.exports = [
       const orgCodes = message.orgCodes
       const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, checked)
       const orgCheckboxes = generateOrganisationCheckboxes(organisationList, orgCodes)
+      const allOfficeRadios = generateSendToAllOrgsRadios(message.allOffices)
 
-      return h.view(routeId, new Model({ ...message, maxMessageLength, officeCheckboxes, orgCheckboxes }))
+      return h.view(routeId, new Model({ ...message, allOfficeRadios, maxMessageLength, officeCheckboxes, orgCheckboxes }))
     },
     options: {
       validate: {
@@ -69,7 +72,7 @@ module.exports = [
     handler: async (request, h) => {
       const { messageId } = request.params
       const { user } = request.auth.credentials
-      const { info, officeCodes, orgCodes, text } = request.payload
+      const { allOffices, info, officeCodes, orgCodes, text } = request.payload
 
       const message = await getMessage(messageId)
 
@@ -81,11 +84,12 @@ module.exports = [
         return boom.unauthorized('Sent messages can not be edited.')
       }
 
-      message.text = text
+      message.allOffices = allOffices
       message.info = info
-      message.officeCodes = [officeCodes].flat()
+      message.officeCodes = [officeCodes ?? []].flat()
       message.orgCodes = [orgCodes].flat()
       message.state = messageStates.edited
+      message.text = text
       addAuditEvent(message, user)
 
       const res = await updateMessage(message)
@@ -101,7 +105,12 @@ module.exports = [
           messageId: Joi.string().guid().required()
         }),
         payload: Joi.object().keys({
-          officeCodes: Joi.alternatives().try(Joi.string().pattern(/^[A-Z]{3}:/), Joi.array().min(1).items(Joi.string().pattern(/^[A-Z]{3}:/))).required(),
+          allOffices: Joi.boolean().required(),
+          officeCodes: Joi.alternatives().when('allOffices', {
+            is: false,
+            then: Joi.alternatives().try(Joi.string().pattern(/^[A-Z]{3}:/), Joi.array().min(1).items(Joi.string().pattern(/^[A-Z]{3}:/))).required(),
+            otherwise: Joi.alternatives().try(Joi.string().pattern(/^[A-Z]{3}:/), Joi.array().min(1).items(Joi.string().pattern(/^[A-Z]{3}:/)))
+          }),
           orgCodes: Joi.alternatives().try(Joi.string(), Joi.array().min(1).items(Joi.string())).required(),
           text: Joi.string().max(maxMessageLength).required(),
           info: Joi.string().max(2000).allow('').empty('')
@@ -116,7 +125,7 @@ module.exports = [
             return boom.internal('Reference data not found.')
           }
 
-          let { officeCodes, orgCodes } = request.payload
+          let { allOffices, officeCodes, orgCodes } = request.payload
           if (typeof (officeCodes) === 'string') {
             officeCodes = [officeCodes]
           }
@@ -125,8 +134,9 @@ module.exports = [
           }
           const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, officeCodes)
           const orgCheckboxes = generateOrganisationCheckboxes(organisationList, orgCodes)
+          const allOfficeRadios = generateSendToAllOrgsRadios(allOffices)
 
-          return h.view(routeId, new Model({ ...request.payload, maxMessageLength, officeCheckboxes, orgCheckboxes }, errors)).takeover()
+          return h.view(routeId, new Model({ ...request.payload, allOfficeRadios, maxMessageLength, officeCheckboxes, orgCheckboxes }, errors)).takeover()
         }
       }
     }

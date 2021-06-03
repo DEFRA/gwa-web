@@ -8,5 +8,5 @@
 
 {% block form %}
   {% include './partials/message-content.html' %}
-  {{ officeCheckboxes('message-create-areas', data.officeCheckboxes, errors.officeCodes) }}
+  {{ officeCheckboxes('message-create-areas', data, errors) }}
 {% endblock %}
