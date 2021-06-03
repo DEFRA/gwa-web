@@ -25,8 +25,7 @@ function getErrorSummaryText (error) {
 
 function getMappedErrors (err, errorMessages) {
   if (err && Array.isArray(err.details)) {
-    const mappedErrors = mapErrors(err, errorMessages)
-    return mappedErrors
+    return mapErrors(err, errorMessages)
   }
 }
 
