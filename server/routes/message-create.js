@@ -68,7 +68,7 @@ module.exports = [
       validate: {
         payload,
         failAction: async (request, h, err) => {
-          return await failAction(request, h, err, routeId)
+          return failAction(request, h, err, routeId)
         }
       }
     }

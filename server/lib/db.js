@@ -2,7 +2,7 @@ const { referenceData } = require('../constants')
 const { messagesContainer, refDataContainer, usersContainer } = require('../db/client')
 
 async function deleteMessage (id) {
-  return await messagesContainer.item(id, id).delete()
+  return messagesContainer.item(id, id).delete()
 }
 
 // TODO: This should be stored in cache
@@ -41,15 +41,15 @@ async function getUsers () {
 }
 
 async function saveMessage (msg) {
-  return await messagesContainer.items.upsert(msg)
+  return messagesContainer.items.upsert(msg)
 }
 
 async function updateMessage (msg) {
-  return await messagesContainer.item(msg.id, msg.id).replace(msg)
+  return messagesContainer.item(msg.id, msg.id).replace(msg)
 }
 
 async function updateUser (user) {
-  return await usersContainer.item(user.id, user.id).replace(user)
+  return usersContainer.item(user.id, user.id).replace(user)
 }
 
 module.exports = {
