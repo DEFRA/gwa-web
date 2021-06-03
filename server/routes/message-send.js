@@ -25,24 +25,28 @@ function getPhoneNumbersToSendTo (users, message) {
 const routeId = 'message-send'
 const path = `/${routeId}/{messageId}`
 
+async function verifyRequest (request) {
+  const { messageId } = request.params
+  const message = await getMessage(messageId)
+
+  if (!message) {
+    return boom.notFound()
+  }
+
+  if (message.state === messageStates.sent) {
+    return boom.unauthorized('Sent messages can not be sent again.')
+  }
+  return message
+}
+
 module.exports = [
   {
     method: 'GET',
     path,
     handler: async (request, h) => {
-      const { messageId } = request.params
-      const { user } = request.auth.credentials
-      const message = await getMessage(messageId)
-
-      if (!message) {
-        return boom.notFound()
-      }
-
-      if (message.state === messageStates.sent) {
-        return boom.unauthorized('Sent messages can not be sent again.')
-      }
-
+      const message = await verifyRequest(request)
       const users = await getUsers()
+
       const phoneNumbersToSendTo = getPhoneNumbersToSendTo(users, message)
       const contactCount = phoneNumbersToSendTo.length
       const cost = contactCount * oneMessageCost
@@ -50,6 +54,7 @@ module.exports = [
       message.cost = cost
       message.contactCount = contactCount
       message.state = messageStates.edited
+      const { user } = request.auth.credentials
       addAuditEvent(message, user)
 
       const res = await updateMessage(message)
@@ -78,23 +83,13 @@ module.exports = [
     method: 'POST',
     path,
     handler: async (request, h) => {
-      const { messageId } = request.params
-      const { user } = request.auth.credentials
-
-      const message = await getMessage(messageId)
-
-      if (!message) {
-        return boom.notFound()
-      }
-
-      if (message.state === messageStates.sent) {
-        return boom.unauthorized('Sent messages can not be sent again.')
-      }
+      const message = await verifyRequest(request)
 
       // TODO: Upload the message criteria to blob storage. If successful, continue else error
       // client.uploadData(message) - needs implementation
 
       message.state = messageStates.sent
+      const { user } = request.auth.credentials
       addAuditEvent(message, user)
       const res = await updateMessage(message)
       if (res.statusCode !== 200) {
