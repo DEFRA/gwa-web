@@ -11,21 +11,27 @@ class Model extends BaseModel {}
 const routeId = 'message-delete'
 const path = `/${routeId}/{messageId}`
 
+async function verifyRequest (request) {
+  const { messageId } = request.params
+  const message = await getMessage(messageId)
+
+  if (!message) {
+    return boom.notFound()
+  }
+
+  if (message.state === messageStates.sent) {
+    return boom.unauthorized('Sent messages can not be deleted.')
+  }
+
+  return message
+}
+
 module.exports = [
   {
     method: 'GET',
     path,
     handler: async (request, h) => {
-      const { messageId } = request.params
-      const message = await getMessage(messageId)
-
-      if (!message) {
-        return boom.notFound()
-      }
-
-      if (message.state === messageStates.sent) {
-        return boom.unauthorized('Sent messages can not be deleted.')
-      }
+      const message = await verifyRequest(request)
 
       const messageRows = getMessageRows(message)
 
@@ -43,18 +49,9 @@ module.exports = [
     method: 'POST',
     path,
     handler: async (request, h) => {
-      const { messageId } = request.params
-      const message = await getMessage(messageId)
+      const message = await verifyRequest(request)
 
-      if (!message) {
-        return boom.notFound()
-      }
-
-      if (message.state === messageStates.sent) {
-        return boom.unauthorized('Sent messages can not be deleted.')
-      }
-
-      const res = await deleteMessage(messageId)
+      const res = await deleteMessage(message.id)
       if (res.statusCode !== 204) {
         return boom.internal('Message has not been deleted.', res)
       }
