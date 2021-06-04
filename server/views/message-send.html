@@ -1,6 +1,15 @@
-{% extends "form.html" %}
+{% extends "two-thirds.html" %}
 
-{% block beforeForm %}
+{% block twoThirds %}
+  {% if errorList.length %}
+    {{
+      govukErrorSummary({
+        titleText: "There is a problem",
+        errorList: errorList
+      })
+    }}
+  {% endif %}
+
   <h1 class="govuk-heading-l">Send message</h1>
   {{
     govukWarningText({
@@ -15,14 +24,19 @@
       rows: data.messageRows
     })
   }}
-{% endblock %}
 
-{% block form %}
-  {{
-    govukButton({
-      text: "Cancel",
-      href: "/message-view/" + data.message.id,
-      classes: "govuk-button--secondary"
-    })
-  }}
+  <form id="form" method="post" action="{{formAction | default('')}}"
+    novalidate enctype="{{formEncType | default('application/x-www-form-urlencoded')}}">
+    {{
+      govukButton({
+        text: "Cancel",
+        href: "/message-view/" + data.message.id,
+        classes: "govuk-button--secondary"
+      })
+    }}
+
+    {% if data.contactCount > 0 %}
+      {{ govukButton({ text: 'Continue' }) }}
+    {% endif %}
+  </form>
 {% endblock %}

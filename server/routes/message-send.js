@@ -60,7 +60,6 @@ module.exports = [
     handler: async (request, h) => {
       const message = await verifyRequest(request)
 
-      // TODO: if there are no contacts to send the message to - do not allow it to be sent
       const phoneNumbersToSendTo = await getPhoneNumbersToSendTo(message)
       const contactCount = phoneNumbersToSendTo.length
       const cost = contactCount * oneMessageCost
@@ -70,7 +69,6 @@ module.exports = [
       message.state = messageStates.edited
       const { user } = request.auth.credentials
       addAuditEvent(message, user)
-
       const res = await updateMessage(message)
       if (res.statusCode !== 200) {
         return boom.internal('Problem updating message.', res)
@@ -88,8 +86,10 @@ module.exports = [
     handler: async (request, h) => {
       const message = await verifyRequest(request)
 
-      // TODO: if there are no contacts to send the message to - do not allow it to be sent
       const phoneNumbersToSendTo = await getPhoneNumbersToSendTo(message)
+      if (phoneNumbersToSendTo.length === 0) {
+        return boom.badRequest('Sending to 0 contacts is not allowed.')
+      }
       const contactCount = phoneNumbersToSendTo.length
       const cost = contactCount * oneMessageCost
 
@@ -98,9 +98,6 @@ module.exports = [
       message.contactCount = contactCount
       message.state = messageStates.sent
 
-      // TODO: Upload the message criteria to blob storage. If successful, continue else error
-      // client.uploadData(message) - needs implementation
-      // await uploadContactList(message)
       const uploadRes = await uploadContactList(message)
       if (!uploadRes) {
         return boom.internal(`Problem uploading contact list for message ${message.id}.`)
