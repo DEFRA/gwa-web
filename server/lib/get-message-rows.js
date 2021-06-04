@@ -13,7 +13,8 @@ module.exports = (message) => {
 
   const rows = [
     [{ text: 'Message state' }, { text: message.state }],
-    [{ text: 'Recipients' }, { text: message.officeCodes.join(', ') }],
+    [{ text: 'Office location recipients' }, { text: message.allOffices ? 'All offices' : message.officeCodes.join(', ') }],
+    [{ text: 'Organisation recipients' }, { text: message.orgCodes.join(', ') }],
     [{ text: 'Message text' }, { text: message.text }],
     [{ text: 'Additional information' }, { text: message.info }],
     [{ text: 'Created at' }, { text: new Date(createEvent.time).toLocaleString() }],
