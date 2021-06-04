@@ -1,5 +1,5 @@
-const { referenceData } = require('../constants')
 const { messagesContainer, refDataContainer, usersContainer } = require('../db/client')
+const { referenceData } = require('../constants')
 
 async function deleteMessage (id) {
   return messagesContainer.item(id, id).delete()

@@ -1,3 +1,5 @@
+const { getAreaToOfficeMap } = require('./db')
+
 function generateCheckbox (officeLocation, checked, disabled) {
   const officeCode = officeLocation.officeCode
   return `<div class="govuk-checkboxes__item">
@@ -13,12 +15,13 @@ function generateCheckbox (officeLocation, checked, disabled) {
  * accordion](https://design-system.service.gov.uk/components/accordion/).
  * Area sections will initially be expanded if they contain a checked option.
  *
- * @param {Array} areaToOfficeMap - list of areas containing an array of officeLocations
  * @param {Array} [checked=[]] - list of office codes to be checked
  * @param {Array} [disabled=[]] - list of office codes to be disabled
  */
-module.exports = (areaToOfficeMap, checked = [], disabled = []) => {
+module.exports = async (checked = [], disabled = []) => {
+  const areaToOfficeMap = await getAreaToOfficeMap()
   const areasToExpand = checked.map(c => c.split(':')[0])
+
   return areaToOfficeMap.map(area => {
     const checkboxes = area.officeLocations.map(ol => generateCheckbox(ol, checked, disabled))
     checkboxes.unshift(generateCheckbox({ officeCode: `${area.areaCode}:*`, officeLocation: `All office locations in the <strong>${area.areaName}</strong> area` }, checked, disabled))
