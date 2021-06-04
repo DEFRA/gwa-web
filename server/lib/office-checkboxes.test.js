@@ -1,9 +1,9 @@
 const cheerio = require('cheerio')
 
+const areaCode1 = 'AC1'
+const areaCode2 = 'AC2'
+
 describe('Generate office checkboxes', () => {
-  const generateOfficeCheckboxes = require('./office-checkboxes')
-  const areaCode1 = 'AC1'
-  const areaCode2 = 'AC2'
   const areaToOfficeMap = [{
     areaCode: areaCode1,
     areaName: 'areaName1',
@@ -26,8 +26,22 @@ describe('Generate office checkboxes', () => {
     }]
   }]
 
-  test('all offices within an area are returned as checkboxes for several areas including the all option for the area', () => {
-    const checkboxes = generateOfficeCheckboxes(areaToOfficeMap)
+  jest.mock('./db', () => {
+    return {
+      getAreaToOfficeMap: jest.fn().mockResolvedValueOnce(areaToOfficeMap)
+    }
+  })
+  let generateOfficeCheckboxes
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    jest.resetModules()
+
+    generateOfficeCheckboxes = require('./office-checkboxes')
+  })
+
+  test('all offices within an area are returned as checkboxes for several areas including the all option for the area', async () => {
+    const checkboxes = await generateOfficeCheckboxes()
 
     expect(checkboxes).toHaveLength(areaToOfficeMap.length)
     checkboxes.forEach((cb, i) => {
@@ -62,10 +76,10 @@ describe('Generate office checkboxes', () => {
     })
   })
 
-  test('when an area is identified as checked, no offices within the area are checked and it is expanded', () => {
+  test('when an area is identified as checked, no offices within the area are checked and it is expanded', async () => {
     const checked = [`${areaCode1}:*`]
 
-    const checkboxes = generateOfficeCheckboxes(areaToOfficeMap, checked)
+    const checkboxes = await generateOfficeCheckboxes(checked)
 
     expect(checkboxes).toHaveLength(areaToOfficeMap.length)
     const checkbox = checkboxes[0]
@@ -95,11 +109,11 @@ describe('Generate office checkboxes', () => {
     })
   })
 
-  test('when an area is not checked but has offices within identified as checked, only they are returned as checked', () => {
+  test('when an area is not checked but has offices within identified as checked, only they are returned as checked', async () => {
     const area = areaToOfficeMap[0]
     const checked = [area.officeLocations[0].officeCode]
 
-    const checkboxes = generateOfficeCheckboxes(areaToOfficeMap, checked)
+    const checkboxes = await generateOfficeCheckboxes(checked)
 
     expect(checkboxes).toHaveLength(areaToOfficeMap.length)
     const checkbox = checkboxes[0]
@@ -113,12 +127,12 @@ describe('Generate office checkboxes', () => {
     expect($('input', actualCheckboxes[2]).attr('checked')).toBeUndefined()
   })
 
-  test('offices identified as disabled are returned as disabled, area being disabled only disables area', () => {
+  test('offices identified as disabled are returned as disabled, area being disabled only disables area', async () => {
     const area = areaToOfficeMap[0]
     const checked = []
     const disabled = [`${area.areaCode}:*`, area.officeLocations[0].officeCode]
 
-    const checkboxes = generateOfficeCheckboxes(areaToOfficeMap, checked, disabled)
+    const checkboxes = await generateOfficeCheckboxes(checked, disabled)
 
     expect(checkboxes).toHaveLength(areaToOfficeMap.length)
     const checkbox = checkboxes[0]

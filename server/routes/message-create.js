@@ -6,7 +6,7 @@ const BaseModel = require('../lib/model')
 const generateOfficeCheckboxes = require('../lib/office-checkboxes')
 const generateOrganisationCheckboxes = require('../lib/organisation-checkboxes')
 const generateSendToAllOrgsRadios = require('../lib/send-to-all-radios')
-const { getAreaToOfficeMap, getOrganisationList, saveMessage } = require('../lib/db')
+const { saveMessage } = require('../lib/db')
 const { message: errorMessages } = require('../lib/error-messages')
 const { message: { failAction } } = require('../lib/fail-actions')
 const { message: { payload } } = require('../lib/validations')
@@ -26,15 +26,8 @@ module.exports = [
     method: 'GET',
     path,
     handler: async (request, h) => {
-      const areaToOfficeMap = await getAreaToOfficeMap()
-      const organisationList = await getOrganisationList()
-
-      if (!areaToOfficeMap || !organisationList) {
-        return boom.internal('Reference data not found.')
-      }
-
-      const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap)
-      const orgCheckboxes = generateOrganisationCheckboxes(organisationList)
+      const officeCheckboxes = await generateOfficeCheckboxes()
+      const orgCheckboxes = await generateOrganisationCheckboxes()
       const allOfficeRadios = generateSendToAllOrgsRadios()
 
       return h.view(routeId, new Model({ allOfficeRadios, maxMessageLength, officeCheckboxes, orgCheckboxes }))

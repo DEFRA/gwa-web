@@ -1,5 +1,5 @@
-const Joi = require('joi')
 const boom = require('@hapi/boom')
+const Joi = require('joi')
 
 const addAuditEvent = require('../lib/add-audit-event')
 const BaseModel = require('../lib/model')
@@ -7,10 +7,12 @@ const { getMessage, getUsers, updateMessage } = require('../lib/db')
 const getMessageRows = require('../lib/get-message-rows')
 const { messageStates, textMessages: { oneMessageCost } } = require('../constants')
 const { scopes } = require('../permissions')
+const uploadContactList = require('../lib/upload-contact-list')
 
 class Model extends BaseModel {}
 
-function getPhoneNumbersToSendTo (users, message) {
+async function getPhoneNumbersToSendTo (message) {
+  const users = await getUsers()
   const phoneNumbers = []
   users.forEach(user => {
     user.phoneNumbers?.forEach(pn => {
@@ -57,9 +59,8 @@ module.exports = [
     path,
     handler: async (request, h) => {
       const message = await verifyRequest(request)
-      const users = await getUsers()
 
-      const phoneNumbersToSendTo = getPhoneNumbersToSendTo(users, message)
+      const phoneNumbersToSendTo = await getPhoneNumbersToSendTo(message)
       const contactCount = phoneNumbersToSendTo.length
       const cost = contactCount * oneMessageCost
 
@@ -68,7 +69,6 @@ module.exports = [
       message.state = messageStates.edited
       const { user } = request.auth.credentials
       addAuditEvent(message, user)
-
       const res = await updateMessage(message)
       if (res.statusCode !== 200) {
         return boom.internal('Problem updating message.', res)
@@ -86,10 +86,23 @@ module.exports = [
     handler: async (request, h) => {
       const message = await verifyRequest(request)
 
-      // TODO: Upload the message criteria to blob storage. If successful, continue else error
-      // client.uploadData(message) - needs implementation
+      const phoneNumbersToSendTo = await getPhoneNumbersToSendTo(message)
+      if (phoneNumbersToSendTo.length === 0) {
+        return boom.badRequest('Sending to 0 contacts is not allowed.')
+      }
+      const contactCount = phoneNumbersToSendTo.length
+      const cost = contactCount * oneMessageCost
 
+      message.cost = cost
+      message.contacts = phoneNumbersToSendTo
+      message.contactCount = contactCount
       message.state = messageStates.sent
+
+      const uploadRes = await uploadContactList(message)
+      if (!uploadRes) {
+        return boom.internal(`Problem uploading contact list for message ${message.id}.`)
+      }
+
       const { user } = request.auth.credentials
       addAuditEvent(message, user)
       const res = await updateMessage(message)

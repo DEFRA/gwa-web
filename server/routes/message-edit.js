@@ -6,7 +6,7 @@ const BaseModel = require('../lib/model')
 const generateOfficeCheckboxes = require('../lib/office-checkboxes')
 const generateOrganisationCheckboxes = require('../lib/organisation-checkboxes')
 const generateSendToAllOrgsRadios = require('../lib/send-to-all-radios')
-const { getAreaToOfficeMap, getMessage, getOrganisationList, updateMessage } = require('../lib/db')
+const { getMessage, updateMessage } = require('../lib/db')
 const { message: errorMessages } = require('../lib/error-messages')
 const { message: { failAction } } = require('../lib/fail-actions')
 const { message: { payload } } = require('../lib/validations')
@@ -37,15 +37,8 @@ module.exports = [
         return boom.unauthorized('Sent messages can not be edited.')
       }
 
-      const areaToOfficeMap = await getAreaToOfficeMap()
-      const organisationList = await getOrganisationList()
-
-      if (!areaToOfficeMap || !organisationList) {
-        return boom.internal('Reference data not found.')
-      }
-
-      const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, message.officeCodes)
-      const orgCheckboxes = generateOrganisationCheckboxes(organisationList, message.orgCodes)
+      const officeCheckboxes = await generateOfficeCheckboxes(message.officeCodes)
+      const orgCheckboxes = await generateOrganisationCheckboxes(message.orgCodes)
       const allOfficeRadios = generateSendToAllOrgsRadios(message.allOffices)
 
       return h.view(routeId, new Model({ ...message, allOfficeRadios, maxMessageLength, officeCheckboxes, orgCheckboxes }))

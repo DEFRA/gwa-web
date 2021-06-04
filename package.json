@@ -16,6 +16,7 @@
   "license": "OGL-UK-3.0",
   "dependencies": {
     "@azure/cosmos": "^3.11.2",
+    "@azure/storage-blob": "^12.5.0",
     "@hapi/bell": "12.1.1",
     "@hapi/boom": "9.1.0",
     "@hapi/cookie": "11.0.2",

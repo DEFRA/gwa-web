@@ -4,7 +4,8 @@ const { auditEventTypes, messageStates } = require('../constants')
  * Generates rows to display a message in the form of a [GOV.UK
  * table](https://design-system.service.gov.uk/components/table/).
  *
- * @param {object} message - object with message details
+ * @param {object} message containing message details.
+ * @returns {Array} `items` for GOV.UK table
  */
 module.exports = (message) => {
   const createEvent = message.auditEvents.filter(e => e.type === auditEventTypes.create)[0]
@@ -12,7 +13,8 @@ module.exports = (message) => {
 
   const rows = [
     [{ text: 'Message state' }, { text: message.state }],
-    [{ text: 'Recipients' }, { text: message.officeCodes.join(', ') }],
+    [{ text: 'Office location recipients' }, { text: message.allOffices ? 'All offices' : message.officeCodes.join(', ') }],
+    [{ text: 'Organisation recipients' }, { text: message.orgCodes.join(', ') }],
     [{ text: 'Message text' }, { text: message.text }],
     [{ text: 'Additional information' }, { text: message.info }],
     [{ text: 'Created at' }, { text: new Date(createEvent.time).toLocaleString() }],
