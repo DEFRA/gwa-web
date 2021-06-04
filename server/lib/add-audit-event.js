@@ -4,8 +4,8 @@ const { auditEventTypes, messageStates } = require('../constants')
  * Adds audit events to the `auditEvents` property on a message, based on
  * the `state` property of the message.
  *
- * @param {object} message - the message to add audit events to.
- * @param {object} user - the user to assign the audit events to.
+ * @param {object} message to add audit events to.
+ * @param {object} user to assign the audit events to.
  */
 module.exports = (message, user) => {
   let type

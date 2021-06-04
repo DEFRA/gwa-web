@@ -6,7 +6,8 @@ const { getOrganisationList } = require('./db')
  * based on a list of organisations. An optional list of organisations to
  * mark as checked can be supplied.
  *
- * @param {Array} [checked=[]] - list of organisation codes to be checked
+ * @param {Array} [checked=[]] list of organisation codes to be checked.
+ * @returns {Array} `items` for GOV.UK checkboxes
  */
 module.exports = async (checked = []) => {
   const organisationList = await getOrganisationList()

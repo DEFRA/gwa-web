@@ -15,8 +15,9 @@ function generateCheckbox (officeLocation, checked, disabled) {
  * accordion](https://design-system.service.gov.uk/components/accordion/).
  * Area sections will initially be expanded if they contain a checked option.
  *
- * @param {Array} [checked=[]] - list of office codes to be checked
- * @param {Array} [disabled=[]] - list of office codes to be disabled
+ * @param {Array} [checked=[]] list of office codes to be checked.
+ * @param {Array} [disabled=[]] list of office codes to be disabled.
+ * @returns {Array} `items` for GOV.UK accordion
  */
 module.exports = async (checked = [], disabled = []) => {
   const areaToOfficeMap = await getAreaToOfficeMap()
