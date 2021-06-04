@@ -17,16 +17,16 @@ describe('Generate organisation checkboxes', () => {
     orgName: 'orgName4'
   }]
 
+  jest.mock('./db', () => {
+    return {
+      getOrganisationList: jest.fn().mockResolvedValueOnce(orgList)
+    }
+  })
   let generateOrganisationCheckboxes
-  let getOrganisationListMock
 
   beforeEach(() => {
     jest.clearAllMocks()
     jest.resetModules()
-
-    getOrganisationListMock = require('./db').getOrganisationList
-    jest.mock('./db')
-    getOrganisationListMock.mockResolvedValueOnce(orgList)
 
     generateOrganisationCheckboxes = require('./organisation-checkboxes')
   })

@@ -1,8 +1,9 @@
 const cheerio = require('cheerio')
 
+const areaCode1 = 'AC1'
+const areaCode2 = 'AC2'
+
 describe('Generate office checkboxes', () => {
-  const areaCode1 = 'AC1'
-  const areaCode2 = 'AC2'
   const areaToOfficeMap = [{
     areaCode: areaCode1,
     areaName: 'areaName1',
@@ -25,16 +26,16 @@ describe('Generate office checkboxes', () => {
     }]
   }]
 
+  jest.mock('./db', () => {
+    return {
+      getAreaToOfficeMap: jest.fn().mockResolvedValueOnce(areaToOfficeMap)
+    }
+  })
   let generateOfficeCheckboxes
-  let getAreaToOfficeMapMock
 
   beforeEach(() => {
     jest.clearAllMocks()
     jest.resetModules()
-
-    getAreaToOfficeMapMock = require('./db').getAreaToOfficeMap
-    jest.mock('./db')
-    getAreaToOfficeMapMock.mockResolvedValueOnce(areaToOfficeMap)
 
     generateOfficeCheckboxes = require('./office-checkboxes')
   })
