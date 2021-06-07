@@ -19,15 +19,16 @@ add additional phone numbers to their profile.
 
 First install the dependencies and build the application using:
 
-`$ npm i`
-
-`$ npm run build`
+```cmd
+npm i
+npm run build
+```
 
 Currently this will just build the `govuk-frontend` sass but may be extended to include other build tasks as needed (e.g. client-side js using browserify or webpack etc.)
 
 Now the application is ready to run:
 
-`$ node index.js`
+`npm run start`
 
 Check the server is running by pointing your browser to `http://localhost:3000`
 
