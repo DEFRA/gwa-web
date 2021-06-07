@@ -3,10 +3,11 @@ const Joi = require('joi')
 
 const addAuditEvent = require('../lib/add-audit-event')
 const BaseModel = require('../lib/model')
+const costOfMessageSend = require('../lib/cost-of-message-send')
 const { getMessage, updateMessage } = require('../lib/db')
 const getMessageRows = require('../lib/get-message-rows')
-const getPhoneNumbersToSendTo = require('../lib/get-phone-numbers-to-send-to')
-const { messageStates, textMessages: { oneMessageCost } } = require('../constants')
+const getPhoneNumbersToSendTo = require('../lib/phone-numbers-to-send-to')
+const { messageStates } = require('../constants')
 const { scopes } = require('../permissions')
 const uploadContactList = require('../lib/upload-contact-list')
 
@@ -28,6 +29,7 @@ async function verifyRequest (request) {
   }
   return message
 }
+
 const options = {
   auth: {
     access: {
@@ -51,9 +53,8 @@ module.exports = [
 
       const phoneNumbersToSendTo = getPhoneNumbersToSendTo(users, message)
 
-      // TODO: calc the cost based on message.text.length
-      message.cost = phoneNumbersToSendTo.length * oneMessageCost
       message.contactCount = phoneNumbersToSendTo.length
+      message.cost = costOfMessageSend(message)
       message.state = messageStates.edited
       const { user } = request.auth.credentials
       addAuditEvent(message, user)
@@ -82,9 +83,9 @@ module.exports = [
         return boom.badRequest('Sending to 0 contacts is not allowed.')
       }
 
-      message.cost = phoneNumbersToSendTo.length * oneMessageCost
       message.contacts = phoneNumbersToSendTo
       message.contactCount = phoneNumbersToSendTo.length
+      message.cost = costOfMessageSend(message)
       message.state = messageStates.sent
 
       const uploadRes = await uploadContactList(message)
