@@ -1,26 +1,35 @@
 const hapi = require('@hapi/hapi')
+
 const config = require('./config')
+const { getAreaToOfficeMap, getOrganisationList, getUsers } = require('./lib/db')
 
 async function createServer () {
   const server = hapi.server({
-    port: config.port,
     host: config.host,
+    port: config.port,
+    router: {
+      stripTrailingSlash: true
+    },
     routes: {
       auth: {
         mode: 'required'
       },
+      security: true,
       validate: {
         options: {
           abortEarly: false,
           stripUnknown: true
         }
-      },
-      security: true
-    },
-    router: {
-      stripTrailingSlash: true
+      }
     }
   })
+
+  // Areas and offices change infrequently. Expire cache daily. Query _should_ take < 2 seconds.
+  server.method('db.getAreaToOfficeMap', getAreaToOfficeMap, { cache: { expiresIn: 60 * 60 * 1000, generateTimeout: 6 * 1000 } })
+  // Organisations change infrequently. Expire cache daily. Query _should_ take < 2 seconds.
+  server.method('db.getOrganisationList', getOrganisationList, { cache: { expiresIn: 60 * 60 * 1000, generateTimeout: 6 * 1000 } })
+  // Users are scheduled to refresh weekly. Expire cache daily. Query _should_ take ~10 seconds.
+  server.method('db.getUsers', getUsers, { cache: { expiresAt: '00:05', generateTimeout: 30 * 1000 } })
 
   // Register the plugins
   await server.register(require('@hapi/inert'))
