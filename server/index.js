@@ -24,11 +24,11 @@ async function createServer () {
     }
   })
 
-  // Areas and offices change infrequently. Expire cache daily. Query _should_ take < 2 seconds.
+  // Areas and offices change infrequently. Expire cache daily. Query _should_ take < 2 seconds, allows 3x before error.
   server.method('db.getAreaToOfficeMap', getAreaToOfficeMap, { cache: { expiresIn: 60 * 60 * 1000, generateTimeout: 6 * 1000 } })
-  // Organisations change infrequently. Expire cache daily. Query _should_ take < 2 seconds.
+  // Organisations change infrequently. Expire cache daily. Query _should_ take < 2 seconds, allows 3x before error.
   server.method('db.getOrganisationList', getOrganisationList, { cache: { expiresIn: 60 * 60 * 1000, generateTimeout: 6 * 1000 } })
-  // Users are scheduled to refresh weekly. Expire cache daily. Query _should_ take ~10 seconds.
+  // Users are scheduled to refresh weekly. Expire cache daily. Query _should_ take ~10 seconds, allows 3x before error.
   server.method('db.getUsers', getUsers, { cache: { expiresAt: '00:05', generateTimeout: 30 * 1000 } })
 
   // Register the plugins
