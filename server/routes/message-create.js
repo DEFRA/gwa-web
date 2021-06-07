@@ -26,7 +26,8 @@ module.exports = [
     method: 'GET',
     path,
     handler: async (request, h) => {
-      const officeCheckboxes = await generateOfficeCheckboxes()
+      const areaToOfficeMap = await request.server.methods.db.getAreaToOfficeMap()
+      const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap)
       const orgCheckboxes = await generateOrganisationCheckboxes()
       const allOfficeRadios = generateSendToAllOrgsRadios()
 

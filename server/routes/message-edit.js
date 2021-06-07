@@ -37,7 +37,8 @@ module.exports = [
         return boom.unauthorized('Sent messages can not be edited.')
       }
 
-      const officeCheckboxes = await generateOfficeCheckboxes(message.officeCodes)
+      const areaToOfficeMap = await request.server.methods.db.getAreaToOfficeMap()
+      const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, message.officeCodes)
       const orgCheckboxes = await generateOrganisationCheckboxes(message.orgCodes)
       const allOfficeRadios = generateSendToAllOrgsRadios(message.allOffices)
 

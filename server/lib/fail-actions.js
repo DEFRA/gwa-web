@@ -24,7 +24,8 @@ module.exports = {
       if (typeof (orgCodes) === 'string') {
         orgCodes = [orgCodes]
       }
-      const officeCheckboxes = await generateOfficeCheckboxes(officeCodes)
+      const areaToOfficeMap = await request.server.methods.db.getAreaToOfficeMap()
+      const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, officeCodes)
       const orgCheckboxes = await generateOrganisationCheckboxes(orgCodes)
       const allOfficeRadios = generateSendToAllOrgsRadios(allOffices)
 
