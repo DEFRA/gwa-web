@@ -37,8 +37,10 @@ module.exports = [
         return boom.unauthorized('Sent messages can not be edited.')
       }
 
-      const areaToOfficeMap = await request.server.methods.db.getAreaToOfficeMap()
-      const organisationList = await request.server.methods.db.getOrganisationList()
+      const [areaToOfficeMap, organisationList] = await Promise.all([
+        request.server.methods.db.getAreaToOfficeMap(),
+        request.server.methods.db.getOrganisationList()
+      ])
       const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, message.officeCodes)
       const orgCheckboxes = generateOrganisationCheckboxes(organisationList, message.orgCodes)
       const allOfficeRadios = generateSendToAllOrgsRadios(message.allOffices)
