@@ -1,10 +1,9 @@
-const joi = require('@hapi/joi')
 const boom = require('@hapi/boom')
-const copyFrom = require('pg-copy-streams').from
+const Joi = require('@hapi/joi')
+
 const BaseModel = require('../lib/model')
-const { scopes } = require('../permissions')
 const { getMappedErrors } = require('../lib/errors')
-const { pool } = require('../db')
+const { scopes } = require('../permissions')
 
 const errorMessages = {
   file: {
@@ -18,11 +17,6 @@ class Model extends BaseModel {
     super(data, err, errorMessages)
   }
 }
-
-const copyUploadSql = `COPY staff_alerts.upload(
-  id, first_name, last_name, email, organisation,
-  active, office, department, managerid, mobile
-) FROM STDIN WITH (FORMAT CSV, HEADER TRUE);`
 
 module.exports = [
   {
@@ -46,27 +40,9 @@ module.exports = [
       const { payload } = request
       const { file: fileStream } = payload
 
-      const client = await pool.connect()
-      await client.query('TRUNCATE table staff_alerts.upload RESTART IDENTITY;')
-
-      const copySql = copyUploadSql
-      const pgStream = client.query(copyFrom(copySql))
-
       try {
         await new Promise((resolve, reject) => {
           fileStream.on('error', reject)
-          pgStream.on('error', reject)
-
-          pgStream.on('finish', async () => {
-            // This query merges the upload data into the `user` and `contact` tables
-            await client.query('CALL staff_alerts.merge_upload()')
-
-            client.release(true)
-
-            resolve()
-          })
-
-          fileStream.pipe(pgStream)
         })
 
         return h.view('upload-results')
@@ -86,8 +62,8 @@ module.exports = [
         multipart: true
       },
       validate: {
-        payload: joi.object().keys({
-          file: joi.object().required()
+        payload: Joi.object().keys({
+          file: Joi.object().required()
         }),
         failAction: async (request, h, err) => {
           const errors = getMappedErrors(err, errorMessages)

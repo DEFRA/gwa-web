@@ -50,7 +50,6 @@ module.exports = [
       const { mobile } = request.payload
       const { id: userId } = request.auth.credentials.user
       const phoneNumber = parsePhoneNumber(mobile)
-      console.log(phoneNumber)
       const { e164, type } = phoneNumber
 
       // Only allow MOBILE
