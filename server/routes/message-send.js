@@ -3,25 +3,15 @@ const Joi = require('joi')
 
 const addAuditEvent = require('../lib/add-audit-event')
 const BaseModel = require('../lib/model')
+const costOfMessageSend = require('../lib/cost-of-message-send')
 const { getMessage, updateMessage } = require('../lib/db')
 const getMessageRows = require('../lib/get-message-rows')
-const { messageStates, textMessages: { oneMessageCost } } = require('../constants')
+const getPhoneNumbersToSendTo = require('../lib/phone-numbers-to-send-to')
+const { messageStates } = require('../constants')
 const { scopes } = require('../permissions')
 const uploadContactList = require('../lib/upload-contact-list')
 
 class Model extends BaseModel {}
-
-function getPhoneNumbersToSendTo (users, message) {
-  const phoneNumbers = []
-  users.forEach(user => {
-    user.phoneNumbers?.forEach(pn => {
-      if (message.officeCodes.some(oc => pn.subscribedTo?.includes(oc))) {
-        phoneNumbers.push(pn.number)
-      }
-    })
-  })
-  return phoneNumbers
-}
 
 const routeId = 'message-send'
 const path = `/${routeId}/{messageId}`
@@ -39,6 +29,7 @@ async function verifyRequest (request) {
   }
   return message
 }
+
 const options = {
   auth: {
     access: {
@@ -61,11 +52,9 @@ module.exports = [
       const users = await request.server.methods.db.getUsers()
 
       const phoneNumbersToSendTo = getPhoneNumbersToSendTo(users, message)
-      const contactCount = phoneNumbersToSendTo.length
-      const cost = contactCount * oneMessageCost
 
-      message.cost = cost
-      message.contactCount = contactCount
+      message.contactCount = phoneNumbersToSendTo.length
+      message.cost = costOfMessageSend(message)
       message.state = messageStates.edited
       const { user } = request.auth.credentials
       addAuditEvent(message, user)
@@ -76,7 +65,7 @@ module.exports = [
 
       const messageRows = getMessageRows(message)
 
-      return h.view(routeId, new Model({ contactCount, cost, message, messageRows }))
+      return h.view(routeId, new Model({ message, messageRows }))
     },
     options
   },
@@ -85,18 +74,18 @@ module.exports = [
     path,
     handler: async (request, h) => {
       const message = await verifyRequest(request)
+      // Drop from cache to run a fresh query, getting the most uptodate info
+      await request.server.methods.db.getUsers.cache.drop()
       const users = await request.server.methods.db.getUsers()
 
       const phoneNumbersToSendTo = getPhoneNumbersToSendTo(users, message)
       if (phoneNumbersToSendTo.length === 0) {
         return boom.badRequest('Sending to 0 contacts is not allowed.')
       }
-      const contactCount = phoneNumbersToSendTo.length
-      const cost = contactCount * oneMessageCost
 
-      message.cost = cost
       message.contacts = phoneNumbersToSendTo
-      message.contactCount = contactCount
+      message.contactCount = phoneNumbersToSendTo.length
+      message.cost = costOfMessageSend(message)
       message.state = messageStates.sent
 
       const uploadRes = await uploadContactList(message)

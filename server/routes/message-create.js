@@ -6,10 +6,10 @@ const BaseModel = require('../lib/model')
 const generateOfficeCheckboxes = require('../lib/office-checkboxes')
 const generateOrganisationCheckboxes = require('../lib/organisation-checkboxes')
 const generateSendToAllOrgsRadios = require('../lib/send-to-all-radios')
-const { saveMessage } = require('../lib/db')
 const { message: errorMessages } = require('../lib/error-messages')
 const { message: { failAction } } = require('../lib/fail-actions')
 const { message: { payload } } = require('../lib/validations')
+const { saveMessage } = require('../lib/db')
 const { textMessages: { maxMessageLength }, messageStates } = require('../constants')
 
 class Model extends BaseModel {

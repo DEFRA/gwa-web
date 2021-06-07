@@ -1,7 +1,8 @@
 const boom = require('@hapi/boom')
+
 const config = require('../config')
-const { permissions } = require('../permissions')
 const { getUser } = require('../lib/db')
+const { permissions } = require('../permissions')
 
 function getPermissions (roles) {
   if (roles) {
@@ -37,9 +38,6 @@ module.exports = [
       const { email } = profile
       const [roles, scope] = getPermissions(profile.raw.roles)
 
-      // request.log('********************************************************credentials', credentials)
-      // request.log('********************************************************profile.raw', profile.raw)
-
       if (!roles || !scope) {
         return boom.forbidden('Insufficient permissions')
       }
@@ -58,8 +56,6 @@ module.exports = [
 
       // Set the authentication cookie
       request.cookieAuth.set({ user, roles, scope })
-      // Store user in session
-      request.yar.set(user.id, user)
 
       return h.redirect(credentials.query?.redirectTo || '/account')
     },

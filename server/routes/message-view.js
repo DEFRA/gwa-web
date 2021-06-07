@@ -1,5 +1,5 @@
-const Joi = require('joi')
 const boom = require('@hapi/boom')
+const Joi = require('joi')
 
 const BaseModel = require('../lib/model')
 const { getMessage } = require('../lib/db')

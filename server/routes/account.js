@@ -28,8 +28,6 @@ module.exports = [
     handler: async (request, h) => {
       const { credentials } = request.auth
       const { roles, user: { id: userId } } = credentials
-      // const user = request.yar.get(userId)
-      console.log('searching for', userId)
       const user = await getUser(userId)
 
       if (!user) {

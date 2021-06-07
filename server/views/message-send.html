@@ -13,7 +13,7 @@
   <h1 class="govuk-heading-l">Send message</h1>
   {{
     govukWarningText({
-      html: "Are you sure you would like to send this message? It will be sent to approximately " + data.contactCount + " contact(s) at an approximate cost of £" + data.cost + " (excluding VAT).",
+      html: "Are you sure you would like to send this message? It will be sent to approximately " + data.message.contactCount + " contact(s) at an approximate cost of £" + data.message.cost + " (excluding VAT).",
       iconFallbackText: "Warning"
     })
   }}
@@ -35,7 +35,7 @@
       })
     }}
 
-    {% if data.contactCount > 0 %}
+    {% if data.message.contactCount > 0 %}
       {{ govukButton({ text: 'Continue' }) }}
     {% endif %}
   </form>
