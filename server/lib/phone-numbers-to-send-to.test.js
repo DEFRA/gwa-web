@@ -59,6 +59,35 @@ describe('Get phone numbers to send to', () => {
     expect(phoneNumbers[0]).toEqual(users[0].phoneNumbers[1].number)
   })
 
+  test('only user\'s phone numbers with an all offices in the area option subscribedTo to the selected office are returned when the all office in an area is selected to send the message to', () => {
+    const users = [{
+      orgCode: 'ABC',
+      phoneNumbers: [{
+        number: '07777111111',
+        subscribedTo: ['ANY:anything']
+      }, {
+        number: '07777222222',
+        subscribedTo: ['OFC:*']
+      }]
+    }, {
+      orgCode: 'XYZ',
+      phoneNumbers: [{
+        number: '07888111111',
+        subscribedTo: ['OFC:not-a-match']
+      }]
+    }]
+    const message = {
+      allOffices: false,
+      officeCodes: ['OFC:*'],
+      orgCodes: ['ABC']
+    }
+
+    const phoneNumbers = getPhoneNumbersToSendTo(users, message)
+
+    expect(phoneNumbers).toHaveLength(1)
+    expect(phoneNumbers[0]).toEqual(users[0].phoneNumbers[1].number)
+  })
+
   test('users phone numbers matching the message critera are not returned if the org they are in is not included in the message crtieria', () => {
     const users = [{
       orgCode: 'ABC',
