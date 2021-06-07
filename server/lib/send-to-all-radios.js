@@ -3,7 +3,7 @@ module.exports = (selectedValue) => {
     selectedValue = selectedValue === 'true'
   }
   return [{
-    checked: (selectedValue === undefined || !selectedValue) ? undefined : selectedValue || false,
+    checked: (selectedValue === undefined || !selectedValue) ? undefined : selectedValue,
     value: true,
     text: 'Yes'
   }, {
