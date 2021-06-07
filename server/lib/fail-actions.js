@@ -24,8 +24,12 @@ module.exports = {
       if (typeof (orgCodes) === 'string') {
         orgCodes = [orgCodes]
       }
-      const officeCheckboxes = await generateOfficeCheckboxes(officeCodes)
-      const orgCheckboxes = await generateOrganisationCheckboxes(orgCodes)
+      const [areaToOfficeMap, organisationList] = await Promise.all([
+        request.server.methods.db.getAreaToOfficeMap(),
+        request.server.methods.db.getOrganisationList()
+      ])
+      const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, officeCodes)
+      const orgCheckboxes = generateOrganisationCheckboxes(organisationList, orgCodes)
       const allOfficeRadios = generateSendToAllOrgsRadios(allOffices)
 
       return h.view(routeId, new Model({ ...request.payload, allOfficeRadios, maxMessageLength, officeCheckboxes, orgCheckboxes }, errors)).takeover()
