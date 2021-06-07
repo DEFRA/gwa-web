@@ -30,7 +30,8 @@ Now the application is ready to run:
 
 `npm run start`
 
-Check the server is running by pointing your browser to `http://localhost:3000`
+Check the server is running by pointing your browser to
+[http://localhost:3000](http://localhost:3000).
 
 ## Config - TODO (update)
 
