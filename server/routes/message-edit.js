@@ -38,8 +38,9 @@ module.exports = [
       }
 
       const areaToOfficeMap = await request.server.methods.db.getAreaToOfficeMap()
+      const organisationList = await request.server.methods.db.getOrganisationList()
       const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, message.officeCodes)
-      const orgCheckboxes = await generateOrganisationCheckboxes(message.orgCodes)
+      const orgCheckboxes = generateOrganisationCheckboxes(organisationList, message.orgCodes)
       const allOfficeRadios = generateSendToAllOrgsRadios(message.allOffices)
 
       return h.view(routeId, new Model({ ...message, allOfficeRadios, maxMessageLength, officeCheckboxes, orgCheckboxes }))

@@ -17,11 +17,6 @@ describe('Generate organisation checkboxes', () => {
     orgName: 'orgName4'
   }]
 
-  jest.mock('./db', () => {
-    return {
-      getOrganisationList: jest.fn().mockResolvedValueOnce(orgList)
-    }
-  })
   let generateOrganisationCheckboxes
 
   beforeEach(() => {
@@ -32,7 +27,7 @@ describe('Generate organisation checkboxes', () => {
   })
 
   test('all active organisations in the list are returned', async () => {
-    const checkboxes = await generateOrganisationCheckboxes()
+    const checkboxes = await generateOrganisationCheckboxes(orgList)
 
     expect(checkboxes).toHaveLength(3)
     checkboxes.forEach((cb, i) => {
@@ -47,7 +42,7 @@ describe('Generate organisation checkboxes', () => {
 
   test('organisations identified as checked as marked as such', async () => {
     const checked = [orgList[2].orgCode]
-    const checkboxes = await generateOrganisationCheckboxes(checked)
+    const checkboxes = await generateOrganisationCheckboxes(orgList, checked)
 
     expect(checkboxes).toHaveLength(3)
     expect(checkboxes[0]).toHaveProperty('text')
