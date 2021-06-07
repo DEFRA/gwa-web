@@ -10,7 +10,7 @@ async function deleteMessage (id) {
  * method is added to the web server via
  * [Server Methods](https://hapi.dev/tutorials/servermethods/?lang=en_US) to
  * improve performance.
- * It is accessible via `server.methods.db.getUsers`.
+ * It is accessible via `server.methods.db.getAreaToOfficeMap`.
  *
  * @returns {object} map of areas with array of `officeLocations`.
  */
@@ -32,7 +32,7 @@ async function getMessages (query) {
  * method is added to the web server via
  * [Server Methods](https://hapi.dev/tutorials/servermethods/?lang=en_US) to
  * improve performance.
- * It is accessible via `server.methods.db.getUsers`.
+ * It is accessible via `server.methods.db.getOrganisationList`.
  *
  * @returns {Array} all organisations consisting of `active`, `orgCode` and
  * `orgName`.
