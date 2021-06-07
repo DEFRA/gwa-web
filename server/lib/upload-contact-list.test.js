@@ -32,7 +32,7 @@ describe('Uploading contact list', () => {
   test('file is uploaded correctly', async () => {
     mockUpload = jest.fn().mockImplementation(() => { return { errorCode: undefined } })
     mockBlockBlobClient.prototype.upload = mockUpload
-    const contacts = []
+    const contacts = [{ phoneNumber: '07777111222' }]
     const text = 'nice to meet you'
     const message = { contacts, id: 'your-id', text }
 
