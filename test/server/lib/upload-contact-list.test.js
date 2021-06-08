@@ -1,10 +1,10 @@
+const { contactListContainer: mockContactListContainer, contactListStorageConnectionString: mockContactListStorageConnectionString } = require('../../test-env-vars')
+
 describe('Uploading contact list', () => {
-  const contactListContainer = 'contactListContainer'
-  const contactListStorageConnectionString = 'contactListStorageConnectionString'
   jest.mock('../../../server/config', () => {
     return {
-      contactListContainer: contactListContainer,
-      contactListStorageConnectionString: contactListStorageConnectionString
+      contactListContainer: mockContactListContainer,
+      contactListStorageConnectionString: mockContactListStorageConnectionString
     }
   })
 
@@ -39,7 +39,7 @@ describe('Uploading contact list', () => {
     const res = await uploadContactList(message)
 
     expect(mockBlockBlobClient).toHaveBeenCalledTimes(1)
-    expect(mockBlockBlobClient).toHaveBeenCalledWith(contactListStorageConnectionString, contactListContainer, `${message.id}.json`)
+    expect(mockBlockBlobClient).toHaveBeenCalledWith(mockContactListStorageConnectionString, mockContactListContainer, `${message.id}.json`)
     expect(mockUpload).toHaveBeenCalledTimes(1)
     const data = JSON.stringify({
       contacts: contacts.map(c => { return { phoneNumber: c } }),

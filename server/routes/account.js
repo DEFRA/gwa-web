@@ -30,7 +30,7 @@ module.exports = [
       const { roles, user: { id: userId } } = credentials
       const user = await getUser(userId)
 
-      if (!user) {
+      if (!user || !user.active) {
         return boom.notFound(`No record found for ${userId}.`)
       }
 

@@ -12,7 +12,7 @@ describe('Home route', () => {
     await server.stop()
   })
 
-  test('responds with 200 when no user is logged in', async () => {
+  test.only('responds with 200 when no user is logged in', async () => {
     const res = await server.inject({
       method: 'GET',
       url
