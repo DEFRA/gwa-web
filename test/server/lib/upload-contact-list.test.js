@@ -26,7 +26,7 @@ describe('Uploading contact list', () => {
     jest.clearAllMocks()
     jest.resetModules()
 
-    uploadContactList = require('./upload-contact-list')
+    uploadContactList = require('../../../server/lib/upload-contact-list')
   })
 
   test('file is uploaded correctly', async () => {

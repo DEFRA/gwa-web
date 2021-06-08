@@ -32,7 +32,7 @@ describe('Generate office checkboxes', () => {
     jest.clearAllMocks()
     jest.resetModules()
 
-    generateOfficeCheckboxes = require('./office-checkboxes')
+    generateOfficeCheckboxes = require('../../../server/lib/office-checkboxes')
   })
 
   test('all offices within an area are returned as checkboxes for several areas including the all option for the area', async () => {

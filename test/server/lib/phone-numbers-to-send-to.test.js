@@ -1,4 +1,4 @@
-const getPhoneNumbersToSendTo = require('./phone-numbers-to-send-to')
+const getPhoneNumbersToSendTo = require('../../../server/lib/phone-numbers-to-send-to')
 
 describe('Get phone numbers to send to', () => {
   test('only user\'s phone numbers with an individual office subscribedTo to the selected office are returned when the all office in an area is selected to send the message to', () => {

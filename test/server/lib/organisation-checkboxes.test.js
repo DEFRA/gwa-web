@@ -23,7 +23,7 @@ describe('Generate organisation checkboxes', () => {
     jest.clearAllMocks()
     jest.resetModules()
 
-    generateOrganisationCheckboxes = require('./organisation-checkboxes')
+    generateOrganisationCheckboxes = require('../../../server/lib/organisation-checkboxes')
   })
 
   test('all active organisations in the list are returned', async () => {

@@ -1,7 +1,7 @@
 describe('Get message rows', () => {
-  const { auditEventTypes, messageStates } = require('../constants')
-  const addAuditEvent = require('./add-audit-event')
-  const getMessageRows = require('./get-message-rows')
+  const { auditEventTypes, messageStates } = require('../../../server/constants')
+  const addAuditEvent = require('../../../server/lib/add-audit-event')
+  const getMessageRows = require('../../../server/lib/get-message-rows')
   const user = { id: 'create-user-id', companyName: 'companyName', givenName: 'givenName', surname: 'surname' }
 
   const now = Date.now()

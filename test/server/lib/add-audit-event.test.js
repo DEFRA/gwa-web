@@ -1,6 +1,6 @@
 describe('Add audit events', () => {
-  const addAuditEvent = require('./add-audit-event')
-  const { auditEventTypes, messageStates } = require('../constants')
+  const addAuditEvent = require('../../../server/lib/add-audit-event')
+  const { auditEventTypes, messageStates } = require('../../../server/constants')
 
   const now = Date.now()
   Date.now = jest.fn(() => now)
