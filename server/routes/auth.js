@@ -2,26 +2,7 @@ const boom = require('@hapi/boom')
 
 const config = require('../config')
 const { getUser } = require('../lib/db')
-const { permissions } = require('../permissions')
-
-function getPermissions (roles) {
-  if (roles) {
-    const parsedRoles = JSON.parse(roles)
-
-    if (Array.isArray(parsedRoles) && parsedRoles.length) {
-      const knownRoles = parsedRoles.filter(role => role in permissions)
-
-      if (knownRoles.length) {
-        return [
-          knownRoles,
-          Array.from(new Set(knownRoles.map(role => permissions[role]).flat()))
-        ]
-      }
-    }
-  }
-
-  return []
-}
+const { getPermissions } = require('../permissions')
 
 module.exports = [
   {
