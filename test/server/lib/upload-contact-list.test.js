@@ -1,7 +1,7 @@
 describe('Uploading contact list', () => {
   const contactListContainer = 'contactListContainer'
   const contactListStorageConnectionString = 'contactListStorageConnectionString'
-  jest.mock('../config', () => {
+  jest.mock('../../../server/config', () => {
     return {
       contactListContainer: contactListContainer,
       contactListStorageConnectionString: contactListStorageConnectionString
