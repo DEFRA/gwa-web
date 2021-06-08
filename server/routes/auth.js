@@ -17,7 +17,7 @@ module.exports = [
       const { credentials } = request.auth
       const { profile } = credentials
       const { email } = profile
-      const [roles, scope] = getPermissions(profile.raw.roles)
+      const { roles, scope } = getPermissions(profile.raw.roles)
 
       if (!roles || !scope) {
         return boom.forbidden('Insufficient permissions')
@@ -31,7 +31,6 @@ module.exports = [
         return boom.notFound('No active user found.')
       }
 
-      // Set the authentication cookie
       request.cookieAuth.set({ user, roles, scope })
 
       return h.redirect(credentials.query?.redirectTo || '/account')

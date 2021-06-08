@@ -13,6 +13,13 @@ const permissions = {
   User: []
 }
 
+/**
+ * Return the known role(s) and scope(s) for the role(s) requested.
+ *
+ * @param {Array} roles from the Azure AD response.
+ * @return {object} consisting of (matched, known - if any) `roles` and `scope`
+ * for the supplied `roles`.
+ */
 function getPermissions (roles) {
   if (roles) {
     const parsedRoles = JSON.parse(roles)
@@ -21,15 +28,15 @@ function getPermissions (roles) {
       const knownRoles = parsedRoles.filter(role => role in permissions)
 
       if (knownRoles.length) {
-        return [
-          knownRoles,
-          Array.from(new Set(knownRoles.map(role => permissions[role]).flat()))
-        ]
+        return {
+          roles: knownRoles,
+          scope: Array.from(new Set(knownRoles.map(role => permissions[role]).flat()))
+        }
       }
     }
   }
 
-  return []
+  return {}
 }
 
 module.exports = {

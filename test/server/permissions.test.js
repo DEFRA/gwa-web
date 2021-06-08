@@ -2,22 +2,23 @@ describe('Permissions and scopes', () => {
   const { getPermissions, scopes } = require('../../server/permissions')
 
   test('no roles or scopes are returned when no roles are supplied', () => {
-    const permissions = getPermissions()
+    const { roles, scope } = getPermissions()
 
-    expect(permissions).toHaveLength(0)
+    expect(roles).toBe(undefined)
+    expect(scope).toBe(undefined)
   })
 
   test('no roles or scopes are returned when no recognised roles are supplied', () => {
-    const roles = JSON.stringify(['Unknown'])
-    const permissions = getPermissions(roles)
+    const { roles, scope } = getPermissions(JSON.stringify(['Unknown']))
 
-    expect(permissions).toHaveLength(0)
+    expect(roles).toBe(undefined)
+    expect(scope).toBe(undefined)
   })
 
   test('known roles and scopes are returned when recognised roles are supplied', () => {
     const rolesInput = JSON.stringify(['Administrator', 'DataManager', 'User', 'Unknown'])
 
-    const [roles, scope] = getPermissions(rolesInput)
+    const { roles, scope } = getPermissions(rolesInput)
 
     expect(roles).toHaveLength(3)
     expect(roles).toEqual(expect.arrayContaining(['Administrator', 'DataManager', 'User']))
@@ -29,7 +30,7 @@ describe('Permissions and scopes', () => {
   test('Administrator role returns correct role and scope', () => {
     const rolesInput = JSON.stringify(['Administrator'])
 
-    const [roles, scope] = getPermissions(rolesInput)
+    const { roles, scope } = getPermissions(rolesInput)
 
     expect(roles).toHaveLength(1)
     expect(roles).toEqual(expect.arrayContaining(['Administrator']))
@@ -40,7 +41,7 @@ describe('Permissions and scopes', () => {
   test('DataManager role returns correct role and scope', () => {
     const rolesInput = JSON.stringify(['DataManager'])
 
-    const [roles, scope] = getPermissions(rolesInput)
+    const { roles, scope } = getPermissions(rolesInput)
 
     expect(roles).toHaveLength(1)
     expect(roles).toEqual(expect.arrayContaining(['DataManager']))
@@ -51,7 +52,7 @@ describe('Permissions and scopes', () => {
   test('User role returns correct role and scope', () => {
     const rolesInput = JSON.stringify(['User'])
 
-    const [roles, scope] = getPermissions(rolesInput)
+    const { roles, scope } = getPermissions(rolesInput)
 
     expect(roles).toHaveLength(1)
     expect(roles).toEqual(expect.arrayContaining(['User']))
