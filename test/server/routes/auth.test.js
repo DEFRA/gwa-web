@@ -7,16 +7,14 @@ describe('Auth route', () => {
   jest.mock('../../../server/lib/db', () => {
     return {
       getUser: jest.fn()
-        .mockResolvedValueOnce(undefined)
+        .mockResolvedValue({ active: true })
         .mockResolvedValueOnce(undefined)
         .mockResolvedValueOnce({ active: false })
-        .mockResolvedValueOnce({ active: true })
-        .mockResolvedValueOnce({ active: true })
     }
   })
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    // jest.clearAllMocks()
 
     server = await createServer()
   })
@@ -68,7 +66,7 @@ describe('Auth route', () => {
             email: 'test@gwa.defra.co.uk',
             displayName: 'test gwa',
             raw: {
-              roles: JSON.stringify(['Administrator'])
+              roles: JSON.stringify(['Not-recognised-role'])
             }
           },
           scope: []
@@ -80,7 +78,7 @@ describe('Auth route', () => {
     expect(res.statusCode).toEqual(403)
   })
 
-  test('responds with 403 when no user is found', async () => {
+  test('responds with 404 when user is not found', async () => {
     const res = await server.inject({
       method: 'GET',
       url,
@@ -100,10 +98,10 @@ describe('Auth route', () => {
       }
     })
 
-    expect(res.statusCode).toEqual(403)
+    expect(res.statusCode).toEqual(404)
   })
 
-  test('responds with 403 when user is found but is not active', async () => {
+  test('responds with 404 when user is found but is not active', async () => {
     const res = await server.inject({
       method: 'GET',
       url,
@@ -123,10 +121,10 @@ describe('Auth route', () => {
       }
     })
 
-    expect(res.statusCode).toEqual(403)
+    expect(res.statusCode).toEqual(404)
   })
 
-  test('responds with 302 to /account when user is found', async () => {
+  test('responds with 302 to /account when active user is found', async () => {
     const res = await server.inject({
       method: 'GET',
       url,
@@ -150,7 +148,7 @@ describe('Auth route', () => {
     expect(res.headers.location).toEqual('/account')
   })
 
-  test('responds with 302 to the redirectTo query when available, when user is found', async () => {
+  test('responds with 302 to the redirectTo query (when available), when active user is found', async () => {
     const redirectTo = '/a-different-route'
     const res = await server.inject({
       method: 'GET',

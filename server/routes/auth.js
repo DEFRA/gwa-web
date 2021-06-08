@@ -45,13 +45,9 @@ module.exports = [
       // Lowercased emails used as ids (at least atm)
       const user = await getUser(email.toLowerCase())
 
-      if (!user) {
+      if (!user || !user.active) {
         request.log(`Problem encountered whilst looking up email: '${email}', ${user}`)
-        return boom.forbidden('Insufficient permissions')
-      }
-
-      if (!user.active) {
-        return boom.forbidden('Insufficient permissions')
+        return boom.notFound('No active user found.')
       }
 
       // Set the authentication cookie
