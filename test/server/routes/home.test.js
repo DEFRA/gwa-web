@@ -1,6 +1,7 @@
 const createServer = require('../../../server/index')
 
 describe('Home route', () => {
+  const url = '/'
   let server
 
   beforeEach(async () => {
@@ -13,8 +14,8 @@ describe('Home route', () => {
 
   test('responds with 200 when no user is logged in', async () => {
     const res = await server.inject({
-      method: 'get',
-      url: '/'
+      method: 'GET',
+      url
     })
 
     expect(res.statusCode).toEqual(200)
@@ -22,8 +23,8 @@ describe('Home route', () => {
 
   test('responds with 200 when user is logged in', async () => {
     const res = await server.inject({
-      method: 'get',
-      url: '/',
+      method: 'GET',
+      url,
       auth: {
         credentials: {
           profile: {
@@ -31,7 +32,7 @@ describe('Home route', () => {
             email: 'test@gwa.defra.co.uk',
             displayName: 'test gwa',
             raw: {
-              roles: ['Administrator']
+              roles: JSON.stringify([])
             }
           },
           scope: []
