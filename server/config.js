@@ -6,7 +6,7 @@ const schema = Joi.object().keys({
   analyticsAccountId: Joi.string().optional(),
   aadClientId: Joi.string().guid(),
   aadClientSecret: Joi.string().required(),
-  aadTenant: Joi.string().guid(),
+  aadTenantId: Joi.string().guid(),
   contactListContainer: Joi.string().default('contact-list'),
   contactListStorageConnectionString: Joi.string().required(),
   db: Joi.object().keys({
@@ -35,7 +35,7 @@ const schema = Joi.object().keys({
 const config = {
   aadClientId: process.env.AAD_CLIENT_ID,
   aadClientSecret: process.env.AAD_CLIENT_SECRET,
-  aadTenant: process.env.AAD_TENANT_ID,
+  aadTenantId: process.env.AAD_TENANT_ID,
   contactListContainer: process.env.CONTACT_LIST_CONTAINER,
   contactListStorageConnectionString: process.env.CONTACT_LIST_STORAGE_CONNECTION_STRING,
   db: {

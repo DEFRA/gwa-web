@@ -1,4 +1,5 @@
 const createServer = require('../../../server/index')
+const testEnvVars = require('../../test-env-vars')
 
 describe('Auth route', () => {
   const url = '/login'
@@ -14,8 +15,6 @@ describe('Auth route', () => {
   })
 
   beforeEach(async () => {
-    // jest.clearAllMocks()
-
     server = await createServer()
   })
 
@@ -176,5 +175,13 @@ describe('Auth route', () => {
     expect(res.headers.location).toEqual(redirectTo)
   })
 
-  // TODO: Test the redirectTo logic
+  test('responds with 302 to the microsoftonline logout URL', async () => {
+    const res = await server.inject({
+      method: 'GET',
+      url: '/logout'
+    })
+
+    expect(res.statusCode).toEqual(302)
+    expect(res.headers.location).toEqual(`https://login.microsoftonline.com/${testEnvVars.aadTenantId}/oauth2/v2.0/logout?post_logout_redirect_uri=${testEnvVars.logoutRedirectUri}`)
+  })
 })

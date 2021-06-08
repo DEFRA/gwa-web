@@ -45,7 +45,7 @@ module.exports = [
     handler: function (request, h) {
       request.cookieAuth.clear()
 
-      return h.redirect(`https://login.microsoftonline.com/${config.aadTenant}/oauth2/v2.0/logout?post_logout_redirect_uri=${config.logoutRedirectUri}`)
+      return h.redirect(`https://login.microsoftonline.com/${config.aadTenantId}/oauth2/v2.0/logout?post_logout_redirect_uri=${config.logoutRedirectUri}`)
     },
     options: {
       auth: false
