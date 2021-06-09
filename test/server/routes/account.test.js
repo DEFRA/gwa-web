@@ -103,7 +103,7 @@ describe('Account route', () => {
     })
 
     expect(res.statusCode).toEqual(200)
-    const $ = cheerio.load(res.payload, null, false)
+    const $ = cheerio.load(res.payload)
 
     const title = $('.govuk-heading-l').text()
     expect(title).toEqual('Account')
@@ -127,7 +127,7 @@ describe('Account route', () => {
       }
     })
 
-    const $ = cheerio.load(res.payload, null, false)
+    const $ = cheerio.load(res.payload)
 
     const phoneNumberTables = $('table.govuk-table')
     expect(phoneNumberTables).toHaveLength(2)
@@ -163,7 +163,7 @@ describe('Account route', () => {
       }
     })
 
-    const $ = cheerio.load(res.payload, null, false)
+    const $ = cheerio.load(res.payload)
 
     const phoneNumberTables = $('table.govuk-table')
     expect(phoneNumberTables).toHaveLength(2)
