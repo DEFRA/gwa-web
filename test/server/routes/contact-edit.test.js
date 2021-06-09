@@ -144,7 +144,7 @@ describe('Contact edit route', () => {
             },
             scope: []
           },
-          strategy: 'try'
+          strategy: 'azuread'
         }
       })
 
@@ -174,7 +174,7 @@ describe('Contact edit route', () => {
             },
             scope: []
           },
-          strategy: 'try'
+          strategy: 'azuread'
         }
       })
 
@@ -204,7 +204,7 @@ describe('Contact edit route', () => {
             },
             scope: []
           },
-          strategy: 'try'
+          strategy: 'azuread'
         }
       })
 
