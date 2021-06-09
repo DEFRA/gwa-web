@@ -1,14 +1,13 @@
 const cheerio = require('cheerio')
 
 const createServer = require('../../../server/index')
-const { phoneNumberTypes: mockPhoneNumberTypes } = require('../../../server/constants')
 
 describe('Account route', () => {
   const url = '/account'
   let server
   const mockPhoneNumbers = [
-    { type: mockPhoneNumberTypes.corporate, number: '07777111111', subscribedTo: ['OFFICE'] },
-    { type: mockPhoneNumberTypes.personal, number: '07777222222', subscribedTo: ['THIS', 'THAT'] }
+    { type: 'corporate', number: '07777111111', subscribedTo: ['OFFICE'] },
+    { type: 'personal', number: '07777222222', subscribedTo: ['THIS', 'THAT'] }
   ]
 
   jest.mock('../../../server/lib/db', () => {
@@ -145,7 +144,7 @@ describe('Account route', () => {
   })
 
   test('add new contact button is not displayed when user has max personal phone numbers', async () => {
-    mockPhoneNumbers.push({ type: mockPhoneNumberTypes.personal, number: '07777333333', subscribedTo: ['CAFE', 'HOME', 'MORE'] })
+    mockPhoneNumbers.push({ type: 'personal', number: '07777333333', subscribedTo: ['CAFE', 'HOME', 'MORE'] })
     const res = await server.inject({
       method: 'GET',
       url,

@@ -39,7 +39,7 @@ describe('Contact add route', () => {
           },
           scope: []
         },
-        strategy: 'try'
+        strategy: 'azuread'
       }
     })
 
