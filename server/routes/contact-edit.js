@@ -1,10 +1,11 @@
 const boom = require('@hapi/boom')
 const Joi = require('joi')
 
-const BaseModel = require('../lib/model')
-const { getUser, updateUser } = require('../lib/db')
-const generateOfficeCheckboxes = require('../lib/office-checkboxes')
 const { phoneNumberTypes } = require('../constants')
+const { updateUser } = require('../lib/db')
+const generateOfficeCheckboxes = require('../lib/office-checkboxes')
+const BaseModel = require('../lib/model')
+const { getUser } = require('../lib/route-pre-handlers')
 
 const errorMessages = {}
 
@@ -23,9 +24,7 @@ module.exports = [
     path,
     handler: async (request, h) => {
       const { phoneNumberId } = request.params
-      const userId = request.auth.credentials.user.id
-
-      const user = await getUser(userId)
+      const user = request.pre.user
       const phoneNumber = user.phoneNumbers.find(x => x.id === phoneNumberId)
 
       if (!phoneNumber) {
@@ -41,6 +40,7 @@ module.exports = [
       return h.view(routeId, new Model({ officeCheckboxes, isCorporate, phoneNumber, user }))
     },
     options: {
+      pre: [getUser],
       validate: {
         params: Joi.object().keys({
           phoneNumberId: Joi.string().guid().required()
@@ -53,11 +53,8 @@ module.exports = [
     path,
     handler: async (request, h) => {
       const { phoneNumberId } = request.params
-      const { id: userId } = request.auth.credentials.user
       const { officeCodes = [] } = request.payload
-
-      const user = await getUser(userId)
-
+      const user = request.pre.user
       const phoneNumber = user.phoneNumbers.find(x => x.id === phoneNumberId)
       if (phoneNumber.type === phoneNumberTypes.corporate) {
         officeCodes.push(user.officeCode)
@@ -72,6 +69,7 @@ module.exports = [
       return h.redirect('/account')
     },
     options: {
+      pre: [getUser],
       validate: {
         params: Joi.object().keys({
           phoneNumberId: Joi.string().guid().required()

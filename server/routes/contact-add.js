@@ -4,7 +4,8 @@ const { v4: uuid } = require('uuid')
 
 const BaseModel = require('../lib/model')
 const { getMappedErrors } = require('../lib/errors')
-const { getUser, updateUser } = require('../lib/db')
+const { getUser } = require('../lib/route-pre-handlers')
+const { updateUser } = require('../lib/db')
 const { parsePhoneNumber, types } = require('../lib/phone-number')
 const { phoneNumberTypes } = require('../constants')
 
@@ -48,7 +49,6 @@ module.exports = [
     path,
     handler: async (request, h) => {
       const { mobile } = request.payload
-      const { id: userId } = request.auth.credentials.user
       const phoneNumber = parsePhoneNumber(mobile)
       const { e164, type } = phoneNumber
 
@@ -60,7 +60,7 @@ module.exports = [
         return h.view(routeId, new Model(request.payload, errors))
       }
 
-      const user = await getUser(userId)
+      const user = request.pre.user
 
       // check if the number already exists
       const existingPhoneNumber = user.phoneNumbers.find(x => x.number === e164)
@@ -80,7 +80,7 @@ module.exports = [
         id: uuid(),
         type: phoneNumberTypes.personal,
         number: e164,
-        subscribedTo: [user.officeLocation]
+        subscribedTo: [user.officeCode]
       })
 
       const response = await updateUser(user)
@@ -91,6 +91,7 @@ module.exports = [
       return h.redirect('/account')
     },
     options: {
+      pre: [getUser],
       validate: {
         payload: Joi.object().keys({
           mobile: Joi.string().required()

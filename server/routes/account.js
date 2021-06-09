@@ -1,9 +1,7 @@
-const boom = require('@hapi/boom')
-
 const BaseModel = require('../lib/model')
-const { getUser } = require('../lib/db')
 const { maxPersonalPhoneNumbers } = require('../config')
 const { phoneNumberTypes } = require('../constants')
+const { getUser } = require('../lib/route-pre-handlers')
 
 class Model extends BaseModel {}
 
@@ -27,17 +25,16 @@ module.exports = [
     path: '/account',
     handler: async (request, h) => {
       const { credentials } = request.auth
-      const { roles, user: { id: userId } } = credentials
-      const user = await getUser(userId)
-
-      if (!user || !user.active) {
-        return boom.notFound(`No record found for ${userId}.`)
-      }
+      const { roles } = credentials
+      const user = request.pre.user
 
       const corporatePhoneNumbers = user.phoneNumbers.filter(x => x.type === phoneNumberTypes.corporate).map(getPhoneNumbersForView)
       const personalPhoneNumbers = user.phoneNumbers.filter(x => x.type === phoneNumberTypes.personal).map(getPhoneNumbersForView)
 
       return h.view('account', new Model({ corporatePhoneNumbers, maxPersonalPhoneNumbers, personalPhoneNumbers, roles, user }))
+    },
+    options: {
+      pre: [getUser]
     }
   }
 ]

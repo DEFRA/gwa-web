@@ -1,8 +1,8 @@
 const boom = require('@hapi/boom')
 
 const config = require('../config')
-const { getUser } = require('../lib/db')
 const { getPermissions } = require('../permissions')
+const { getUser } = require('../lib/db')
 
 module.exports = [
   {
