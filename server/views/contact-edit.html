@@ -3,11 +3,7 @@
 {% set formSubmitButtonText = "Save" %}
 
 {% block beforeForm %}
-  <span class="govuk-caption-l">{{ user.givenName }} {{ user.surname }} - {{ user.companyName }}</span>
-  <h1 class="govuk-heading-l">Your details</h1>
-  <p>
-  You will get alerts to your <strong>{{ data.phoneNumber.type }}</strong> phone number <strong>({{ data.phoneNumber.number }})</strong> for the following office locations.
-  </p>
+  <h1 class="govuk-heading-l">{{ data.phoneNumber.type | capitalize }} phone number: {{ data.phoneNumber.number }}</h1>
 {% endblock %}
 
 {% block form %}
