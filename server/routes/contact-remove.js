@@ -23,9 +23,12 @@ module.exports = [
       if (!phoneNumber) {
         return boom.notFound('Phone number not found.')
       }
-      const isCorporate = phoneNumber.type === phoneNumberTypes.corporate
 
-      return h.view(routeId, new Model({ isCorporate, phoneNumber }))
+      if (phoneNumber.type === phoneNumberTypes.corporate) {
+        return boom.forbidden(`Unable to remove ${phoneNumberTypes.corporate} phone number.`)
+      }
+
+      return h.view(routeId, new Model({ phoneNumber }))
     },
     options: {
       pre: [getUser],
@@ -37,6 +40,7 @@ module.exports = [
     }
   },
   {
+    // TODO: test this
     method: 'POST',
     path,
     handler: async (request, h) => {
