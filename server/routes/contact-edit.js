@@ -49,6 +49,7 @@ module.exports = [
     }
   },
   {
+    // TODO: test this
     method: 'POST',
     path,
     handler: async (request, h) => {
