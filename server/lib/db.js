@@ -19,7 +19,7 @@ async function deleteMessage (id) {
  * improve performance.
  * It is accessible via `server.methods.db.getAreaToOfficeMap`.
  *
- * @returns {object} map of areas with array of `officeLocations`.
+ * @returns {Array} list of areas with an array of `officeLocations`.
  */
 async function getAreaToOfficeMap () {
   return (await refDataContainer.item(referenceData.areaToOfficeMap, referenceData.areaToOfficeMap).read())?.resource?.data
@@ -63,7 +63,7 @@ async function getOrganisationList () {
  * Get a user by id (lowercased email address).
  *
  * @param {string} id (lowercased email address).
- * @returns {object} the user
+ * @returns {object} the user.
  */
 async function getUser (id) {
   return (await usersContainer.item(id, id).read()).resource
