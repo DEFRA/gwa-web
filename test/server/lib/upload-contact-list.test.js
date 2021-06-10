@@ -9,16 +9,8 @@ describe('Uploading contact list', () => {
   })
 
   let mockUpload
-  const mockBlockBlobClient = jest.fn(() => {
-    return {
-      upload: mockUpload
-    }
-  })
-  jest.mock('@azure/storage-blob', () => {
-    return {
-      BlockBlobClient: mockBlockBlobClient
-    }
-  })
+  const mockBlockBlobClient = jest.fn(() => { return { upload: mockUpload } })
+  jest.mock('@azure/storage-blob', () => { return { BlockBlobClient: mockBlockBlobClient } })
 
   let uploadContactList
 
