@@ -2,10 +2,11 @@ const boom = require('@hapi/boom')
 const Joi = require('@hapi/joi')
 
 const { scopes } = require('../permissions')
+const convertCSVToJSON = require('../lib/convert-csv-to-json')
 const { getMappedErrors } = require('../lib/errors')
 const BaseModel = require('../lib/model')
+const generateNonCoreOrgSelectItems = require('../lib/non-core-org-select')
 const uploadUserData = require('../lib/upload-user-data')
-const convertCSVToJSON = require('../lib/convert-csv-to-json')
 
 const errorMessages = {
   file: { '*': 'Select a valid CSV file' },
@@ -16,25 +17,6 @@ class Model extends BaseModel {
   constructor (data, err) {
     super(data, err, errorMessages)
   }
-}
-
-/**
- * Generates the items for use in a [GOV.UK
- * select](https://design-system.service.gov.uk/components/select/) component.
- * Specifically, the non-core organisations.
- *
- * @param {Array} organisations list of organisations with `core` (flag indicating
- * exclusion), `active` (flag indicating if the org should be listed) `orgCode`
- * and `orgName`.
- * @param {string} [selected=''] the item to set as selected, defaults to
- * 'Select an organisation' option..
- * @returns {Array} `items` for GOV.UK select.
- */
-function generateNonCoreOrgSelectItems (organisations, selected = '') {
-  // TODO: extract to own module
-  const nonCoreOrganisations = organisations.filter(org => !org.core && org.active).map(org => { return { text: org.orgName, value: org.orgCode, selected: org.orgCode === selected } })
-  nonCoreOrganisations.unshift({ text: 'Select an organisation', selected: selected === '' })
-  return nonCoreOrganisations
 }
 
 const path = '/upload'
