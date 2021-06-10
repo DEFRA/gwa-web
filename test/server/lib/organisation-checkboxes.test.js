@@ -1,4 +1,6 @@
 describe('Generate organisation checkboxes', () => {
+  const generateOrganisationCheckboxes = require('../../../server/lib/organisation-checkboxes')
+
   const orgList = [{
     active: true,
     orgCode: 'orgCode1',
@@ -16,15 +18,6 @@ describe('Generate organisation checkboxes', () => {
     orgCode: 'orgCode4',
     orgName: 'orgName4'
   }]
-
-  let generateOrganisationCheckboxes
-
-  beforeEach(() => {
-    jest.clearAllMocks()
-    jest.resetModules()
-
-    generateOrganisationCheckboxes = require('../../../server/lib/organisation-checkboxes')
-  })
 
   test('all active organisations in the list are returned', async () => {
     const checkboxes = await generateOrganisationCheckboxes(orgList)
