@@ -7,7 +7,7 @@ function generateCheckbox (officeLocation, checked, disabled) {
 }
 
 /**
- * Generates [GOV.UK
+ * Generates items for use in a [GOV.UK
  * checkboxes](https://design-system.service.gov.uk/components/checkboxes/) to
  * be used within a [GOV.UK
  * accordion](https://design-system.service.gov.uk/components/accordion/).
@@ -16,7 +16,7 @@ function generateCheckbox (officeLocation, checked, disabled) {
  * @param {object} areaToOfficeMap map of areas with `officeLocations`.
  * @param {Array} [checked=[]] list of office codes to be checked.
  * @param {Array} [disabled=[]] list of office codes to be disabled.
- * @returns {Array} `items` for GOV.UK accordion
+ * @returns {Array} `items` for GOV.UK accordion.
  */
 module.exports = (areaToOfficeMap, checked = [], disabled = []) => {
   const areasToExpand = checked.map(c => c.split(':')[0])
