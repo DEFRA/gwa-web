@@ -1,5 +1,5 @@
 describe('send to all orgs radio creation', () => {
-  const generateSendToAllOrgsRadios = require('./send-to-all-radios')
+  const generateSendToAllOrgsRadios = require('../../../server/lib/send-to-all-radios')
 
   test('radios are generated correctly when no selected value is supplied', () => {
     const radioItems = generateSendToAllOrgsRadios()

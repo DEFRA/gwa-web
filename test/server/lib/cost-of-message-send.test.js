@@ -1,5 +1,5 @@
-const { textMessages: { oneMessageCost, oneMessageLength, twoMessageLength, additionalMessageIncrement, maxMessageLength } } = require('../constants')
-const costOfMessageSend = require('./cost-of-message-send')
+const { textMessages: { oneMessageCost, oneMessageLength, twoMessageLength, additionalMessageIncrement, maxMessageLength } } = require('../../../server/constants')
+const costOfMessageSend = require('../../../server/lib/cost-of-message-send')
 
 describe('Calculate the cost of sending the message', () => {
   test.each([

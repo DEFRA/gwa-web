@@ -33,7 +33,7 @@ async function verifyRequest (request) {
 const options = {
   auth: {
     access: {
-      scope: [`+${scopes.message.approve}`]
+      scope: [`+${scopes.message.manage}`]
     }
   },
   validate: {

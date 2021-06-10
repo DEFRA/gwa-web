@@ -1,9 +1,10 @@
 const boom = require('@hapi/boom')
 const Joi = require('joi')
 
-const BaseModel = require('../lib/model')
-const { getUser, updateUser } = require('../lib/db')
 const { phoneNumberTypes } = require('../constants')
+const { updateUser } = require('../lib/db')
+const BaseModel = require('../lib/model')
+const { getUser } = require('../lib/route-pre-handlers')
 
 class Model extends BaseModel {}
 
@@ -15,20 +16,22 @@ module.exports = [
     method: 'GET',
     path,
     handler: async (request, h) => {
-      const { id: userId } = request.auth.credentials.user
       const { phoneNumberId } = request.params
-
-      const user = await getUser(userId)
+      const user = request.pre.user
       const phoneNumber = user.phoneNumbers.find(x => x.id === phoneNumberId)
 
       if (!phoneNumber) {
         return boom.notFound('Phone number not found.')
       }
-      const isCorporate = phoneNumber.type === phoneNumberTypes.corporate
 
-      return h.view(routeId, new Model({ isCorporate, phoneNumber }))
+      if (phoneNumber.type === phoneNumberTypes.corporate) {
+        return boom.forbidden(`Unable to remove ${phoneNumberTypes.corporate} phone number.`)
+      }
+
+      return h.view(routeId, new Model({ phoneNumber }))
     },
     options: {
+      pre: [getUser],
       validate: {
         params: Joi.object().keys({
           phoneNumberId: Joi.string().guid().required()
@@ -37,13 +40,12 @@ module.exports = [
     }
   },
   {
+    // TODO: test this
     method: 'POST',
     path,
     handler: async (request, h) => {
       const { phoneNumberId } = request.params
-      const { id: userId } = request.auth.credentials.user
-
-      const user = await getUser(userId)
+      const user = request.pre.user
       const phoneNumber = user.phoneNumbers.find(x => x.id === phoneNumberId)
       if (phoneNumber.type === phoneNumberTypes.corporate) {
         return boom.forbidden(`Unable to remove ${phoneNumberTypes.corporate} phone number.`)
@@ -55,6 +57,7 @@ module.exports = [
       return h.redirect('/account')
     },
     options: {
+      pre: [getUser],
       validate: {
         params: Joi.object().keys({
           phoneNumberId: Joi.string().guid().required()

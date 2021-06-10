@@ -51,7 +51,7 @@ module.exports = {
 
             )
 
-            if (ctx.credentials.scope.includes(scopes.system.maintain)) {
+            if (ctx.credentials.scope.includes(scopes.data.manage)) {
               navigation.push({
                 href: '/upload',
                 text: 'Upload',

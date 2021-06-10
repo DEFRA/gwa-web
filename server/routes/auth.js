@@ -1,27 +1,8 @@
 const boom = require('@hapi/boom')
 
 const config = require('../config')
+const { getPermissions } = require('../permissions')
 const { getUser } = require('../lib/db')
-const { permissions } = require('../permissions')
-
-function getPermissions (roles) {
-  if (roles) {
-    const parsedRoles = JSON.parse(roles)
-
-    if (Array.isArray(parsedRoles) && parsedRoles.length) {
-      const knownRoles = parsedRoles.filter(role => role in permissions)
-
-      if (knownRoles.length) {
-        return [
-          knownRoles,
-          Array.from(new Set(knownRoles.map(role => permissions[role]).flat()))
-        ]
-      }
-    }
-  }
-
-  return []
-}
 
 module.exports = [
   {
@@ -36,7 +17,7 @@ module.exports = [
       const { credentials } = request.auth
       const { profile } = credentials
       const { email } = profile
-      const [roles, scope] = getPermissions(profile.raw.roles)
+      const { roles, scope } = getPermissions(profile.raw.roles)
 
       if (!roles || !scope) {
         return boom.forbidden('Insufficient permissions')
@@ -45,16 +26,11 @@ module.exports = [
       // Lowercased emails used as ids (at least atm)
       const user = await getUser(email.toLowerCase())
 
-      if (!user) {
+      if (!user || !user.active) {
         request.log(`Problem encountered whilst looking up email: '${email}', ${user}`)
-        return boom.forbidden('Insufficient permissions')
+        return boom.notFound('No active user found.')
       }
 
-      if (!user.active) {
-        return boom.forbidden('Insufficient permissions')
-      }
-
-      // Set the authentication cookie
       request.cookieAuth.set({ user, roles, scope })
 
       return h.redirect(credentials.query?.redirectTo || '/account')
@@ -69,7 +45,7 @@ module.exports = [
     handler: function (request, h) {
       request.cookieAuth.clear()
 
-      return h.redirect(`https://login.microsoftonline.com/${config.aadTenant}/oauth2/v2.0/logout?post_logout_redirect_uri=${config.logoutRedirectUri}`)
+      return h.redirect(`https://login.microsoftonline.com/${config.aadTenantId}/oauth2/v2.0/logout?post_logout_redirect_uri=${config.logoutRedirectUri}`)
     },
     options: {
       auth: false

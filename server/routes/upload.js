@@ -28,7 +28,7 @@ module.exports = [
     options: {
       auth: {
         access: {
-          scope: [`+${scopes.system.maintain}`]
+          scope: [`+${scopes.data.manage}`]
         }
       }
     }
@@ -53,7 +53,7 @@ module.exports = [
     options: {
       auth: {
         access: {
-          scope: [`+${scopes.system.maintain}`]
+          scope: [`+${scopes.data.manage}`]
         }
       },
       payload: {

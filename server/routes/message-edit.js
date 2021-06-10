@@ -8,8 +8,8 @@ const generateOrganisationCheckboxes = require('../lib/organisation-checkboxes')
 const generateSendToAllOrgsRadios = require('../lib/send-to-all-radios')
 const { getMessage, updateMessage } = require('../lib/db')
 const { message: errorMessages } = require('../lib/error-messages')
-const { message: { failAction } } = require('../lib/fail-actions')
-const { message: { payload } } = require('../lib/validations')
+const { message: { failAction } } = require('../lib/route-fail-actions')
+const { message: { payload } } = require('../lib/route-validations')
 const { textMessages: { maxMessageLength }, messageStates } = require('../constants')
 
 class Model extends BaseModel {

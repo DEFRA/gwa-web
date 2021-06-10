@@ -13,7 +13,7 @@ module.exports = {
         isSecure: config.cookie.isSecure,
         forceHttps: config.forceHttps,
         config: {
-          tenant: config.aadTenant
+          tenant: config.aadTenantId
         }
       })
 
