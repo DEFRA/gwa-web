@@ -1,9 +1,9 @@
 {% extends "two-thirds.html" %}
 
 {% block twoThirds %}
-  <h1 class="govuk-heading-l">Upload results</h1>
+  <h1 class="govuk-heading-l">Upload succeeded</h1>
   <p class="govuk-body">
-    Upload succeeded
+    <strong>{{ data.filename }}</strong> has been upload successfully.
     <!-- Succeeded: {{data.result.succeeded.length}}<br>
     Success rate: {{data.result.successRate}}%<br>
     Skipped: {{data.result.invalid}}<br> -->

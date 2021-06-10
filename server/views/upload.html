@@ -1,24 +1,39 @@
-{% extends "form.html" %}
+{% extends 'form.html' %}
 
-{% set formSubmitButtonText = "Upload" %}
-{% set formEncType = "multipart/form-data" %}
+{% set formSubmitButtonText = 'Upload' %}
+{% set formEncType = 'multipart/form-data' %}
 
 {% block beforeForm %}
   <h1 class="govuk-heading-l">Upload</h1>
+  <p>TODO: Provide some guidance as to what the format of the file needs to be.</p>
 
 {% endblock %}
 
 {% block form %}
   {{
-    govukFileUpload({
-      id: "file",
-      name: "file",
+    govukSelect({
+      id: 'orgCode',
+      name: 'orgCode',
+      hint: {
+        text: 'This is the organisation the user data will be associated to'
+      },
       label: {
-        text: "Choose a CSV file (.csv)"
+        text: 'Select organisation'
+      },
+      items: data.organisations,
+      errorMessage: errors.orgCode
+    })
+  }}
+  {{
+    govukFileUpload({
+      id: 'file',
+      name: 'file',
+      label: {
+        text: 'Choose a CSV file (.csv)'
       },
       attributes: {
-        accept: ["text/csv"],
-        required: "required"
+        accept: ['text/csv'],
+        required: 'required'
       },
       errorMessage: errors.file
     })
