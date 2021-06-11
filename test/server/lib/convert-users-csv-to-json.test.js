@@ -41,8 +41,9 @@ describe('Converting CSV of user data into JSON for upload', () => {
       expect(user.orgCode).toEqual(orgCode)
       expect(user).toHaveProperty('orgName')
       expect(user.orgName).toEqual(orgName)
-      expect(user).toHaveProperty('phoneNumber')
-      expect(user.phoneNumber).toEqual(outputPhoneNumber)
+      expect(user).toHaveProperty('phoneNumbers')
+      expect(user.phoneNumbers).toEqual([outputPhoneNumber])
+      expect(user).not.toHaveProperty('phoneNumber')
     })
   })
 
@@ -71,6 +72,6 @@ describe('Converting CSV of user data into JSON for upload', () => {
     const users = await convertCSVToJSON(stream, organisation, officeLocationMap)
 
     expect(users).toHaveLength(1)
-    expect(users[0].phoneNumber).toEqual(parsePhoneNumber(phoneNumber).e164)
+    expect(users[0].phoneNumbers).toEqual([parsePhoneNumber(phoneNumber).e164])
   })
 })

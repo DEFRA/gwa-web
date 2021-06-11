@@ -7,8 +7,9 @@ const { parsePhoneNumber } = require('./phone-number')
  * Convert a readableStream of a CSV file containing users into JSON.
  * CSV header is required. Columns are `emailAddress`, `givenName`, `surname`,
  * `officeLocation`, `phoneNumber` (in order).
- * Columns are mapped to properties with the same name. Additional properties
- * are added:
+ * Columns are mapped to properties with the same name expect `phoneNumber`
+ * that becomes an array called `phoneNumbers`. In addition, the following
+ * properties are also added:
  * - `id` uuidv5 based on emailAddress
  * - `officeCode` (based on mapping from `officeLocation`)
  * - `orgCode` based on the organisation associated to in the upload
@@ -34,7 +35,8 @@ module.exports = async (readableStream, organisation, officeLocationMapRefData) 
     user.officeCode = office?.officeCode ?? officeLocationMappings.unmappedOfficeCode
 
     const pn = parsePhoneNumber(user.phoneNumber)
-    user.phoneNumber = pn.e164
+    user.phoneNumbers = [pn.e164]
+    delete user.phoneNumber
   })
 
   return users
