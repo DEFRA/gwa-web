@@ -17,32 +17,34 @@ describe('Converting CSV of user data into JSON for upload', () => {
   const orgName = 'Department for things'
   const officeLocationMap = [{ originalOfficeLocation, officeLocation, officeCode }]
 
-  test('ideal input returns expected output', async () => {
-    const stream = Readable.from(`emailAddress,givenName,surname,officeLocation,phoneNumber\n${emailAddress},${givenName},${surname},${originalOfficeLocation},${inputPhoneNumber}`)
+  test('ideal input of several users returns expected output', async () => {
+    const stream = Readable.from(`emailAddress,givenName,surname,officeLocation,phoneNumber\n${emailAddress},${givenName},${surname},${originalOfficeLocation},${inputPhoneNumber}\n${emailAddress},${givenName},${surname},${originalOfficeLocation},${inputPhoneNumber}`)
     const organisation = { orgCode, orgName }
 
     const { error, valid } = await convertCSVToJSON(stream, organisation, officeLocationMap)
 
-    expect(valid).toHaveLength(1)
+    expect(valid).toHaveLength(2)
     expect(error).toHaveLength(0)
-    expect(valid[0]).toHaveProperty('id')
-    expect(valid[0].id).toEqual(uuidv5(emailAddress, uuidv5.URL))
-    expect(valid[0]).toHaveProperty('emailAddress')
-    expect(valid[0].emailAddress).toEqual(emailAddress)
-    expect(valid[0]).toHaveProperty('givenName')
-    expect(valid[0].givenName).toEqual(givenName)
-    expect(valid[0]).toHaveProperty('surname')
-    expect(valid[0].surname).toEqual(surname)
-    expect(valid[0]).toHaveProperty('officeLocation')
-    expect(valid[0].officeLocation).toEqual(officeLocation)
-    expect(valid[0]).toHaveProperty('officeCode')
-    expect(valid[0].officeCode).toEqual(officeCode)
-    expect(valid[0]).toHaveProperty('orgCode')
-    expect(valid[0].orgCode).toEqual(orgCode)
-    expect(valid[0]).toHaveProperty('orgName')
-    expect(valid[0].orgName).toEqual(orgName)
-    expect(valid[0]).toHaveProperty('phoneNumber')
-    expect(valid[0].phoneNumber).toEqual(outputPhoneNumber)
+    valid.forEach(user => {
+      expect(user).toHaveProperty('id')
+      expect(user.id).toEqual(uuidv5(emailAddress, uuidv5.URL))
+      expect(user).toHaveProperty('emailAddress')
+      expect(user.emailAddress).toEqual(emailAddress)
+      expect(user).toHaveProperty('givenName')
+      expect(user.givenName).toEqual(givenName)
+      expect(user).toHaveProperty('surname')
+      expect(user.surname).toEqual(surname)
+      expect(user).toHaveProperty('officeLocation')
+      expect(user.officeLocation).toEqual(officeLocation)
+      expect(user).toHaveProperty('officeCode')
+      expect(user.officeCode).toEqual(officeCode)
+      expect(user).toHaveProperty('orgCode')
+      expect(user.orgCode).toEqual(orgCode)
+      expect(user).toHaveProperty('orgName')
+      expect(user.orgName).toEqual(orgName)
+      expect(user).toHaveProperty('phoneNumber')
+      expect(user.phoneNumber).toEqual(outputPhoneNumber)
+    })
   })
 
   test('unmapped office location is mapped correctly', async () => {
