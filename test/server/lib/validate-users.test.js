@@ -40,18 +40,23 @@ describe('Validating users against schema', () => {
   })
 
   test.each([
-    ['id'],
-    ['emailAd'],
-    ['givenName'],
-    ['surname'],
-    ['orgCode'],
-    ['orgName'],
-    ['officeCode'],
-    ['officeLocation'],
-    ['phoneNumbers']
-  ])('non-valid users are returned as nonValid with error for property %s', (property) => {
+    ['id', undefined],
+    ['id', 'not-a-uuid'],
+    ['emailAddress', undefined],
+    ['emailAddress', 'not-an-email'],
+    ['givenName', undefined],
+    ['surname', undefined],
+    ['orgCode', undefined],
+    ['orgName', undefined],
+    ['officeCode', undefined],
+    ['officeCode', 'ABCD:incorrect-format'],
+    ['officeLocation', undefined],
+    ['phoneNumbers', undefined],
+    ['phoneNumbers', ['07000111222']],
+    ['phoneNumbers', ['07000111222', '07700111222']]
+  ])('non-valid users are returned as nonValid with error when property %s is set to %s', (property, value) => {
     const nonValidUser = { ...user }
-    nonValidUser[property] = undefined
+    nonValidUser[property] = value
     const users = [nonValidUser]
 
     const { nonValid, valid } = validateUsers(users)
@@ -81,6 +86,10 @@ describe('Validating users against schema', () => {
     const error = nonValid[0].error
     expect(error).toHaveProperty('_original')
     expect(error).toHaveProperty('details')
-    expect(error.details[0].context.key).toEqual(property)
+    if (property === 'phoneNumbers' && value) {
+      expect(error.details[0].context.key).toEqual(0)
+    } else {
+      expect(error.details[0].context.key).toEqual(property)
+    }
   })
 })
