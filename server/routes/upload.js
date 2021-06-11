@@ -2,7 +2,8 @@ const boom = require('@hapi/boom')
 const Joi = require('@hapi/joi')
 
 const { scopes } = require('../permissions')
-const convertCSVToJSON = require('../lib/convert-csv-to-json')
+const convertCSVToJSON = require('../lib/convert-users-csv-to-json')
+const { getStandardisedOfficeLocationMap } = require('../lib/db')
 const { getMappedErrors } = require('../lib/errors')
 const BaseModel = require('../lib/model')
 const generateNonCoreOrgSelectItems = require('../lib/non-core-org-select')
@@ -53,15 +54,22 @@ module.exports = [
         return h.view('upload', new Model({ organisations }, errors))
       }
 
+      const organisation = orgList.filter(o => o.orgCode === orgCode)[0]
+      if (!organisation) {
+        return boom.badRequest(`Organisation with code ${orgCode} not recognised`)
+      }
+
       try {
-        const data = await convertCSVToJSON(fileStream)
-        console.log('DATA', data)
-        if (!data) {
+        const officeLocationMap = await getStandardisedOfficeLocationMap()
+        const { errors: errorUsers, users } = await convertCSVToJSON(fileStream, organisation, officeLocationMap)
+        // TODO: Validate users, return view with error when invalid format
+        console.log('DATA', users, errorUsers)
+        if (errorUsers) {
           const errors = { file: errorMessages.file['*'] }
           return h.view('upload', new Model({ organisations }, errors))
         }
 
-        const uploadRes = await uploadUserData(data, orgCode)
+        const uploadRes = await uploadUserData(users, orgCode)
         if (!uploadRes) {
           return boom.internal(`Problem uploading user data for file ${filename}.`)
         }

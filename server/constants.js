@@ -9,13 +9,18 @@ module.exports = {
     edited: 'edited',
     sent: 'sent'
   },
+  officeLocationMappings: {
+    unmappedOfficeCode: 'UNM:Unmapped-office-location',
+    unmappedOfficeLocation: 'Unmapped office location'
+  },
   phoneNumberTypes: {
     corporate: 'corporate',
     personal: 'personal'
   },
   referenceData: {
     areaToOfficeMap: 'areaToOfficeMap',
-    organisationList: 'organisationList'
+    organisationList: 'organisationList',
+    standardisedOffceLocationMap: 'standardisedOffceLocationMap'
   },
   textMessages: {
     oneMessageCost: 0.016,
