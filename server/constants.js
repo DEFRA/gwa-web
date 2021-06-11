@@ -20,7 +20,7 @@ module.exports = {
   referenceData: {
     areaToOfficeMap: 'areaToOfficeMap',
     organisationList: 'organisationList',
-    standardisedOffceLocationMap: 'standardisedOffceLocationMap'
+    standardisedOfficeLocationMap: 'standardisedOfficeLocationMap'
   },
   textMessages: {
     oneMessageCost: 0.016,

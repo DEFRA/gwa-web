@@ -66,7 +66,7 @@ async function getOrganisationList () {
  * @returns {Array} list of areas with an array of `officeLocations`.
  */
 async function getStandardisedOfficeLocationMap () {
-  return (await refDataContainer.item(referenceData.standardisedOffceLocationMap, referenceData.standardisedOffceLocationMap).read())?.resource?.data
+  return (await refDataContainer.item(referenceData.standardisedOfficeLocationMap, referenceData.standardisedOfficeLocationMap).read())?.resource?.data
 }
 
 /**
