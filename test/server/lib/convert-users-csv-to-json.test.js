@@ -21,11 +21,10 @@ describe('Converting CSV of user data into JSON for upload', () => {
     const stream = Readable.from(`emailAddress,givenName,surname,officeLocation,phoneNumber\n${emailAddress},${givenName},${surname},${originalOfficeLocation},${inputPhoneNumber}\n${emailAddress},${givenName},${surname},${originalOfficeLocation},${inputPhoneNumber}`)
     const organisation = { orgCode, orgName }
 
-    const { error, valid } = await convertCSVToJSON(stream, organisation, officeLocationMap)
+    const users = await convertCSVToJSON(stream, organisation, officeLocationMap)
 
-    expect(valid).toHaveLength(2)
-    expect(error).toHaveLength(0)
-    valid.forEach(user => {
+    expect(users).toHaveLength(2)
+    users.forEach(user => {
       expect(user).toHaveProperty('id')
       expect(user.id).toEqual(uuidv5(emailAddress, uuidv5.URL))
       expect(user).toHaveProperty('emailAddress')
@@ -52,37 +51,26 @@ describe('Converting CSV of user data into JSON for upload', () => {
     const stream = Readable.from(`emailAddress,givenName,surname,officeLocation,phoneNumber\n${emailAddress},${givenName},${surname},${unmappedOfficeLocation},${inputPhoneNumber}`)
     const organisation = { orgCode, orgName }
 
-    const { error, valid } = await convertCSVToJSON(stream, organisation, officeLocationMap)
+    const users = await convertCSVToJSON(stream, organisation, officeLocationMap)
 
-    expect(valid).toHaveLength(1)
-    expect(error).toHaveLength(0)
-    expect(valid[0]).toHaveProperty('officeLocation')
-    expect(valid[0].officeLocation).toEqual(officeLocationMappings.unmappedOfficeLocation)
-    expect(valid[0]).toHaveProperty('officeCode')
-    expect(valid[0].officeCode).toEqual(officeLocationMappings.unmappedOfficeCode)
+    expect(users).toHaveLength(1)
+    expect(users[0]).toHaveProperty('officeLocation')
+    expect(users[0].officeLocation).toEqual(officeLocationMappings.unmappedOfficeLocation)
+    expect(users[0]).toHaveProperty('officeCode')
+    expect(users[0].officeCode).toEqual(officeLocationMappings.unmappedOfficeCode)
   })
 
-  test('e164 formatted UK mobile phone number is accepted', async () => {
-    const unmappedOfficeLocation = 'not-mapped'
-    const e164FormattedUKPhoneNumber = '+447700111222'
-    const stream = Readable.from(`emailAddress,givenName,surname,officeLocation,phoneNumber\n${emailAddress},${givenName},${surname},${unmappedOfficeLocation},${e164FormattedUKPhoneNumber}`)
+  test.each([
+    ['+447700111222'],
+    ['07000111222'],
+    ['01234567890']
+  ])('e164 formatted phone number is returned - %s', async (phoneNumber) => {
+    const stream = Readable.from(`emailAddress,givenName,surname,officeLocation,phoneNumber\n${emailAddress},${givenName},${surname},${officeLocation},${phoneNumber}`)
     const organisation = { orgCode, orgName }
 
-    const { error, valid } = await convertCSVToJSON(stream, organisation, officeLocationMap)
+    const users = await convertCSVToJSON(stream, organisation, officeLocationMap)
 
-    expect(valid).toHaveLength(1)
-    expect(error).toHaveLength(0)
-  })
-
-  test('non UK mobile phone number is rejected', async () => {
-    const unmappedOfficeLocation = 'not-mapped'
-    const nonUKMobilePhoneNumber = '07000111222'
-    const stream = Readable.from(`emailAddress,givenName,surname,officeLocation,phoneNumber\n${emailAddress},${givenName},${surname},${unmappedOfficeLocation},${nonUKMobilePhoneNumber}`)
-    const organisation = { orgCode, orgName }
-
-    const { error, valid } = await convertCSVToJSON(stream, organisation, officeLocationMap)
-
-    expect(valid).toHaveLength(0)
-    expect(error).toHaveLength(1)
+    expect(users).toHaveLength(1)
+    expect(users[0].phoneNumber).toEqual(parsePhoneNumber(phoneNumber).e164)
   })
 })

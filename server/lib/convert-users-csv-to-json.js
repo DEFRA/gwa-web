@@ -1,11 +1,10 @@
 const csv = require('csvtojson')
 const { v5: uuidv5 } = require('uuid')
 const { officeLocationMappings } = require('../constants')
-const { parsePhoneNumber, types } = require('./phone-number')
+const { parsePhoneNumber } = require('./phone-number')
 
 /**
- * Convert a readableStream of a CSV file containing users into two JSON arrays
- * representing users (`error` and `valid`).
+ * Convert a readableStream of a CSV file containing users into JSON.
  * CSV header is required. Columns are `emailAddress`, `givenName`, `surname`,
  * `officeLocation`, `phoneNumber` (in order).
  * Columns are mapped to properties with the same name. Additional properties
@@ -19,12 +18,10 @@ const { parsePhoneNumber, types } = require('./phone-number')
  * @param {object} organisation organisation the users are associated to.
  * @param {Array} officeLocations list of office locations.
  * includes `orgCode` and `orgName`.
- * @returns {object} containing two arrays of users - `error` and `valid`.
+ * @returns {Array} containing users
  */
 module.exports = async (readableStream, organisation, officeLocationMapRefData) => {
   const officeLocationMap = new Map(officeLocationMapRefData.map(ol => [ol.originalOfficeLocation, { officeCode: ol.officeCode, officeLocation: ol.officeLocation }]))
-  const error = []
-  const valid = []
 
   const users = await csv({ headers: ['emailAddress', 'givenName', 'surname', 'officeLocation', 'phoneNumber'] }).fromStream(readableStream)
   users.forEach(user => {
@@ -37,16 +34,8 @@ module.exports = async (readableStream, organisation, officeLocationMapRefData) 
     user.officeCode = office?.officeCode ?? officeLocationMappings.unmappedOfficeCode
 
     const pn = parsePhoneNumber(user.phoneNumber)
-    if (pn.type === types.MOBILE) {
-      user.phoneNumber = pn.e164
-      valid.push(user)
-    } else {
-      error.push(user)
-    }
+    user.phoneNumber = pn.e164
   })
 
-  return {
-    error,
-    valid
-  }
+  return users
 }

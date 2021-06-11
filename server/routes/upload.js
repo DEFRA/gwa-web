@@ -62,15 +62,15 @@ module.exports = [
       try {
         const officeLocationMap = await getStandardisedOfficeLocationMap()
         console.log(officeLocationMap)
-        const { error, valid } = await convertCSVToJSON(fileStream, organisation, officeLocationMap)
+        const users = await convertCSVToJSON(fileStream, organisation, officeLocationMap)
         // TODO: Validate users, return view with error when invalid format
-        console.log('DATA', valid, error)
-        if (error.length) {
+        console.log('DATA', users)
+        if (users) {
           const errors = { file: 'Data not valid' }
           return h.view('upload', new Model({ organisations }, errors))
         }
 
-        const uploadRes = await uploadUserData(valid, orgCode)
+        const uploadRes = await uploadUserData(users, orgCode)
         if (!uploadRes) {
           return boom.internal(`Problem uploading user data for file ${filename}.`)
         }
