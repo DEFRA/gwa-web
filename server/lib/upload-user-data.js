@@ -2,9 +2,9 @@ const { BlockBlobClient } = require('@azure/storage-blob')
 const { dataSourcesContainer, dataSourcesStorageConnectionString } = require('../config')
 
 /**
- * Uploads a JSON file to the 'contact-list' blob storage container. The file
- * includes the text of the message and the list of contact phone numbers to
- * send the message to.
+ * Uploads a JSON file to the 'data-sources' blob storage container. The
+ * contents of the file is whatever is contained in `users`. The name of the
+ * file is `{orgCode}.json`.
  *
  * @param {object} users list of users.
  * @param {string} orgCode organisation code to name the file with.
