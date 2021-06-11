@@ -15,11 +15,11 @@ describe('Converting CSV of user data into JSON for upload', () => {
   const outputPhoneNumber = parsePhoneNumber(inputPhoneNumber).e164
   const orgCode = 'DFT'
   const orgName = 'Department for things'
+  const organisation = { orgCode, orgName }
   const officeLocationMap = [{ originalOfficeLocation, officeLocation, officeCode }]
 
   test('ideal input of several users returns expected output', async () => {
     const stream = Readable.from(`emailAddress,givenName,surname,officeLocation,phoneNumber\n${emailAddress},${givenName},${surname},${originalOfficeLocation},${inputPhoneNumber}\n${emailAddress},${givenName},${surname},${originalOfficeLocation},${inputPhoneNumber}`)
-    const organisation = { orgCode, orgName }
 
     const users = await convertCSVToJSON(stream, organisation, officeLocationMap)
 
@@ -50,7 +50,6 @@ describe('Converting CSV of user data into JSON for upload', () => {
   test('unmapped office location is mapped correctly', async () => {
     const unmappedOfficeLocation = 'not-mapped'
     const stream = Readable.from(`emailAddress,givenName,surname,officeLocation,phoneNumber\n${emailAddress},${givenName},${surname},${unmappedOfficeLocation},${inputPhoneNumber}`)
-    const organisation = { orgCode, orgName }
 
     const users = await convertCSVToJSON(stream, organisation, officeLocationMap)
 
@@ -61,13 +60,21 @@ describe('Converting CSV of user data into JSON for upload', () => {
     expect(users[0].officeCode).toEqual(officeLocationMappings.unmappedOfficeCode)
   })
 
+  test('email addres is lowercased', async () => {
+    const stream = Readable.from(`emailAddress,givenName,surname,officeLocation,phoneNumber\n${emailAddress.toUpperCase()},${givenName},${surname},${officeLocation},${inputPhoneNumber}`)
+
+    const users = await convertCSVToJSON(stream, organisation, officeLocationMap)
+
+    expect(users).toHaveLength(1)
+    expect(users[0].emailAddress).toEqual(emailAddress)
+  })
+
   test.each([
     ['+447700111222'],
     ['07000111222'],
     ['01234567890']
   ])('e164 formatted phone number is returned - %s', async (phoneNumber) => {
     const stream = Readable.from(`emailAddress,givenName,surname,officeLocation,phoneNumber\n${emailAddress},${givenName},${surname},${officeLocation},${phoneNumber}`)
-    const organisation = { orgCode, orgName }
 
     const users = await convertCSVToJSON(stream, organisation, officeLocationMap)
 

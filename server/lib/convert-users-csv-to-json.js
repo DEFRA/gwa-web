@@ -17,8 +17,8 @@ const { parsePhoneNumber } = require('./phone-number')
  *
  * @param {Stream} readableStream CSV file of users.
  * @param {object} organisation organisation the users are associated to.
- * @param {Array} officeLocations list of office locations.
- * includes `orgCode` and `orgName`.
+ * @param {Array} officeLocations list of office locations. Locations include
+ * `orgCode` and `orgName`.
  * @returns {Array} containing users
  */
 module.exports = async (readableStream, organisation, officeLocationMapRefData) => {
@@ -27,6 +27,7 @@ module.exports = async (readableStream, organisation, officeLocationMapRefData) 
   const users = await csv({ headers: ['emailAddress', 'givenName', 'surname', 'officeLocation', 'phoneNumber'] }).fromStream(readableStream)
   users.forEach(user => {
     user.id = uuidv5(user.emailAddress, uuidv5.URL)
+    user.emailAddress = user.emailAddress.toLowerCase()
     user.orgCode = organisation.orgCode
     user.orgName = organisation.orgName
 
