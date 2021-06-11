@@ -8,6 +8,7 @@ const { getMappedErrors } = require('../lib/errors')
 const BaseModel = require('../lib/model')
 const generateNonCoreOrgSelectItems = require('../lib/non-core-org-select')
 const uploadUserData = require('../lib/upload-user-data')
+const validateUsers = require('../lib/validate-users')
 
 const errorMessages = {
   file: { '*': 'Select a valid CSV file' },
@@ -61,21 +62,21 @@ module.exports = [
 
       try {
         const officeLocationMap = await getStandardisedOfficeLocationMap()
-        console.log(officeLocationMap)
         const users = await convertCSVToJSON(fileStream, organisation, officeLocationMap)
-        // TODO: Validate users, return view with error when invalid format
-        console.log('DATA', users)
-        if (users) {
-          const errors = { file: 'Data not valid' }
+        const { nonValid, valid } = validateUsers(users)
+        console.log('DATA', users, nonValid, valid)
+
+        if (nonValid.length) {
+          const errors = { file: `${nonValid.length} record(s) are not valid.` }
           return h.view('upload', new Model({ organisations }, errors))
         }
 
-        const uploadRes = await uploadUserData(users, orgCode)
+        const uploadRes = await uploadUserData(valid, orgCode)
         if (!uploadRes) {
           return boom.internal(`Problem uploading user data for file ${filename}.`)
         }
 
-        return h.view('upload-results', new Model({ filename }))
+        return h.view('upload-results', new Model({ filename, organisation, recordCount: valid.length }))
       } catch (err) {
         return boom.internal(`Problem uploading user data for file ${filename}.`, err)
       }

@@ -2,31 +2,8 @@
 
 {% block twoThirds %}
   <h1 class="govuk-heading-l">Upload succeeded</h1>
-  <p class="govuk-body">
-    <strong>{{ data.filename }}</strong> has been upload successfully.
-    <!-- Succeeded: {{data.result.succeeded.length}}<br>
-    Success rate: {{data.result.successRate}}%<br>
-    Skipped: {{data.result.invalid}}<br> -->
-  </p>
-
-  {#
-  {% if data.result.failed.length %}
-    <details class="govuk-details" data-module="govuk-details">
-      <summary class="govuk-details__summary">
-        <span class="govuk-details__summary-text">
-          Failed {{data.result.failed.length}}
-        </span>
-      </summary>
-      <div class="govuk-details__text">
-        <ul>
-        {% for item in data.result.failed %}
-          <li>{{item.record.userid}} - {{item.err.message}}</li>
-        {% endfor %}
-      </ul>
-      </div>
-    </details>
-  {% endif %}
-  #}
+  <p class="govuk-body"><strong>{{ data.filename }}</strong> was successfully uploaded.</p>
+  <p class="govuk-body"><strong>{{ data.recordCount }}</strong> user(s) were uploaded and associated to <strong>{{ data.organisation.orgName }}</strong>.</p>
 
   <!-- Should use PRG pattern but this stops any form resubmissions -->
   <script>
