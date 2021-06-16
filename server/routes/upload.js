@@ -66,7 +66,6 @@ module.exports = [
         const users = await convertCSVToJSON(fileStream, organisation, officeLocationMap)
         // TODO: check for duplicates
         const { nonValid, valid } = validateUsers(users)
-        console.log('DATA', users, nonValid, valid)
 
         if (nonValid.length > 0) {
           const errors = { file: `${nonValid.length} record(s) are not valid.` }
@@ -74,7 +73,6 @@ module.exports = [
         }
 
         if (valid.length === 0) {
-          // TODO: test
           const errors = { file: 'No valid records found. No upload will take place.' }
           return h.view('upload', new Model({ headers, organisations }, errors))
         }
