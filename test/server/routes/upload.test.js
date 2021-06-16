@@ -261,7 +261,41 @@ describe('Upload route', () => {
         expect(res.statusCode).toEqual(500)
 
         const $ = cheerio.load(res.payload)
-        expect($('.govuk-body').text()).toEqual(`Problem uploading user data for file ${filename}`)
+        expect($('.govuk-body').text()).toEqual('Please try again later.')
+      })
+
+      test('responds with 400 and errors when org is not recognised', async () => {
+        const filename = 'test.csv'
+        const notValidOrgCode = 'not-valid-org-code'
+        const form = new FormData()
+        form.append('file', Readable.from(`${headers.join(',')}\nabc@test.com,givenName,surname,home office,07700111111`), { filename })
+        form.append('orgCode', notValidOrgCode)
+        const res = await server.inject({
+          method: 'POST',
+          url,
+          auth: {
+            credentials: {
+              user: {
+                id,
+                email,
+                displayName: 'test gwa',
+                officeCode,
+                raw: {
+                  roles: JSON.stringify([])
+                }
+              },
+              scope: [scopes.data.manage]
+            },
+            strategy: 'azuread'
+          },
+          headers: form.getHeaders(),
+          payload: await getStream(form)
+        })
+
+        expect(res.statusCode).toEqual(400)
+
+        const $ = cheerio.load(res.payload)
+        expect($('.govuk-body').text()).toEqual(`Organisation with code ${notValidOrgCode} not recognised.`)
       })
     })
   })
