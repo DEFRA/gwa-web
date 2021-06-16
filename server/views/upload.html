@@ -6,7 +6,7 @@
 {% block beforeForm %}
   <h1 class="govuk-heading-l">Upload</h1>
   <p class="govuk-body">Users can be added to the system for additional organisations by uploading a CSV file (.csv).</p>
-  <p class="govuk-body">The file must contain a header row. The following columns are required (in this order): <strong>emailAddress</strong>, <strong>givenName</strong>, <strong>surname</strong>, <strong>officeLocation</strong>, <strong>phoneNumber</strong>.</p>
+  <p class="govuk-body">The file must contain a header row. The following columns are required (in this order): {% for header in data.headers %}<strong>{{ header }}</strong>{{ '.' if loop.last else ', ' }}{% endfor %}</p>
   <p class="govuk-body"><strong>officeLocation</strong> should be one of the existing office locations (see reference data page). If no match is found the office location will be mapped to <strong>Unassigned</strong>.</p>
   <p class="govuk-body"><strong>phoneNumber</strong> should be a UK mobile phone number e.g. <strong>07700111222</strong> you want to subscribe. Phone numbers can also be formatted with the <a href="https://countrycode.org/uk">UK country code</a> e.g. <strong>+447700111222</strong>. If the phone number is not deemed to be a UK mobile, the import will be rejected.</p>
 

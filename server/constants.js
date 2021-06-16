@@ -4,6 +4,7 @@ module.exports = {
     edit: 'edit',
     send: 'send'
   },
+  headers: ['emailAddress', 'givenName', 'surname', 'officeLocation', 'phoneNumber'],
   messageStates: {
     created: 'created',
     edited: 'edited',
