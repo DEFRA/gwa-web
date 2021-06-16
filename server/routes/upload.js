@@ -58,8 +58,7 @@ module.exports = [
 
       const organisation = orgList.filter(o => o.orgCode === orgCode)[0]
       if (!organisation) {
-        // TODO: test
-        return boom.badRequest(`Organisation with code ${orgCode} not recognised`)
+        return boom.badRequest(`Organisation with code ${orgCode} not recognised.`)
       }
 
       try {
