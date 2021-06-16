@@ -18,6 +18,23 @@ describe('Phone number parsing', () => {
     expect(parsedPhoneNumber.type).toEqual(types.MOBILE)
   })
 
+  test('parsedPhoneNumber works with bad input', () => {
+    const phoneNumber = ''
+
+    const parsedPhoneNumber = parsePhoneNumber(phoneNumber)
+
+    expect(parsedPhoneNumber).toHaveProperty('original')
+    expect(parsedPhoneNumber.original).toEqual(phoneNumber)
+    expect(parsedPhoneNumber).toHaveProperty('national')
+    expect(parsedPhoneNumber.national).toEqual(undefined)
+    expect(parsedPhoneNumber).toHaveProperty('international')
+    expect(parsedPhoneNumber.international).toEqual(undefined)
+    expect(parsedPhoneNumber).toHaveProperty('e164')
+    expect(parsedPhoneNumber.e164).toEqual(undefined)
+    expect(parsedPhoneNumber).toHaveProperty('type')
+    expect(parsedPhoneNumber.type).toEqual(types.UNKNOWN)
+  })
+
   test('types returns expected properties', () => {
     expect(types).not.toBe(undefined)
     expect(types).toHaveProperty('MOBILE')
