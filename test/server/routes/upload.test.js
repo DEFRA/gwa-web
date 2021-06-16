@@ -6,7 +6,7 @@ const getStream = require('get-stream')
 const { v4: uuid } = require('uuid')
 
 const { scopes } = require('../../../server/permissions')
-const { headers } = require('../../../server/constants')
+const { orgDataFileHeaders } = require('../../../server/constants')
 
 describe('Upload route', () => {
   const mockCorporatePhoneNumber = '07777111111'
@@ -233,7 +233,7 @@ describe('Upload route', () => {
       test('responds with 200 and errors when file contains no users', async () => {
         const filename = 'test.csv'
         const form = new FormData()
-        form.append('file', Readable.from(`${headers.join(',')}\n`), { filename })
+        form.append('file', Readable.from(`${orgDataFileHeaders.join(',')}\n`), { filename })
         form.append('orgCode', orgCode)
         const res = await server.inject({
           method: 'POST',
@@ -268,7 +268,7 @@ describe('Upload route', () => {
         const filename = 'test.csv'
         const userCount = 1
         const form = new FormData()
-        form.append('file', Readable.from(`${headers.join(',')}\nabc@test.com,givenName,surname,home office,07000111111`), { filename })
+        form.append('file', Readable.from(`${orgDataFileHeaders.join(',')}\nabc@test.com,givenName,surname,home office,07000111111`), { filename })
         form.append('orgCode', orgCode)
         const res = await server.inject({
           method: 'POST',
@@ -303,7 +303,7 @@ describe('Upload route', () => {
         const filename = 'test.csv'
         const userCount = 1
         const form = new FormData()
-        form.append('file', Readable.from(`${headers.join(',')}\nabc@test.com,givenName,surname,home office,07700111111\nxyz@test.com,givenName,surname,home office,07000111111`), { filename })
+        form.append('file', Readable.from(`${orgDataFileHeaders.join(',')}\nabc@test.com,givenName,surname,home office,07700111111\nxyz@test.com,givenName,surname,home office,07000111111`), { filename })
         form.append('orgCode', orgCode)
         const res = await server.inject({
           method: 'POST',
@@ -338,7 +338,7 @@ describe('Upload route', () => {
         uploadUserData.mockResolvedValue(false)
         const filename = 'test.csv'
         const form = new FormData()
-        form.append('file', Readable.from(`${headers.join(',')}\nabc@test.com,givenName,surname,home office,07700111111`), { filename })
+        form.append('file', Readable.from(`${orgDataFileHeaders.join(',')}\nabc@test.com,givenName,surname,home office,07700111111`), { filename })
         form.append('orgCode', orgCode)
         const res = await server.inject({
           method: 'POST',
@@ -372,7 +372,7 @@ describe('Upload route', () => {
         uploadUserData.mockRejectedValue(new Error('Upload error'))
         const filename = 'test.csv'
         const form = new FormData()
-        form.append('file', Readable.from(`${headers.join(',')}\nabc@test.com,givenName,surname,home office,07700111111`), { filename })
+        form.append('file', Readable.from(`${orgDataFileHeaders.join(',')}\nabc@test.com,givenName,surname,home office,07700111111`), { filename })
         form.append('orgCode', orgCode)
         const res = await server.inject({
           method: 'POST',
@@ -406,7 +406,7 @@ describe('Upload route', () => {
         const filename = 'test.csv'
         const notValidOrgCode = 'not-valid-org-code'
         const form = new FormData()
-        form.append('file', Readable.from(`${headers.join(',')}\nabc@test.com,givenName,surname,home office,07700111111`), { filename })
+        form.append('file', Readable.from(`${orgDataFileHeaders.join(',')}\nabc@test.com,givenName,surname,home office,07700111111`), { filename })
         form.append('orgCode', notValidOrgCode)
         const res = await server.inject({
           method: 'POST',
@@ -476,7 +476,7 @@ describe('Upload route', () => {
       const filename = 'test.csv'
       const userCount = 1
       const form = new FormData()
-      form.append('file', Readable.from(`${headers.join(',')}\nabc@test.com,givenName,surname,home office,07700111111`), { filename })
+      form.append('file', Readable.from(`${orgDataFileHeaders.join(',')}\nabc@test.com,givenName,surname,home office,07700111111`), { filename })
       form.append('orgCode', orgCode)
       const res = await server.inject({
         method: 'POST',

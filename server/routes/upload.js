@@ -1,7 +1,7 @@
 const boom = require('@hapi/boom')
 const Joi = require('@hapi/joi')
 
-const { headers } = require('../constants')
+const { orgDataFileHeaders } = require('../constants')
 const { scopes } = require('../permissions')
 const convertCSVToJSON = require('../lib/convert-users-csv-to-json')
 const { getStandardisedOfficeLocationMap } = require('../lib/db')
@@ -32,7 +32,7 @@ module.exports = [
       const orgList = await request.server.methods.db.getOrganisationList()
       const organisations = generateNonCoreOrgSelectItems(orgList)
 
-      return h.view('upload', new Model({ headers, organisations }))
+      return h.view('upload', new Model({ headers: orgDataFileHeaders, organisations }))
     },
     options: {
       auth: {
@@ -53,7 +53,7 @@ module.exports = [
 
       if (!filename || headers['content-type'] !== 'text/csv') {
         const errors = { file: errorMessages.file['*'] }
-        return h.view('upload', new Model({ headers, organisations }, errors))
+        return h.view('upload', new Model({ headers: orgDataFileHeaders, organisations }, errors))
       }
 
       const organisation = orgList.filter(o => o.orgCode === orgCode)[0]
@@ -69,12 +69,12 @@ module.exports = [
 
         if (nonValid.length > 0) {
           const errors = { file: `${nonValid.length} record(s) are not valid.` }
-          return h.view('upload', new Model({ headers, organisations }, errors))
+          return h.view('upload', new Model({ headers: orgDataFileHeaders, organisations }, errors))
         }
 
         if (valid.length === 0) {
           const errors = { file: 'No valid records found. No upload will take place.' }
-          return h.view('upload', new Model({ headers, organisations }, errors))
+          return h.view('upload', new Model({ headers: orgDataFileHeaders, organisations }, errors))
         }
 
         const uploadRes = await uploadUserData(valid, orgCode)
@@ -109,7 +109,7 @@ module.exports = [
           const organisations = generateNonCoreOrgSelectItems(orgList, orgCode)
           const errors = getMappedErrors(err, errorMessages)
 
-          return h.view('upload', new Model({ headers, organisations }, errors)).takeover()
+          return h.view('upload', new Model({ headers: orgDataFileHeaders, organisations }, errors)).takeover()
         }
       }
     }
