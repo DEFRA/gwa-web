@@ -1,7 +1,6 @@
 describe('Validating users against schema', () => {
   const validateUsers = require('../../../server/lib/validate-users')
   const user = {
-    id: '55cdd95a-4965-4f3a-a8bf-cee99d1e8fa5',
     emailAddress: 'test@abc.com',
     givenName: 'givenName',
     surname: 'surname',
@@ -20,8 +19,6 @@ describe('Validating users against schema', () => {
     expect(nonValid).toHaveLength(0)
     expect(valid).toHaveLength(1)
     const validUser = valid[0]
-    expect(validUser).toHaveProperty('id')
-    expect(validUser.id).toEqual(users[0].id)
     expect(validUser).toHaveProperty('emailAddress')
     expect(validUser.emailAddress).toEqual(users[0].emailAddress)
     expect(validUser).toHaveProperty('givenName')
@@ -40,8 +37,6 @@ describe('Validating users against schema', () => {
   })
 
   test.each([
-    ['id', undefined],
-    ['id', 'not-a-uuid'],
     ['emailAddress', undefined],
     ['emailAddress', 'not-an-email'],
     ['givenName', undefined],
@@ -65,8 +60,6 @@ describe('Validating users against schema', () => {
     expect(valid).toHaveLength(0)
 
     const nonValidUserResult = nonValid[0].value
-    expect(nonValidUserResult).toHaveProperty('id')
-    expect(nonValidUserResult.id).toEqual(users[0].id)
     expect(nonValidUserResult).toHaveProperty('emailAddress')
     expect(nonValidUserResult.emailAddress).toEqual(users[0].emailAddress)
     expect(nonValidUserResult).toHaveProperty('givenName')

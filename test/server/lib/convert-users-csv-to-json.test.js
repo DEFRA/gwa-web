@@ -1,5 +1,4 @@
 const { Readable } = require('stream')
-const { v5: uuidv5 } = require('uuid')
 const { officeLocationMappings } = require('../../../server/constants')
 const { parsePhoneNumber } = require('../../../server/lib/phone-number')
 
@@ -25,8 +24,6 @@ describe('Converting CSV of user data into JSON for upload', () => {
 
     expect(users).toHaveLength(2)
     users.forEach(user => {
-      expect(user).toHaveProperty('id')
-      expect(user.id).toEqual(uuidv5(emailAddress, uuidv5.URL))
       expect(user).toHaveProperty('emailAddress')
       expect(user.emailAddress).toEqual(emailAddress)
       expect(user).toHaveProperty('givenName')
@@ -84,8 +81,6 @@ describe('Converting CSV of user data into JSON for upload', () => {
 
     expect(users).toHaveLength(1)
     const user = users[0]
-    expect(user).toHaveProperty('id')
-    expect(user.id).toEqual(uuidv5('a', uuidv5.URL))
     expect(user).toHaveProperty('emailAddress')
     expect(user.emailAddress).toEqual('a')
     expect(user).not.toHaveProperty('givenName')
@@ -110,8 +105,6 @@ describe('Converting CSV of user data into JSON for upload', () => {
 
     expect(users).toHaveLength(1)
     const user = users[0]
-    expect(user).toHaveProperty('id')
-    expect(user.id).toEqual(uuidv5('a', uuidv5.URL))
     expect(user).toHaveProperty('emailAddress')
     expect(user.emailAddress).toEqual('a')
     expect(user).toHaveProperty('givenName')

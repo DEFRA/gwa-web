@@ -1,7 +1,6 @@
 const Joi = require('joi')
 
 module.exports = Joi.object({
-  id: Joi.string().guid().required(),
   emailAddress: Joi.string().email().required(),
   givenName: Joi.string().required(),
   surname: Joi.string().required(),
