@@ -24,6 +24,10 @@ class Model extends BaseModel {
 
 const path = '/upload'
 
+function anyDuplicates (valid) {
+  return new Map(valid.map(x => [x.emailAddress, x])).size !== valid.length
+}
+
 module.exports = [
   {
     method: 'GET',
@@ -64,7 +68,6 @@ module.exports = [
       try {
         const officeLocationMap = await getStandardisedOfficeLocationMap()
         const users = await convertCSVToJSON(fileStream, organisation, officeLocationMap)
-        // TODO: check for duplicates
         const { nonValid, valid } = validateUsers(users)
 
         if (nonValid.length > 0) {
@@ -74,6 +77,11 @@ module.exports = [
 
         if (valid.length === 0) {
           const errors = { file: 'No valid records found. No upload will take place.' }
+          return h.view('upload', new Model({ headers: orgDataFileHeaders, organisations }, errors))
+        }
+
+        if (anyDuplicates(valid)) {
+          const errors = { file: 'Duplicates found. No upload will take place.' }
           return h.view('upload', new Model({ headers: orgDataFileHeaders, organisations }, errors))
         }
 

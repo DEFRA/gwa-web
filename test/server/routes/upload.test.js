@@ -134,7 +134,7 @@ describe('Upload route', () => {
         expect($('.govuk-body').text()).toEqual('Insufficient scope')
       })
 
-      test('responds with 200 and errors when no file or orgnisation is included', async () => {
+      test('responds with 200 and errors when no file or organisation is included', async () => {
         const res = await server.inject({
           method,
           url,
@@ -332,6 +332,40 @@ describe('Upload route', () => {
         const $ = cheerio.load(res.payload)
         expect($('.govuk-heading-l').text()).toEqual('Upload')
         expect($('.govuk-error-summary__list').text()).toMatch(`${userCount} record(s) are not valid.`)
+      })
+
+      test('responds with 200 and errors when file contains duplicate users', async () => {
+        const filename = 'test.csv'
+        const form = new FormData()
+        form.append('file', Readable.from(`${orgDataFileHeaders.join(',')}\nabc@test.com,givenName,surname,home office,07700111111\nabc@test.com,givenName,surname,home office,07700111111`), { filename })
+        form.append('orgCode', orgCode)
+        const res = await server.inject({
+          method: 'POST',
+          url,
+          auth: {
+            credentials: {
+              user: {
+                id,
+                email,
+                displayName: 'test gwa',
+                officeCode,
+                raw: {
+                  roles: JSON.stringify([])
+                }
+              },
+              scope: [scopes.data.manage]
+            },
+            strategy: 'azuread'
+          },
+          headers: form.getHeaders(),
+          payload: await getStream(form)
+        })
+
+        expect(res.statusCode).toEqual(200)
+
+        const $ = cheerio.load(res.payload)
+        expect($('.govuk-heading-l').text()).toEqual('Upload')
+        expect($('.govuk-error-summary__list').text()).toMatch('Duplicates found. No upload will take place.')
       })
 
       test('responds with 500 when upload response was not successful', async () => {
