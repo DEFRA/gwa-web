@@ -26,6 +26,7 @@
     "@hapi/vision": "6.0.1",
     "@hapi/yar": "10.1.1",
     "blipp": "4.0.1",
+    "csvtojson": "^2.0.10",
     "dotenv": "^9.0.2",
     "google-libphonenumber": "^3.2.21",
     "govuk-frontend": "3.11.0",
@@ -42,8 +43,10 @@
     "Steve Hunt <steven.hunt@defra.gov.uk>"
   ],
   "devDependencies": {
-    "@jest/types": "^26.6.2",
+    "@types/jest": "^26.0.23",
     "cheerio": "^1.0.0-rc.9",
+    "form-data": "^3.0.1",
+    "get-stream": "^5.2.0",
     "jest": "^26.6.3",
     "node-sass": "5.0.0",
     "nodemon": "^2.0.7",

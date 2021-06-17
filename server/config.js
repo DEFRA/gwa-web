@@ -9,6 +9,8 @@ const schema = Joi.object().keys({
   aadTenantId: Joi.string().guid(),
   contactListContainer: Joi.string().default('contact-list'),
   contactListStorageConnectionString: Joi.string().required(),
+  dataSourcesContainer: Joi.string().default('data-sources'),
+  dataSourcesStorageConnectionString: Joi.string().required(),
   db: Joi.object().keys({
     connectionString: Joi.string().required(),
     name: Joi.string().required(),
@@ -38,6 +40,8 @@ const config = {
   aadTenantId: process.env.AAD_TENANT_ID,
   contactListContainer: process.env.CONTACT_LIST_CONTAINER,
   contactListStorageConnectionString: process.env.CONTACT_LIST_STORAGE_CONNECTION_STRING,
+  dataSourcesContainer: process.env.DATA_SOURCES_CONTAINER,
+  dataSourcesStorageConnectionString: process.env.DATA_SOURCES_STORAGE_CONNECTION_STRING,
   db: {
     connectionString: process.env.COSMOS_DB_CONNECTION_STRING,
     name: process.env.COSMOS_DB_NAME,

@@ -4,10 +4,15 @@ module.exports = {
     edit: 'edit',
     send: 'send'
   },
+  orgDataFileHeaders: ['emailAddress', 'givenName', 'surname', 'officeLocation', 'phoneNumber'],
   messageStates: {
     created: 'created',
     edited: 'edited',
     sent: 'sent'
+  },
+  officeLocationMappings: {
+    unmappedOfficeCode: 'UNM:Unmapped-office-location',
+    unmappedOfficeLocation: 'Unmapped office location'
   },
   phoneNumberTypes: {
     corporate: 'corporate',
@@ -15,7 +20,8 @@ module.exports = {
   },
   referenceData: {
     areaToOfficeMap: 'areaToOfficeMap',
-    organisationList: 'organisationList'
+    organisationList: 'organisationList',
+    standardisedOfficeLocationMap: 'standardisedOfficeLocationMap'
   },
   textMessages: {
     oneMessageCost: 0.016,

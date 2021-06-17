@@ -11,9 +11,10 @@ const routes = [].concat(
   require('../routes/message-send'),
   require('../routes/message-view'),
   require('../routes/messages'),
-  // require('../routes/upload'),
   require('../routes/public'),
-  require('../routes/status')
+  // TODO: Look into what the status route provides
+  require('../routes/status'),
+  require('../routes/upload')
 )
 
 module.exports = {

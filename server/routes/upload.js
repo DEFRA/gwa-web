@@ -1,15 +1,19 @@
 const boom = require('@hapi/boom')
 const Joi = require('@hapi/joi')
 
-const BaseModel = require('../lib/model')
-const { getMappedErrors } = require('../lib/errors')
+const { orgDataFileHeaders } = require('../constants')
 const { scopes } = require('../permissions')
+const convertCSVToJSON = require('../lib/convert-users-csv-to-json')
+const { getStandardisedOfficeLocationMap } = require('../lib/db')
+const { getMappedErrors } = require('../lib/errors')
+const BaseModel = require('../lib/model')
+const generateNonCoreOrgSelectItems = require('../lib/non-core-org-select')
+const uploadUserData = require('../lib/upload-user-data')
+const validateUsers = require('../lib/validate-users')
 
 const errorMessages = {
-  file: {
-    '*': 'Select a valid CSV file',
-    'array.min': 'CSV file is empty'
-  }
+  file: { '*': 'Select a valid CSV file' },
+  orgCode: { '*': 'Select an organisation' }
 }
 
 class Model extends BaseModel {
@@ -18,12 +22,21 @@ class Model extends BaseModel {
   }
 }
 
+const path = '/upload'
+
+function anyDuplicates (valid) {
+  return new Map(valid.map(x => [x.emailAddress, x])).size !== valid.length
+}
+
 module.exports = [
   {
     method: 'GET',
-    path: '/upload',
+    path,
     handler: async (request, h) => {
-      return h.view('upload')
+      const orgList = await request.server.methods.db.getOrganisationList()
+      const organisations = generateNonCoreOrgSelectItems(orgList)
+
+      return h.view('upload', new Model({ headers: orgDataFileHeaders, organisations }))
     },
     options: {
       auth: {
@@ -35,19 +48,51 @@ module.exports = [
   },
   {
     method: 'POST',
-    path: '/upload',
+    path,
     handler: async (request, h) => {
-      const { payload } = request
-      const { file: fileStream } = payload
+      const { file: fileStream, orgCode } = request.payload
+      const { filename, headers } = fileStream.hapi
+      const orgList = await request.server.methods.db.getOrganisationList()
+      const organisations = generateNonCoreOrgSelectItems(orgList, orgCode)
+
+      if (!filename || headers['content-type'] !== 'text/csv') {
+        const errors = { file: errorMessages.file['*'] }
+        return h.view('upload', new Model({ headers: orgDataFileHeaders, organisations }, errors))
+      }
+
+      const organisation = orgList.filter(o => o.orgCode === orgCode)[0]
+      if (!organisation) {
+        return boom.badRequest(`Organisation with code ${orgCode} not recognised.`)
+      }
 
       try {
-        await new Promise((resolve, reject) => {
-          fileStream.on('error', reject)
-        })
+        const officeLocationMap = await getStandardisedOfficeLocationMap()
+        const users = await convertCSVToJSON(fileStream, organisation, officeLocationMap)
+        const { nonValid, valid } = validateUsers(users)
 
-        return h.view('upload-results')
+        if (nonValid.length > 0) {
+          const errors = { file: `${nonValid.length} record(s) are not valid.` }
+          return h.view('upload', new Model({ headers: orgDataFileHeaders, organisations }, errors))
+        }
+
+        if (valid.length === 0) {
+          const errors = { file: 'No valid records found. No upload will take place.' }
+          return h.view('upload', new Model({ headers: orgDataFileHeaders, organisations }, errors))
+        }
+
+        if (anyDuplicates(valid)) {
+          const errors = { file: 'Duplicates found. No upload will take place.' }
+          return h.view('upload', new Model({ headers: orgDataFileHeaders, organisations }, errors))
+        }
+
+        const uploadRes = await uploadUserData(valid, orgCode)
+        if (!uploadRes) {
+          return boom.internal(`Problem uploading user data for file ${filename}.`)
+        }
+
+        return h.view('upload-results', new Model({ filename, organisation, recordCount: valid.length }))
       } catch (err) {
-        return boom.badRequest('Upload failed', err)
+        return boom.internal(`Problem uploading user data for file ${filename}.`, err)
       }
     },
     options: {
@@ -63,11 +108,16 @@ module.exports = [
       },
       validate: {
         payload: Joi.object().keys({
-          file: Joi.object().required()
+          file: Joi.object().required(),
+          orgCode: Joi.string().required()
         }),
         failAction: async (request, h, err) => {
+          const { orgCode } = request.payload
+          const orgList = await request.server.methods.db.getOrganisationList()
+          const organisations = generateNonCoreOrgSelectItems(orgList, orgCode)
           const errors = getMappedErrors(err, errorMessages)
-          return h.view('upload', new Model({}, errors)).takeover()
+
+          return h.view('upload', new Model({ headers: orgDataFileHeaders, organisations }, errors)).takeover()
         }
       }
     }

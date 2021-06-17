@@ -60,6 +60,16 @@ async function getOrganisationList () {
 }
 
 /**
+ * Gets the `standardisedOffceLocationMap` item from the reference data
+ * container.
+ *
+ * @returns {Array} list of areas with an array of `officeLocations`.
+ */
+async function getStandardisedOfficeLocationMap () {
+  return (await refDataContainer.item(referenceData.standardisedOfficeLocationMap, referenceData.standardisedOfficeLocationMap).read())?.resource?.data
+}
+
+/**
  * Get a user by id (lowercased email address).
  *
  * @param {string} id (lowercased email address).
@@ -120,6 +130,7 @@ module.exports = {
   getMessage,
   getMessages,
   getOrganisationList,
+  getStandardisedOfficeLocationMap,
   getUser,
   getUsers,
   saveMessage,

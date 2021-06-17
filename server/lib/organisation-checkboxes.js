@@ -1,12 +1,12 @@
 /**
- * Generates [GOV.UK
+ * Generates items for use in a [GOV.UK
  * checkboxes](https://design-system.service.gov.uk/components/checkboxes/)
  * based on a list of organisations. An optional list of organisations to
  * mark as checked can be supplied.
  *
  * @param {Array} organisationList list of organisations.
  * @param {Array} [checked=[]] list of organisation codes to be checked.
- * @returns {Array} `items` for GOV.UK checkboxes
+ * @returns {Array} `items` for GOV.UK checkboxes.
  */
 module.exports = (organisationList, checked = []) => {
   return organisationList
