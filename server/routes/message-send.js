@@ -1,14 +1,14 @@
 const boom = require('@hapi/boom')
 const Joi = require('joi')
 
+const { messageStates } = require('../constants')
+const { scopes } = require('../permissions')
 const addAuditEvent = require('../lib/add-audit-event')
-const BaseModel = require('../lib/model')
 const costOfMessageSend = require('../lib/cost-of-message-send')
 const { getMessage, updateMessage } = require('../lib/db')
 const getMessageRows = require('../lib/get-message-rows')
+const BaseModel = require('../lib/model')
 const getPhoneNumbersToSendTo = require('../lib/phone-numbers-to-send-to')
-const { messageStates } = require('../constants')
-const { scopes } = require('../permissions')
 const uploadContactList = require('../lib/upload-contact-list')
 
 class Model extends BaseModel {}

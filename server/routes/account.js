@@ -1,6 +1,6 @@
-const BaseModel = require('../lib/model')
 const { maxPersonalPhoneNumbers } = require('../config')
 const { phoneNumberTypes } = require('../constants')
+const BaseModel = require('../lib/model')
 const { getUser } = require('../lib/route-pre-handlers')
 
 class Model extends BaseModel {}
