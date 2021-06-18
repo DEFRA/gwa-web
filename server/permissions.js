@@ -1,3 +1,9 @@
+const roles = {
+  Administrator: 'Administrator',
+  DataManager: 'DataManager',
+  User: 'User'
+}
+
 const scopes = {
   message: {
     manage: 'message:manage'
@@ -7,10 +13,13 @@ const scopes = {
   }
 }
 
+/**
+ * Mapping of roles to scopes.
+ */
 const permissions = {
-  Administrator: [scopes.message.manage, scopes.data.manage],
-  DataManager: [scopes.data.manage],
-  User: []
+  [roles.Administrator]: [scopes.message.manage, scopes.data.manage],
+  [roles.DataManager]: [scopes.data.manage],
+  [roles.User]: []
 }
 
 /**
