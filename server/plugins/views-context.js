@@ -41,9 +41,9 @@ module.exports = {
 
             if (ctx.credentials.scope.includes(scopes.data.manage)) {
               navigation.push({
-                href: '/data',
+                href: '/data-manage',
                 text: 'Manage Data',
-                active: request.path === '/data'
+                active: request.path === '/data-manage'
               })
             }
 
