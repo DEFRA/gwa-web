@@ -4,7 +4,6 @@ module.exports = {
   plugin: {
     name: 'auth',
     register: (server, options) => {
-      // TODO: Look at non-legacy azure strategy
       server.auth.strategy('azuread', 'bell', {
         provider: 'azure-legacy',
         password: config.cookie.password,
@@ -14,6 +13,9 @@ module.exports = {
         forceHttps: config.forceHttps,
         config: {
           tenant: config.aadTenantId
+        },
+        profileParams: {
+          redirect_uri: config.logoutRedirectUri
         }
       })
 
