@@ -1,0 +1,24 @@
+{% extends "two-thirds.html" %}
+
+{% block twoThirds %}
+  <h1 class="govuk-heading-xl">Manage data</h1>
+  <h2 class="govuk-heading-m">Upload new organisation data</h2>
+  <p class="govuk-body">Additional organisations can be added to the system by uploading data.</p>
+  {{
+    govukButton({
+      href: '/upload',
+      text: 'Upload',
+      isStartButton: true
+    })
+  }}
+
+  <h2 class="govuk-heading-m">Manage reference data</h2>
+  <p class="govuk-body">There are several reference data items used within the system that can be managed.</p>
+  {{
+    govukButton({
+      href: '/data-reference',
+      text: 'Reference data',
+      isStartButton: true
+    })
+  }}
+{% endblock %}

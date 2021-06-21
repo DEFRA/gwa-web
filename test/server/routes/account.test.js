@@ -1,5 +1,4 @@
 const cheerio = require('cheerio')
-
 const createServer = require('../../../server/index')
 
 describe('Account route', () => {

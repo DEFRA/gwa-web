@@ -1,3 +1,9 @@
+const roles = {
+  Administrator: 'Administrator',
+  DataManager: 'DataManager',
+  User: 'User'
+}
+
 const scopes = {
   message: {
     manage: 'message:manage'
@@ -7,22 +13,25 @@ const scopes = {
   }
 }
 
+/**
+ * Mapping of roles to scopes.
+ */
 const permissions = {
-  Administrator: [scopes.message.manage, scopes.data.manage],
-  DataManager: [scopes.data.manage],
-  User: []
+  [roles.Administrator]: [scopes.message.manage, scopes.data.manage],
+  [roles.DataManager]: [scopes.data.manage],
+  [roles.User]: []
 }
 
 /**
  * Return the known role(s) and scope(s) for the role(s) requested.
  *
- * @param {Array} roles from the Azure AD response.
+ * @param {Array} userRoles from the Azure AD response.
  * @return {object} consisting of (matched, known - if any) `roles` and `scope`
  * for the supplied `roles`.
  */
-function getPermissions (roles) {
-  if (roles) {
-    const parsedRoles = JSON.parse(roles)
+function getPermissions (userRoles) {
+  if (userRoles) {
+    const parsedRoles = JSON.parse(userRoles)
 
     if (Array.isArray(parsedRoles) && parsedRoles.length) {
       const knownRoles = parsedRoles.filter(role => role in permissions)

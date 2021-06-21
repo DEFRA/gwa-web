@@ -1,0 +1,35 @@
+{% extends "two-thirds.html" %}
+
+{% block twoThirds %}
+  <h1 class="govuk-heading-xl">Manage reference data</h1>
+  <p>There are several reference data items that can be managed. Each one will provide the ability to download the reference data in a CSV file which can then be edited and uploaded.</p>
+  <h2 class="govuk-heading-m">Organisation list</h2>
+  <p class="govuk-body">This is a list of all organisations including ALBs.</p>
+  {{
+    govukButton({
+      href: '/data-org-list',
+      text: 'Organisation list',
+      isStartButton: true
+    })
+  }}
+
+  <h2 class="govuk-heading-m">Organisation mapping</h2>
+  <p class="govuk-body">This is a list of mappings between the name an organisation has in the source system and the actual organisation.</p>
+  {{
+    govukButton({
+      href: '/data-org-map',
+      text: 'Organisation mapping',
+      isStartButton: true
+    })
+  }}
+
+  <h2 class="govuk-heading-m">Office locations</h2>
+  <p class="govuk-body">This is a list of all office locations.</p>
+  {{
+    govukButton({
+      href: '/data-office-locations',
+      text: 'Office locations',
+      isStartButton: true
+    })
+  }}
+{% endblock %}

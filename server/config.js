@@ -27,8 +27,6 @@ const schema = Joi.object().keys({
   isLocal: Joi.boolean().default(false),
   forceHttps: Joi.boolean().required(),
   logoutRedirectUri: Joi.string().uri(),
-  // documentationHomePage: Joi.string().required(),
-  // websiteHomePage: Joi.string().required(),
   maxPersonalPhoneNumbers: Joi.number().integer().default(2),
   phaseBannerTag: Joi.string().required(),
   phaseBannerHtml: Joi.string().required()
@@ -58,9 +56,7 @@ const config = {
   forceHttps: process.env.FORCE_HTTPS,
   logoutRedirectUri: process.env.LOGOUT_REDIRECT_URI,
   isLocal: process.env.NODE_ENV === 'local',
-  // documentationHomePage: Joi.string().required(),
-  // websiteHomePage: Joi.string().required(),
-  // TODO: change this
+  // TODO: change this based on environment
   phaseBannerTag: 'local',
   phaseBannerHtml: 'This is a TEST service - messages will not be sent'
 }

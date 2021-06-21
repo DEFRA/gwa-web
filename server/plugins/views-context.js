@@ -1,11 +1,9 @@
-const config = require('../config')
 const { scopes } = require('../permissions')
 
-/*
-* Adds an `onPreResponse` listener to apply
-* some common props to the view context
-*/
-
+/**
+ * Adds an `onPreResponse` listener to apply
+ * some common props to the view context.
+ */
 module.exports = {
   plugin: {
     name: 'views-context',
@@ -16,8 +14,7 @@ module.exports = {
         if (response.variety === 'view') {
           const ctx = response.source.context || {}
 
-          // Set the auth object
-          // onto the top level context
+          // Set the auth object onto the top level context
           const { auth } = request
 
           ctx.auth = auth
@@ -28,34 +25,25 @@ module.exports = {
           if (auth.isAuthenticated) {
             ctx.user = auth.credentials.user
             ctx.credentials = auth.credentials
+            navigation.push({
+              href: '/account',
+              text: 'Account',
+              active: request.path === '/account'
+            })
 
-            navigation.push(
-              {
+            if (ctx.credentials.scope.includes(scopes.message.manage)) {
+              navigation.push({
                 href: '/messages',
                 text: 'Messages',
                 active: request.path === '/messages'
-              },
-              {
-                href: '/account',
-                text: 'Account',
-                active: request.path === '/account'
-              },
-              {
-                href: config.documentationHomePage,
-                text: 'Documentation'
-              },
-              {
-                href: config.websiteHomePage,
-                text: 'Website'
-              }
-
-            )
+              })
+            }
 
             if (ctx.credentials.scope.includes(scopes.data.manage)) {
               navigation.push({
-                href: '/upload',
-                text: 'Upload',
-                active: request.path === '/upload'
+                href: '/data-manage',
+                text: 'Manage Data',
+                active: request.path === '/data-manage'
               })
             }
 
