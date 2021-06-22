@@ -21,6 +21,7 @@ module.exports = {
   referenceData: {
     areaToOfficeMap: 'areaToOfficeMap',
     organisationList: 'organisationList',
+    organisationMap: 'organisationMap',
     standardisedOfficeLocationMap: 'standardisedOfficeLocationMap'
   },
   textMessages: {

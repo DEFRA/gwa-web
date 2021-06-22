@@ -60,6 +60,16 @@ async function getOrganisationList () {
 }
 
 /**
+ * Get the `organisationMap` item from the reference data container.
+ *
+ * @returns {Array} all mappings between `originalOrgName` and the actual
+ * organisation. Organisation consists of `orgCode` and `orgName`.
+ */
+async function getOrganisationMap () {
+  return (await refDataContainer.item(referenceData.organisationMap, referenceData.organisationMap).read())?.resource?.data
+}
+
+/**
  * Gets the `standardisedOffceLocationMap` item from the reference data
  * container.
  *
@@ -130,6 +140,7 @@ module.exports = {
   getMessage,
   getMessages,
   getOrganisationList,
+  getOrganisationMap,
   getStandardisedOfficeLocationMap,
   getUser,
   getUsers,
