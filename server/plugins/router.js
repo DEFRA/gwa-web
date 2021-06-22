@@ -7,6 +7,7 @@ const routes = [].concat(
   require('../routes/data-manage'),
   require('../routes/data-reference'),
   require('../routes/data-reference-manage'),
+  require('../routes/data-reference-download'),
   require('../routes/home'),
   require('../routes/message-create'),
   require('../routes/message-delete'),

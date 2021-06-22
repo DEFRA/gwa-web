@@ -5,8 +5,9 @@
 {% block beforeForm %}
   <h1 class="govuk-heading-xl">{{ data.heading }}</h1>
   <p class="govuk-body">Download the current version of the reference data, edit it and upload the edited version of the file.</p>
+  <p class="govuk-body">{{ data.blurb | safe }}</p>
 
-  <a href='/data-reference-download?filename={{ data.filename }}'
+  <a href='/data-reference-download/{{ data.filename }}'
      class='govuk-button govuk-button--start'
      download='{{ data.download }}'>Download</a>
 {% endblock %}
