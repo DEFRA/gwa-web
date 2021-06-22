@@ -19,15 +19,17 @@ module.exports = [
       let fileContents = 'a,b,c\n1,2,3'
       const { type } = request.params
       switch (type) {
-        case types.orgList:
+        case types.orgList: {
           await request.server.methods.db.getOrganisationList.cache.drop()
           const organisationList = await request.server.methods.db.getOrganisationList()
           fileContents = await getOrganisationListCSV(organisationList)
           break
-        case types.orgMap:
+        }
+        case types.orgMap: {
           const organisationMap = await getOrganisationMap()
           fileContents = await getOrganisationMapCSV(organisationMap)
           break
+        }
         default:
           return boom.notFound(`Unrecognised reference data type: '${type}'.`)
       }

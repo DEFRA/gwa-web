@@ -1,4 +1,4 @@
-const boom = require('@hapi/boom')
+// const boom = require('@hapi/boom')
 const Joi = require('joi')
 
 const { scopes } = require('../permissions')
