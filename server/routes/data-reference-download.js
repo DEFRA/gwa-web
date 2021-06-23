@@ -4,7 +4,7 @@ const Joi = require('joi')
 const { getOrganisationMap } = require('../lib/db')
 const { scopes } = require('../permissions')
 const { types } = require('../lib/reference-data')
-const { getOfficeLocationMapCSV, getOrganisationListCSV, getOrganisationMapCSV } = require('../lib/get-reference-data')
+const { getOrganisationListCSV, getOrganisationMapCSV, getStandardisedOfficeLocationMap } = require('../lib/get-reference-data')
 
 module.exports = [
   {
@@ -33,7 +33,7 @@ module.exports = [
         case types.officeLocations: {
           await request.server.methods.db.getStandardisedOfficeLocationMap.cache.drop()
           const officeLocationMap = await request.server.methods.db.getStandardisedOfficeLocationMap()
-          fileContents = await getOfficeLocationMapCSV(officeLocationMap)
+          fileContents = await getStandardisedOfficeLocationMap(officeLocationMap)
           break
         }
         default:

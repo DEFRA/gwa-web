@@ -1,7 +1,7 @@
 const csvtojson = require('csvtojson')
 
 describe('Get organisation list CSV file', () => {
-  const { getOrganisationListCSV, getOrganisationMapCSV } = require('../../../server/lib/get-reference-data')
+  const { getOrganisationListCSV, getOrganisationMapCSV, getStandardisedOfficeLocationMap } = require('../../../server/lib/get-reference-data')
 
   test('JSON array is converted into CSV - getOrganisationListCSV', async () => {
     const organisationList = [{
@@ -61,6 +61,40 @@ describe('Get organisation list CSV file', () => {
       expect(d.orgCode).toEqual(organisationMap[i].orgCode)
       expect(d).toHaveProperty('orgName')
       expect(d.orgName).toEqual(organisationMap[i].orgName)
+    })
+  })
+
+  test('JSON array is converted into CSV - getStandardisedOfficeLocationMap', async () => {
+    const officeLocationMap = [{
+      originalOfficeLocation: 'originalOfficeLocation',
+      officeLocation: 'officeLocation',
+      areaCode: 'areaCode',
+      areaName: 'areaName',
+      officeCode: 'officeCode'
+    }, {
+      originalOfficeLocation: 'originalOfficeLocation, two',
+      officeLocation: 'officeLocation two',
+      areaCode: 'areaCode two',
+      areaName: 'areaName two',
+      officeCode: 'officeCode two'
+    }]
+
+    const fileContents = await getStandardisedOfficeLocationMap(officeLocationMap)
+
+    const data = await csvtojson().fromString(fileContents)
+
+    expect(data).toHaveLength(2)
+    data.forEach((d, i) => {
+      expect(d).toHaveProperty('originalOfficeLocation')
+      expect(d.originalOfficeLocation).toEqual(officeLocationMap[i].originalOfficeLocation)
+      expect(d).toHaveProperty('officeLocation')
+      expect(d.officeLocation).toEqual(officeLocationMap[i].officeLocation)
+      expect(d).toHaveProperty('areaCode')
+      expect(d.areaCode).toEqual(officeLocationMap[i].areaCode)
+      expect(d).toHaveProperty('areaName')
+      expect(d.areaName).toEqual(officeLocationMap[i].areaName)
+      expect(d).toHaveProperty('officeCode')
+      expect(d.officeCode).toEqual(officeLocationMap[i].officeCode)
     })
   })
 })

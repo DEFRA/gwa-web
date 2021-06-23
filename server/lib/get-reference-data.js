@@ -7,7 +7,7 @@ const { parseAsync } = require('json2csv')
  * @param {Array} organisationList.
  * @returns {String} CSV representation of officeLocationMap.
  */
-async function getOfficeLocationMapCSV (officeLocationMap) {
+async function getStandardisedOfficeLocationMap (officeLocationMap) {
   return parseAsync(officeLocationMap)
 }
 
@@ -35,7 +35,7 @@ async function getOrganisationMapCSV (organisationMap) {
 }
 
 module.exports = {
-  getOfficeLocationMapCSV,
+  getStandardisedOfficeLocationMap,
   getOrganisationListCSV,
   getOrganisationMapCSV
 }
