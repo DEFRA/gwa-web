@@ -15,6 +15,7 @@ describe('Contact remove route', () => {
     return {
       getAreaToOfficeMap: jest.fn(),
       getOrganisationList: jest.fn(),
+      getStandardisedOfficeLocationMap: jest.fn(),
       getUsers: jest.fn(),
       getUser: jest.fn()
         .mockResolvedValue({

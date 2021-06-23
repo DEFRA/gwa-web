@@ -18,6 +18,7 @@ describe('Contact edit route', () => {
         { areaCode: 'PER', areaName: 'Personal', officeLocations: [{ officeCode: 'PER:office-one', officeLocation: 'office one' }, { officeCode: 'PER:office-two', officeLocation: 'office two' }] }
       ]),
       getOrganisationList: jest.fn(),
+      getStandardisedOfficeLocationMap: jest.fn(),
       getUsers: jest.fn(),
       getUser: jest.fn()
         .mockResolvedValue({
