@@ -1,6 +1,17 @@
 const { parseAsync } = require('json2csv')
 
 /**
+ * Converts a list of office location mappings into CSV data, using object
+ * properties for column names in header.
+ *
+ * @param {Array} organisationList.
+ * @returns {String} CSV representation of officeLocationMap.
+ */
+async function getOfficeLocationMapCSV (officeLocationMap) {
+  return parseAsync(officeLocationMap)
+}
+
+/**
  * Converts a list of organisations into CSV data, using object properties for
  * column names in header.
  *
@@ -24,6 +35,7 @@ async function getOrganisationMapCSV (organisationMap) {
 }
 
 module.exports = {
+  getOfficeLocationMapCSV,
   getOrganisationListCSV,
   getOrganisationMapCSV
 }
