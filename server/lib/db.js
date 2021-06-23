@@ -71,7 +71,10 @@ async function getOrganisationMap () {
 
 /**
  * Gets the `standardisedOffceLocationMap` item from the reference data
- * container.
+ * container. This method is added to the web server via
+ * [Server Methods](https://hapi.dev/tutorials/servermethods/?lang=en_US) to
+ * improve performance.
+ * It is accessible via `server.methods.db.getStandardisedOfficeLocationMap`.
  *
  * @returns {Array} list of areas with an array of `officeLocations`.
  */

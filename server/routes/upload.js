@@ -4,7 +4,6 @@ const Joi = require('@hapi/joi')
 const { orgDataFileHeaders } = require('../constants')
 const { scopes } = require('../permissions')
 const convertCSVToJSON = require('../lib/convert-users-csv-to-json')
-const { getStandardisedOfficeLocationMap } = require('../lib/db')
 const { getMappedErrors } = require('../lib/errors')
 const BaseModel = require('../lib/model')
 const generateNonCoreOrgSelectItems = require('../lib/non-core-org-select')
@@ -66,7 +65,7 @@ module.exports = [
       }
 
       try {
-        const officeLocationMap = await getStandardisedOfficeLocationMap()
+        const officeLocationMap = await request.server.methods.db.getStandardisedOfficeLocationMap()
         const users = await convertCSVToJSON(fileStream, organisation, officeLocationMap)
         const { nonValid, valid } = validateUsers(users)
 

@@ -1,7 +1,7 @@
 const hapi = require('@hapi/hapi')
 
 const config = require('./config')
-const { getAreaToOfficeMap, getOrganisationList, getUsers } = require('./lib/db')
+const { getAreaToOfficeMap, getOrganisationList, getStandardisedOfficeLocationMap, getUsers } = require('./lib/db')
 
 async function createServer () {
   const server = hapi.server({
@@ -28,6 +28,8 @@ async function createServer () {
   server.method('db.getAreaToOfficeMap', getAreaToOfficeMap, { cache: { expiresIn: 60 * 60 * 1000, generateTimeout: 6 * 1000 } })
   // Organisations change infrequently. Expire cache daily. Query _should_ take < 2 seconds, allows 3x before error.
   server.method('db.getOrganisationList', getOrganisationList, { cache: { expiresIn: 60 * 60 * 1000, generateTimeout: 6 * 1000 } })
+  // Office locations change infrequently. Expire cache daily. Query _should_ take < 2 seconds, allows 3x before error.
+  server.method('db.getStandardisedOfficeLocationMap', getStandardisedOfficeLocationMap, { cache: { expiresIn: 60 * 60 * 1000, generateTimeout: 6 * 1000 } })
   // Users are scheduled to refresh weekly. Expire cache daily. Query _should_ take ~10 seconds, allows 3x before error.
   server.method('db.getUsers', getUsers, { cache: { expiresAt: '00:05', generateTimeout: 30 * 1000 } })
 
