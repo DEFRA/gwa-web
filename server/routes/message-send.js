@@ -31,11 +31,7 @@ async function verifyRequest (request) {
 }
 
 const options = {
-  auth: {
-    access: {
-      scope: [`+${scopes.message.manage}`]
-    }
-  },
+  auth: { access: { scope: [`+${scopes.message.manage}`] } },
   validate: {
     params: Joi.object().keys({
       messageId: Joi.string().guid().required()

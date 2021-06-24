@@ -1,13 +1,22 @@
 const boom = require('@hapi/boom')
 const Joi = require('joi')
 
+const { messageStates } = require('../constants')
+const { scopes } = require('../permissions')
 const BaseModel = require('../lib/model')
 const { deleteMessage, getMessage } = require('../lib/db')
 const getMessageRows = require('../lib/get-message-rows')
-const { messageStates } = require('../constants')
 
 class Model extends BaseModel {}
 
+const options = {
+  auth: { access: { scope: [`+${scopes.message.manage}`] } },
+  validate: {
+    params: Joi.object().keys({
+      messageId: Joi.string().guid().required()
+    })
+  }
+}
 const routeId = 'message-delete'
 const path = `/${routeId}/{messageId}`
 
@@ -37,13 +46,7 @@ module.exports = [
 
       return h.view(routeId, new Model({ message, messageRows }))
     },
-    options: {
-      validate: {
-        params: Joi.object().keys({
-          messageId: Joi.string().guid().required()
-        })
-      }
-    }
+    options
   },
   {
     method: 'POST',
@@ -58,12 +61,6 @@ module.exports = [
 
       return h.redirect('/messages')
     },
-    options: {
-      validate: {
-        params: Joi.object().keys({
-          messageId: Joi.string().guid().required()
-        })
-      }
-    }
+    options
   }
 ]

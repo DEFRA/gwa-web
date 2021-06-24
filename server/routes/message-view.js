@@ -1,10 +1,11 @@
 const boom = require('@hapi/boom')
 const Joi = require('joi')
 
+const { messageStates } = require('../constants')
+const { scopes } = require('../permissions')
 const BaseModel = require('../lib/model')
 const { getMessage } = require('../lib/db')
 const getMessageRows = require('../lib/get-message-rows')
-const { messageStates } = require('../constants')
 
 class Model extends BaseModel {}
 
@@ -28,6 +29,7 @@ module.exports = [
       return h.view(routeId, new Model({ isEditable, messageId, messageRows }))
     },
     options: {
+      auth: { access: { scope: [`+${scopes.message.manage}`] } },
       validate: {
         params: Joi.object().keys({
           messageId: Joi.string().guid().required()

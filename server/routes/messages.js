@@ -1,6 +1,7 @@
+const { messageStates } = require('../constants')
+const { scopes } = require('../permissions')
 const BaseModel = require('../lib/model')
 const { getMessages } = require('../lib/db')
-const { messageStates } = require('../constants')
 
 class Model extends BaseModel {}
 
@@ -31,7 +32,9 @@ module.exports = [
       const recentlySent = await getRecentMessages(messageStates.sent)
 
       return h.view('messages', new Model({ recentlyCreated, recentlyEdited, recentlySent }))
+    },
+    options: {
+      auth: { access: { scope: [`+${scopes.message.manage}`] } }
     }
-    // TODO: Add auth
   }
 ]
