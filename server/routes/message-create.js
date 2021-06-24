@@ -1,16 +1,17 @@
 const boom = require('@hapi/boom')
 const { v4: uuid } = require('uuid')
 
+const { textMessages: { maxMessageLength }, messageStates } = require('../constants')
+const { scopes } = require('../permissions')
 const addAuditEvent = require('../lib/add-audit-event')
-const BaseModel = require('../lib/model')
+const { message: errorMessages } = require('../lib/error-messages')
+const { saveMessage } = require('../lib/db')
 const generateOfficeCheckboxes = require('../lib/office-checkboxes')
 const generateOrganisationCheckboxes = require('../lib/organisation-checkboxes')
-const generateSendToAllOrgsRadios = require('../lib/send-to-all-radios')
-const { message: errorMessages } = require('../lib/error-messages')
+const BaseModel = require('../lib/model')
 const { message: { failAction } } = require('../lib/route-fail-actions')
 const { message: { payload } } = require('../lib/route-validations')
-const { saveMessage } = require('../lib/db')
-const { textMessages: { maxMessageLength }, messageStates } = require('../constants')
+const generateSendToAllOrgsRadios = require('../lib/send-to-all-radios')
 
 class Model extends BaseModel {
   constructor (data, err) {
@@ -18,6 +19,7 @@ class Model extends BaseModel {
   }
 }
 
+const auth = { access: { scope: [`+${scopes.message.manage}`] } }
 const routeId = 'message-create'
 const path = `/${routeId}`
 
@@ -35,6 +37,9 @@ module.exports = [
       const allOfficeRadios = generateSendToAllOrgsRadios()
 
       return h.view(routeId, new Model({ allOfficeRadios, maxMessageLength, officeCheckboxes, orgCheckboxes }))
+    },
+    options: {
+      auth
     }
   },
   {
@@ -62,6 +67,7 @@ module.exports = [
       return h.redirect('/messages')
     },
     options: {
+      auth,
       validate: {
         payload,
         failAction: async (request, h, err) => {

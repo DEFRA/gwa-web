@@ -1,16 +1,17 @@
 const boom = require('@hapi/boom')
 const Joi = require('joi')
 
+const { textMessages: { maxMessageLength }, messageStates } = require('../constants')
+const { scopes } = require('../permissions')
 const addAuditEvent = require('../lib/add-audit-event')
-const BaseModel = require('../lib/model')
-const generateOfficeCheckboxes = require('../lib/office-checkboxes')
-const generateOrganisationCheckboxes = require('../lib/organisation-checkboxes')
-const generateSendToAllOrgsRadios = require('../lib/send-to-all-radios')
 const { getMessage, updateMessage } = require('../lib/db')
 const { message: errorMessages } = require('../lib/error-messages')
+const generateOfficeCheckboxes = require('../lib/office-checkboxes')
+const generateOrganisationCheckboxes = require('../lib/organisation-checkboxes')
+const BaseModel = require('../lib/model')
 const { message: { failAction } } = require('../lib/route-fail-actions')
 const { message: { payload } } = require('../lib/route-validations')
-const { textMessages: { maxMessageLength }, messageStates } = require('../constants')
+const generateSendToAllOrgsRadios = require('../lib/send-to-all-radios')
 
 class Model extends BaseModel {
   constructor (data, err) {
@@ -18,6 +19,7 @@ class Model extends BaseModel {
   }
 }
 
+const auth = { access: { scope: [`+${scopes.message.manage}`] } }
 const routeId = 'message-edit'
 const path = `/${routeId}/{messageId}`
 
@@ -48,6 +50,7 @@ module.exports = [
       return h.view(routeId, new Model({ ...message, allOfficeRadios, maxMessageLength, officeCheckboxes, orgCheckboxes }))
     },
     options: {
+      auth,
       validate: {
         params: Joi.object().keys({
           messageId: Joi.string().guid().required()
@@ -89,6 +92,7 @@ module.exports = [
       return h.redirect('/messages')
     },
     options: {
+      auth,
       validate: {
         params: Joi.object().keys({
           messageId: Joi.string().guid().required()
