@@ -60,8 +60,21 @@ async function getOrganisationList () {
 }
 
 /**
+ * Get the `organisationMap` item from the reference data container.
+ *
+ * @returns {Array} all mappings between `originalOrgName` and the actual
+ * organisation. Organisation consists of `orgCode` and `orgName`.
+ */
+async function getOrganisationMap () {
+  return (await refDataContainer.item(referenceData.organisationMap, referenceData.organisationMap).read())?.resource?.data
+}
+
+/**
  * Gets the `standardisedOffceLocationMap` item from the reference data
- * container.
+ * container. This method is added to the web server via
+ * [Server Methods](https://hapi.dev/tutorials/servermethods/?lang=en_US) to
+ * improve performance.
+ * It is accessible via `server.methods.db.getStandardisedOfficeLocationMap`.
  *
  * @returns {Array} list of areas with an array of `officeLocations`.
  */
@@ -130,6 +143,7 @@ module.exports = {
   getMessage,
   getMessages,
   getOrganisationList,
+  getOrganisationMap,
   getStandardisedOfficeLocationMap,
   getUser,
   getUsers,

@@ -32,5 +32,6 @@ module.exports = [
 
       return h.view('messages', new Model({ recentlyCreated, recentlyEdited, recentlySent }))
     }
+    // TODO: Add auth
   }
 ]

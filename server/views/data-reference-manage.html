@@ -1,0 +1,47 @@
+{% extends 'form.html' %}
+
+{% set formEncType = 'multipart/form-data' %}
+
+{% block beforeForm %}
+  <h1 class="govuk-heading-xl">{{ data.heading }}</h1>
+  <p class="govuk-body">Download the current version of the reference data, edit it and upload the edited version of the file.</p>
+  <p class="govuk-body">{{ data.blurb | safe }}</p>
+
+  <a href='/data-reference-download/{{ data.filename }}'
+     class='govuk-button govuk-button--start'
+     download='{{ data.download }}'>Download</a>
+{% endblock %}
+
+{% block form %}
+  {{
+    govukFileUpload({
+      id: 'file',
+      name: 'file',
+      label: {
+        text: 'Choose the edited CSV file (.csv)'
+      },
+      attributes: {
+        accept: ['text/csv'],
+        required: 'required'
+      },
+      errorMessage: errors.file
+    })
+  }}
+{% endblock %}
+
+{% block button %}
+  {{ govukButton({ classes: 'govuk-button--start', text: 'Upload' }) }}
+{% endblock %}
+
+{% block afterForm %}
+  <img id="spinner" src="/assets/loading.gif" alt="Loading..." style="display: none;" />
+  <script>
+    var form = document.getElementById('form')
+
+    form.addEventListener('submit', function () {
+      form.style.display = 'none'
+      var spinner = document.getElementById('spinner')
+      spinner.style.display = 'inline'
+    }, false)
+  </script>
+{% endblock %}

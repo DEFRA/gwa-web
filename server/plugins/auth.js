@@ -13,9 +13,6 @@ module.exports = {
         forceHttps: config.forceHttps,
         config: {
           tenant: config.aadTenantId
-        },
-        profileParams: {
-          redirect_uri: config.logoutRedirectUri
         }
       })
 

@@ -49,6 +49,8 @@ module.exports = [
     path,
     handler: async (request, h) => {
       const message = await verifyRequest(request)
+      if (message.isBoom) { return message }
+
       const users = await request.server.methods.db.getUsers()
 
       const phoneNumbersToSendTo = getPhoneNumbersToSendTo(users, message)
@@ -74,6 +76,8 @@ module.exports = [
     path,
     handler: async (request, h) => {
       const message = await verifyRequest(request)
+      if (message.isBoom) { return message }
+
       // Drop from cache to run a fresh query, getting the most uptodate info
       await request.server.methods.db.getUsers.cache.drop()
       const users = await request.server.methods.db.getUsers()

@@ -1,4 +1,4 @@
-const csv = require('csvtojson')
+const csvtojson = require('csvtojson')
 const { officeLocationMappings, orgDataFileHeaders } = require('../constants')
 const { parsePhoneNumber } = require('./phone-number')
 
@@ -22,7 +22,7 @@ const { parsePhoneNumber } = require('./phone-number')
 module.exports = async (readableStream, organisation, officeLocationMapRefData) => {
   const officeLocationMap = new Map(officeLocationMapRefData.map(ol => [ol.originalOfficeLocation, { officeCode: ol.officeCode, officeLocation: ol.officeLocation }]))
 
-  const users = await csv({ headers: orgDataFileHeaders }).fromStream(readableStream)
+  const users = await csvtojson({ headers: orgDataFileHeaders }).fromStream(readableStream)
   users.forEach(user => {
     user.emailAddress = user.emailAddress.toLowerCase()
     user.orgCode = organisation.orgCode
