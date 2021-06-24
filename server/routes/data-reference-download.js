@@ -11,12 +11,7 @@ module.exports = [
     method: 'GET',
     path: '/data-reference-download/{type}',
     handler: async (request, h) => {
-      console.log('hi')
-      console.log(request.params)
-      // TODO: make request to db for reference data
-      // TODO: convert JSON to CSV
-
-      let fileContents = 'a,b,c\n1,2,3'
+      let fileContents
       const { type } = request.params
       switch (type) {
         case types.orgList: {

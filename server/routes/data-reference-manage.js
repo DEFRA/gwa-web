@@ -22,8 +22,6 @@ module.exports = [
     method: 'GET',
     path,
     handler: (request, h) => {
-      console.log('hi')
-      console.log(request.params)
       const { type } = request.params
       return h.view('data-reference-manage', new Model(typeInfo[type]))
     },
@@ -43,9 +41,9 @@ module.exports = [
     method: 'POST',
     path,
     handler: (request, h) => {
-      console.log('hi')
-      console.log(request.params)
+      console.log('POST to', path)
       const { type } = request.params
+      // TODO: convert CSV to JSON and upload
       return h.view('data-reference-manage', new Model(typeInfo[type]))
     },
     options: {
