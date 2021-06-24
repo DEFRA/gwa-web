@@ -46,7 +46,6 @@ describe('Contact add route', () => {
     expect(res.statusCode).toEqual(200)
     const $ = cheerio.load(res.payload)
 
-    const title = $('.govuk-label--l').text()
-    expect(title).toMatch('What is your telephone number?')
+    expect($('.govuk-label--l').text()).toMatch('What is your telephone number?')
   })
 })
