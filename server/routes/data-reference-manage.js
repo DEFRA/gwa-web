@@ -71,9 +71,9 @@ module.exports = [
         // TODO: Need to make sure not all columns are used for data
         // TODO: Need to generate (and upload) the areaToOfficeMap file for `officeLocations`
 
-        const uploadRes = await updateReferenceData(data, type)
-        if (!uploadRes) {
-          return boom.internal(`Problem uploading ${types[type]} reference data for file ${filename}.`)
+        const updateRes = await updateReferenceData(data, type)
+        if (updateRes.statusCode !== 200) {
+          return boom.internal(`Problem uploading ${types[type]} reference data for file ${filename}.`, updateRes)
         }
       } catch (err) {
         return boom.internal(`Problem uploading ${types[type]} reference data for file ${filename}.`, err)
