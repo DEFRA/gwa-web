@@ -1,0 +1,13 @@
+{% extends "two-thirds.html" %}
+
+{% block twoThirds %}
+  <h1 class="govuk-heading-l">Reference data upload succeeded</h1>
+  <p class="govuk-body">The reference data for <strong>{{ data.heading }}</strong> was successfully updated with the data from <strong>{{ data.filename }}</strong>.</p>
+
+  <!-- Should use PRG pattern but this stops any form resubmissions -->
+  <script>
+    if (window.history.replaceState) {
+      window.history.replaceState(null, null, window.location.href)
+    }
+  </script>
+{% endblock %}

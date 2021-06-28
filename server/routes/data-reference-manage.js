@@ -1,9 +1,11 @@
-// const boom = require('@hapi/boom')
+const boom = require('@hapi/boom')
 const Joi = require('joi')
 
 const { scopes } = require('../permissions')
 const BaseModel = require('../lib/model')
+const convertReferenceDataCsvToJson = require('../lib/convert-reference-data-csv-to-json')
 const { types, typeInfo } = require('../lib/reference-data')
+const updateReferenceData = require('../lib/update-reference-data')
 
 const errorMessages = {
   file: { '*': 'Select a valid CSV file' }
@@ -16,6 +18,17 @@ class Model extends BaseModel {
 }
 
 const path = '/data-reference-manage/{type}'
+
+async function dropItemFromServerCache (request, type) {
+  switch (type) {
+    case types.officeLocations:
+      return Promise.all([
+        request.server.methods.db.getAreaToOfficeMap.cache.drop(),
+        request.server.methods.db.getStandardisedOfficeLocationMap.cache.drop()])
+    case types.orgList:
+      return request.server.methods.db.getOrganisationList.cache.drop()
+  }
+}
 
 module.exports = [
   {
@@ -40,11 +53,35 @@ module.exports = [
   }, {
     method: 'POST',
     path,
-    handler: (request, h) => {
-      console.log('POST to', path)
+    handler: async (request, h) => {
       const { type } = request.params
-      // TODO: convert CSV to JSON and upload
-      return h.view('data-reference-manage', new Model(typeInfo[type]))
+      const { file: fileStream } = request.payload
+      const { filename, headers } = fileStream.hapi
+
+      if (!filename || headers['content-type'] !== 'text/csv') {
+        const errors = { file: errorMessages.file['*'] }
+        return h.view('data-reference-manage', new Model(typeInfo[type], errors))
+      }
+
+      // TODO: Convert CSV to JSON and upload
+      try {
+        const data = await convertReferenceDataCsvToJson(fileStream, type)
+
+        // TODO: Might need to validate reference data prior to uploading
+        // TODO: Need to make sure not all columns are used for data
+        // TODO: Need to generate (and upload) the areaToOfficeMap file for `officeLocations`
+
+        const uploadRes = await updateReferenceData(data, type)
+        if (!uploadRes) {
+          return boom.internal(`Problem uploading ${types[type]} reference data for file ${filename}.`)
+        }
+      } catch (err) {
+        return boom.internal(`Problem uploading ${types[type]} reference data for file ${filename}.`, err)
+      }
+
+      await dropItemFromServerCache(request, type)
+      // TODO: Potentially add some more info to view
+      return h.view('data-reference-upload-results', new Model({ filename, heading: typeInfo[type].heading }))
     },
     options: {
       auth: {
