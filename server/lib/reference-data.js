@@ -1,7 +1,15 @@
+const { referenceData } = require('../constants')
+
 const types = {
   officeLocations: 'office-locations',
   orgList: 'org-list',
   orgMap: 'org-map'
+}
+
+const ids = {
+  [types.officeLocations]: referenceData.standardisedOfficeLocationMap,
+  [types.orgList]: referenceData.organisationList,
+  [types.orgMap]: referenceData.organisationMap
 }
 
 const typeInfo = {
