@@ -1,5 +1,5 @@
 const { updateReferenceData } = require('./db')
-const { ids } = require('./reference-data')
+const { typeInfo } = require('./reference-data')
 
 /**
  * Uploads a JSON file to the 'data-sources' blob storage container. The
@@ -12,9 +12,8 @@ const { ids } = require('./reference-data')
  */
 module.exports = async (data, type) => {
   const referenceDataItem = {
-    id: ids[type],
+    id: typeInfo[type].id,
     data
   }
-  console.log('UPLOADING...', referenceDataItem)
   return updateReferenceData(referenceDataItem)
 }
