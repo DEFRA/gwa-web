@@ -2,8 +2,8 @@ const { updateReferenceData } = require('./db')
 const { typeInfo } = require('./reference-data')
 
 /**
- * Updates the reference data item in the DB based on the `type` of data. If no
- * type is matched an error is thrown.
+ * Updates the reference data item (and any associated items) in the DB based
+ * on the `type` of data. If no type is matched an error is thrown.
  *
  * @param {object} data the reference data item.
  * @param {string} type the type of the reference data item.

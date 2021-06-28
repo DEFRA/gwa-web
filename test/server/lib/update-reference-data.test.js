@@ -1,5 +1,4 @@
-const { typeInfo } = require('../../../server/lib/reference-data')
-const types = Object.getOwnPropertyNames(typeInfo)
+const { typeInfo, types } = require('../../../server/lib/reference-data')
 
 const mockResponse = { status: 200 }
 const mockUpdateReferenceData = jest.fn().mockResolvedValue(mockResponse)
@@ -16,9 +15,10 @@ describe('Updating reference data', () => {
     jest.clearAllMocks()
   })
 
-  test.each(
-    types
-  )('reference data item is updated when type is found', async (type) => {
+  test.each([
+    [types.orgList],
+    [types.orgMap]
+  ])('reference data item is updated when type is found', async (type) => {
     const data = [{ a: 1 }]
 
     const response = await updateReferenceData(data, type)
@@ -27,6 +27,19 @@ describe('Updating reference data', () => {
     expect(mockUpdateReferenceData).toHaveBeenCalledTimes(1)
     expect(mockUpdateReferenceData).toHaveBeenCalledWith({
       id: typeInfo[type].id,
+      data
+    })
+  })
+
+  test('areaToOfficeMap is generated and updated when type is `officeLocations`', async () => {
+    const data = [{ a: 1 }]
+
+    const response = await updateReferenceData(data, types.officeLocations)
+
+    expect(response).toEqual(mockResponse)
+    expect(mockUpdateReferenceData).toHaveBeenCalledTimes(1)
+    expect(mockUpdateReferenceData).toHaveBeenCalledWith({
+      id: typeInfo[types.officeLocations].id,
       data
     })
   })
