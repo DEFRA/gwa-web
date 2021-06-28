@@ -137,6 +137,17 @@ async function updateUser (user) {
   return usersContainer.item(user.id, user.id).replace(user)
 }
 
+/**
+ * Update a reference data item.
+ *
+ * @param {object} referenceDataItem with an `id` matching a referenceData item.
+ * @returns {Promise} Promise representing
+ * [ItemResponse](https://azuresdkdocs.blob.core.windows.net/$web/javascript/azure-cosmos/3.10.6/classes/itemresponse.html)
+ */
+async function updateReferenceData (referenceDataItem) {
+  return refDataContainer.item(referenceDataItem.id, referenceDataItem.id).replace(referenceDataItem)
+}
+
 module.exports = {
   deleteMessage,
   getAreaToOfficeMap,
@@ -149,5 +160,6 @@ module.exports = {
   getUsers,
   saveMessage,
   updateMessage,
+  updateReferenceData,
   updateUser
 }
