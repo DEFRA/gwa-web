@@ -2,17 +2,22 @@ const { updateReferenceData } = require('./db')
 const { typeInfo } = require('./reference-data')
 
 /**
- * Uploads a JSON file to the 'data-sources' blob storage container. The
- * contents of the file is whatever is contained in `users`. The name of the
- * file is `{orgCode}.json`.
+ * Updates the reference data item in the DB based on the `type` of data. If no
+ * type is matched an error is thrown.
  *
- * @param {object} users list of users.
- * @param {string} orgCode organisation code to name the file with.
- * @returns {boolean} represents success of upload.
+ * @param {object} data the reference data item.
+ * @param {string} type the type of the reference data item.
+ * @returns {Promise} Promise representing
+ * [ItemResponse](https://azuresdkdocs.blob.core.windows.net/$web/javascript/azure-cosmos/3.10.6/classes/itemresponse.html)
  */
 module.exports = async (data, type) => {
+  const typeData = typeInfo[type]
+  if (!typeData) {
+    throw new Error(`Unknown reference data type: ${type}.`)
+  }
+
   const referenceDataItem = {
-    id: typeInfo[type].id,
+    id: typeData.id,
     data
   }
   return updateReferenceData(referenceDataItem)
