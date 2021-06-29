@@ -1,5 +1,7 @@
 const { updateReferenceData } = require('./db')
-const { typeInfo } = require('./reference-data')
+const generateAreaToOfficeMap = require('./generate-area-to-office-map')
+const { typeInfo, types } = require('./reference-data')
+const { referenceData } = require('../constants')
 
 /**
  * Updates the reference data item (and any associated items) in the DB based
@@ -16,9 +18,17 @@ module.exports = async (data, type) => {
     throw new Error(`Unknown reference data type: ${type}.`)
   }
 
-  const referenceDataItem = {
-    id: typeData.id,
-    data
+  if (type === types.officeLocations) {
+    const areaToOfficeMapItem = generateAreaToOfficeMap(data)
+    const res = await Promise.all([
+      updateReferenceData({ id: referenceData.areaToOfficeMap, data: areaToOfficeMapItem }),
+      updateReferenceData({ id: typeData.id, data })
+    ])
+    return res.sort((a, b) => {
+      if (a.status > b.status) { return -1 }
+      if (a.status < b.status) { return 1 }
+      return 0
+    })[0]
   }
-  return updateReferenceData(referenceDataItem)
+  return updateReferenceData({ id: typeData.id, data })
 }
