@@ -9,8 +9,9 @@ const { referenceData } = require('../constants')
  *
  * @param {object} data the reference data item.
  * @param {string} type the type of the reference data item.
- * @returns {Promise} Promise representing
+ * @returns {object} Either a promise representing an
  * [ItemResponse](https://azuresdkdocs.blob.core.windows.net/$web/javascript/azure-cosmos/3.10.6/classes/itemresponse.html)
+ * or a resolved `ItemResponse`.
  */
 module.exports = async (data, type) => {
   const typeData = typeInfo[type]
