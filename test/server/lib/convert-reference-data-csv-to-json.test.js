@@ -1,5 +1,6 @@
 const { Readable } = require('stream')
 const { types } = require('../../../server/lib/reference-data')
+const generateOfficeCode = require('../../../server/lib/generate-office-code')
 
 describe('Converting CSV of reference data into JSON for upload', () => {
   const convertReferenceDataCsvToJson = require('../../../server/lib/convert-reference-data-csv-to-json')
@@ -8,10 +9,10 @@ describe('Converting CSV of reference data into JSON for upload', () => {
     const headers = ['originalOfficeLocation', 'officeLocation', 'areaCode', 'areaName', 'officeCode']
     const type = types.officeLocations
     const originalOfficeLocation = 'originalOfficeLocation'
-    const officeLocation = 'officeLocation'
+    const officeLocation = 'office location'
     const areaCode = 'ABC'
     const areaName = 'area name'
-    const officeCode = 'ABC:area-name'
+    const officeCode = 'any old input'
 
     test('ideal input of several office locations returns expected output', async () => {
       const stream = Readable.from(`${headers.join()}\n${originalOfficeLocation},${officeLocation},${areaCode},${areaName},${officeCode}`)
@@ -29,7 +30,7 @@ describe('Converting CSV of reference data into JSON for upload', () => {
         expect(ol).toHaveProperty('areaName')
         expect(ol.areaName).toEqual(areaName)
         expect(ol).toHaveProperty('officeCode')
-        expect(ol.officeCode).toEqual(officeCode)
+        expect(ol.officeCode).toEqual(generateOfficeCode({ areaCode, officeLocation }))
       })
     })
 

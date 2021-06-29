@@ -1,5 +1,6 @@
 const csvtojson = require('csvtojson')
 const { types } = require('./reference-data')
+const generateOfficeCode = require('./generate-office-code')
 
 /**
  * Convert a readableStream of a CSV file containing reference data into JSON.
@@ -16,7 +17,11 @@ module.exports = async (readableStream, type) => {
     case types.officeLocations:
       data = await csvtojson({
         headers: ['originalOfficeLocation', 'officeLocation', 'areaCode', 'areaName', 'officeCode']
-      }).fromStream(readableStream)
+      })
+        .fromStream(readableStream)
+        .subscribe(line => {
+          line.officeCode = generateOfficeCode(line)
+        })
       break
     case types.orgList:
       data = await csvtojson({
