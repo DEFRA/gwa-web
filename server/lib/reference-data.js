@@ -15,7 +15,8 @@ const typeInfo = {
     '<br><strong>officeCode</strong> is a generated value and will be ignored during the upload.',
     download: 'office-locations-reference-data.csv',
     filename: 'office-locations',
-    heading: 'office locations'
+    heading: 'office locations',
+    headers: ['originalOfficeLocation', 'officeLocation', 'areaCode', 'areaName', 'officeCode']
   },
   [types.orgList]: {
     id: referenceData.organisationList,
@@ -29,7 +30,8 @@ const typeInfo = {
     '</ul>',
     download: 'organisation-list-reference-data.csv',
     filename: 'org-list',
-    heading: 'organisation list'
+    heading: 'organisation list',
+    headers: ['orgName', 'orgCode', 'active', 'core']
   },
   [types.orgMap]: {
     id: referenceData.organisationMap,
@@ -37,7 +39,8 @@ const typeInfo = {
     '<br>When editing the data, either by updating existing rows or adding new rows, <strong>orgName</strong> will be ignored when the file is uploaded. The column only exists in the download to help identify which organisation the code belongs to. <strong>orgCode</strong> is used to create the mapping to the correct organisation.',
     download: 'organisation-map-reference-data.csv',
     filename: 'org-map',
-    heading: 'organisation map'
+    heading: 'organisation map',
+    headers: ['originalOrgName', 'orgName', 'orgCode']
   }
 }
 
