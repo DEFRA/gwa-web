@@ -12,33 +12,32 @@ const generateOfficeCode = require('./generate-office-code')
  * @returns {Array} containing reference data.
  */
 module.exports = async (readableStream, type) => {
-  let data = []
   switch (type) {
     case types.officeLocations:
-      data = await csvtojson({
+      return await csvtojson({
         headers: ['originalOfficeLocation', 'officeLocation', 'areaCode', 'areaName', 'officeCode']
       })
         .fromStream(readableStream)
         .subscribe(line => {
           line.officeCode = generateOfficeCode(line)
         })
-      break
-    case types.orgList:
-      data = await csvtojson({
+    case types.orgList: {
+      return (await csvtojson({
         headers: ['orgName', 'orgCode', 'active', 'core'],
         colParser: {
           active: item => item.toLowerCase() === 'true',
           core: item => item.toLowerCase() === 'true'
         }
-      }).fromStream(readableStream)
-      break
+      })
+        .fromStream(readableStream))
+        .filter(x => x.orgCode !== 'UFD')
+        .concat({ orgCode: 'UFD', orgName: 'Undefined', active: true, core: false })
+    }
     case types.orgMap:
-      data = await csvtojson({
+      return await csvtojson({
         headers: ['originalOrgName', 'orgName', 'orgCode']
       }).fromStream(readableStream)
-      break
     default:
       throw new Error(`Unknown reference data type: ${type}.`)
   }
-  return data
 }

@@ -56,22 +56,40 @@ describe('Converting CSV of reference data into JSON for upload', () => {
     const active = true
     const core = false
 
-    test('ideal input of several office locations returns expected output', async () => {
+    function expectUndefinedOrg (officeLocation) {
+      expect(officeLocation.orgCode).toEqual('UFD')
+      expect(officeLocation.orgName).toEqual('Undefined')
+      expect(officeLocation.active).toEqual(true)
+      expect(officeLocation.core).toEqual(false)
+    }
+
+    test('input of office location returns json along with undefined org', async () => {
       const stream = Readable.from(`${headers.join()}\n${orgName},${orgCode},${active},${core}`)
 
       const officeLocations = await convertReferenceDataCsvToJson(stream, type)
 
-      expect(officeLocations).toHaveLength(1)
+      expect(officeLocations).toHaveLength(2)
       officeLocations.forEach(ol => {
         expect(ol).toHaveProperty('orgCode')
-        expect(ol.orgCode).toEqual(orgCode)
         expect(ol).toHaveProperty('orgName')
-        expect(ol.orgName).toEqual(orgName)
         expect(ol).toHaveProperty('active')
-        expect(ol.active).toEqual(active)
         expect(ol).toHaveProperty('core')
-        expect(ol.core).toEqual(core)
       })
+      const officeLocationOne = officeLocations[0]
+      expect(officeLocationOne.orgCode).toEqual(orgCode)
+      expect(officeLocationOne.orgName).toEqual(orgName)
+      expect(officeLocationOne.active).toEqual(active)
+      expect(officeLocationOne.core).toEqual(core)
+      expectUndefinedOrg(officeLocations[1])
+    })
+
+    test('input including undefined org returns a instance that is active and not core', async () => {
+      const stream = Readable.from(`${headers.join()}\nUndefined,UFD,FALSE,TRUE`)
+
+      const officeLocations = await convertReferenceDataCsvToJson(stream, type)
+
+      expect(officeLocations).toHaveLength(1)
+      expectUndefinedOrg(officeLocations[0])
     })
 
     test.each([
@@ -82,17 +100,19 @@ describe('Converting CSV of reference data into JSON for upload', () => {
 
       const officeLocations = await convertReferenceDataCsvToJson(stream, type)
 
-      expect(officeLocations).toHaveLength(1)
+      expect(officeLocations).toHaveLength(2)
       officeLocations.forEach(ol => {
         expect(ol).toHaveProperty('orgCode')
-        expect(ol.orgCode).toEqual(orgCode)
         expect(ol).toHaveProperty('orgName')
-        expect(ol.orgName).toEqual(orgName)
         expect(ol).toHaveProperty('active')
-        expect(ol.active).toEqual(activeVariant.toLowerCase() === 'true')
         expect(ol).toHaveProperty('core')
-        expect(ol.core).toEqual(coreVariant.toLowerCase() === 'true')
       })
+      const officeLocationOne = officeLocations[0]
+      expect(officeLocationOne.orgCode).toEqual(orgCode)
+      expect(officeLocationOne.orgName).toEqual(orgName)
+      expect(officeLocationOne.active).toEqual(activeVariant.toLowerCase() === 'true')
+      expect(officeLocationOne.core).toEqual(coreVariant.toLowerCase() === 'true')
+      expectUndefinedOrg(officeLocations[1])
     })
 
     test('altered headers in file do not name properties', async () => {
@@ -100,12 +120,23 @@ describe('Converting CSV of reference data into JSON for upload', () => {
 
       const officeLocations = await convertReferenceDataCsvToJson(stream, type)
 
-      expect(officeLocations).toHaveLength(1)
+      expect(officeLocations).toHaveLength(2)
       officeLocations.forEach(ol => {
         headers.forEach(header => {
           expect(ol).toHaveProperty(header)
         })
       })
+      expectUndefinedOrg(officeLocations[1])
+    })
+
+    test('no user data returns undefined org', async () => {
+      const stream = Readable.from('\n')
+
+      const officeLocations = await convertReferenceDataCsvToJson(stream, type)
+      console.log(officeLocations)
+
+      expect(officeLocations).toHaveLength(1)
+      expectUndefinedOrg(officeLocations[0])
     })
   })
 
@@ -149,7 +180,6 @@ describe('Converting CSV of reference data into JSON for upload', () => {
   describe('generic tests', () => {
     test.each([
       { type: types.officeLocations },
-      { type: types.orgList },
       { type: types.orgMap }
     ])('no user data - $type', async ({ type }) => {
       const stream = Readable.from('\n')
