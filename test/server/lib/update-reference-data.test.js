@@ -1,5 +1,4 @@
 const { typeInfo, types } = require('../../../server/lib/reference-data')
-const { referenceData } = require('../../../server/constants')
 
 const { updateReferenceData: mockUpdateReferenceData } = require('../../../server/lib/db')
 jest.mock('../../../server/lib/db')
@@ -32,7 +31,7 @@ describe('Updating reference data', () => {
   })
 
   test('areaToOfficeMap is generated and updated when type is `officeLocations`', async () => {
-    const mockAreaToOfficeMap = []
+    const mockAreaToOfficeMap = { id: 'areaToOfficeMapId', data: [{ id: 1 }] }
     generateAreaToOfficeMap.mockReturnValue(mockAreaToOfficeMap)
     const data = [{ a: 1 }]
 
@@ -42,10 +41,7 @@ describe('Updating reference data', () => {
     expect(generateAreaToOfficeMap).toHaveBeenCalledTimes(1)
     expect(generateAreaToOfficeMap).toHaveBeenCalledWith(data)
     expect(mockUpdateReferenceData).toHaveBeenCalledTimes(2)
-    expect(mockUpdateReferenceData).toHaveBeenNthCalledWith(1, {
-      id: referenceData.areaToOfficeMap,
-      data: mockAreaToOfficeMap
-    })
+    expect(mockUpdateReferenceData).toHaveBeenNthCalledWith(1, mockAreaToOfficeMap)
     expect(mockUpdateReferenceData).toHaveBeenNthCalledWith(2, {
       id: typeInfo[types.officeLocations].id,
       data
@@ -57,7 +53,7 @@ describe('Updating reference data', () => {
     [503, 404]
   ])('when type is `officeLocations` highest status code is returned', async (statusOne, statusTwo) => {
     mockUpdateReferenceData.mockResolvedValueOnce({ status: statusOne }).mockResolvedValueOnce({ status: statusTwo })
-    const mockAreaToOfficeMap = []
+    const mockAreaToOfficeMap = { id: 'areaToOfficeMapId', data: [{ id: 1 }] }
     generateAreaToOfficeMap.mockReturnValue(mockAreaToOfficeMap)
     const data = [{ a: 1 }]
 
@@ -67,10 +63,7 @@ describe('Updating reference data', () => {
     expect(generateAreaToOfficeMap).toHaveBeenCalledTimes(1)
     expect(generateAreaToOfficeMap).toHaveBeenCalledWith(data)
     expect(mockUpdateReferenceData).toHaveBeenCalledTimes(2)
-    expect(mockUpdateReferenceData).toHaveBeenNthCalledWith(1, {
-      id: referenceData.areaToOfficeMap,
-      data: mockAreaToOfficeMap
-    })
+    expect(mockUpdateReferenceData).toHaveBeenNthCalledWith(1, mockAreaToOfficeMap)
     expect(mockUpdateReferenceData).toHaveBeenNthCalledWith(2, {
       id: typeInfo[types.officeLocations].id,
       data
