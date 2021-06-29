@@ -158,5 +158,13 @@ describe('Converting CSV of reference data into JSON for upload', () => {
 
       expect(data).toHaveLength(0)
     })
+
+    test('error thrown when type not matched', async () => {
+      const stream = Readable.from('\n')
+      const type = 'unknown'
+
+      expect.assertions(1)
+      await expect(convertReferenceDataCsvToJson(stream, type)).rejects.toThrow(`Unknown reference data type: ${type}.`)
+    })
   })
 })

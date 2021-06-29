@@ -38,7 +38,7 @@ module.exports = async (readableStream, type) => {
       }).fromStream(readableStream)
       break
     default:
-      break
+      throw new Error(`Unknown reference data type: ${type}.`)
   }
   return data
 }
