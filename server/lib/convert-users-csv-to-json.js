@@ -22,20 +22,19 @@ const { parsePhoneNumber } = require('./phone-number')
 module.exports = async (readableStream, organisation, officeLocationMapRefData) => {
   const officeLocationMap = new Map(officeLocationMapRefData.map(ol => [ol.originalOfficeLocation, { officeCode: ol.officeCode, officeLocation: ol.officeLocation }]))
 
-  const users = await csvtojson({ headers: orgDataFileHeaders }).fromStream(readableStream)
-  users.forEach(user => {
-    user.emailAddress = user.emailAddress.toLowerCase()
-    user.orgCode = organisation.orgCode
-    user.orgName = organisation.orgName
+  return csvtojson({ headers: orgDataFileHeaders })
+    .fromStream(readableStream)
+    .subscribe(user => {
+      user.emailAddress = user.emailAddress.toLowerCase()
+      user.orgCode = organisation.orgCode
+      user.orgName = organisation.orgName
 
-    const office = officeLocationMap.get(user.officeLocation)
-    user.officeLocation = office?.officeLocation ?? officeLocationMappings.unmappedOfficeLocation
-    user.officeCode = office?.officeCode ?? officeLocationMappings.unmappedOfficeCode
+      const office = officeLocationMap.get(user.officeLocation)
+      user.officeLocation = office?.officeLocation ?? officeLocationMappings.unmappedOfficeLocation
+      user.officeCode = office?.officeCode ?? officeLocationMappings.unmappedOfficeCode
 
-    const pn = parsePhoneNumber(user.phoneNumber)
-    user.phoneNumbers = [pn.e164]
-    delete user.phoneNumber
-  })
-
-  return users
+      const pn = parsePhoneNumber(user.phoneNumber)
+      user.phoneNumbers = [pn.e164]
+      delete user.phoneNumber
+    })
 }
