@@ -4,10 +4,10 @@ const generateOfficeCode = require('./generate-office-code')
 
 function validateOrgList (data, orgList) {
   const orgMap = new Map(orgList.map(x => [x.orgCode, { orgName: x.orgName }]))
-  for (let i = 0; i < data.length; i++) {
-    const org = orgMap.get(data[i].orgCode)
+  for (const item of data) {
+    const org = orgMap.get(item.orgCode)
     if (org) {
-      data[i].orgName = org.orgName
+      item.orgName = org.orgName
     } else {
       return false
     }
