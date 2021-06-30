@@ -1,4 +1,3 @@
-const boom = require('@hapi/boom')
 const Joi = require('joi')
 
 const { getOrganisationMap } = require('../lib/db')
@@ -31,8 +30,6 @@ module.exports = [
           fileContents = await getStandardisedOfficeLocationMap(officeLocationMap)
           break
         }
-        default:
-          return boom.notFound(`Unrecognised reference data type: '${type}'.`)
       }
       return h.response(fileContents).header('Content-Type', 'text/csv')
     },
