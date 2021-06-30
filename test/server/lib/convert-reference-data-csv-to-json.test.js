@@ -137,24 +137,40 @@ describe('Converting CSV of reference data into JSON for upload', () => {
     const headers = ['originalOrgName', 'orgName', 'orgCode']
     const type = types.orgMap
     const originalOrgName = 'originalOrgName'
+    const originalOrgNameTwo = 'originalOrgNameTwo'
     const orgName = 'orgName'
     const orgCode = 'ABC'
 
-    test('ideal input of several office locations returns expected output', async () => {
-      const stream = Readable.from(`${headers.join()}\n${originalOrgName},${orgName},${orgCode}`)
+    test('input of several office locations returns expected output with altered orgName corrected as per orgList contents', async () => {
+      const stream = Readable.from(`${headers.join()}\n${originalOrgName},${orgName},${orgCode}\n${originalOrgNameTwo},another orgName,${orgCode}`)
+      const db = { getOrganisationList: () => new Promise((resolve, reject) => { resolve([{ orgCode, orgName }]) }) }
 
-      const { data, valid } = await convertReferenceDataCsvToJson(stream, type)
+      const { data, valid } = await convertReferenceDataCsvToJson(stream, type, db)
 
       expect(valid).toEqual(true)
-      expect(data).toHaveLength(1)
+      expect(data).toHaveLength(2)
       data.forEach(ol => {
         expect(ol).toHaveProperty('originalOrgName')
-        expect(ol.originalOrgName).toEqual(originalOrgName)
         expect(ol).toHaveProperty('orgName')
-        expect(ol.orgName).toEqual(orgName)
         expect(ol).toHaveProperty('orgCode')
-        expect(ol.orgCode).toEqual(orgCode)
       })
+      const olOne = data[0]
+      expect(olOne.originalOrgName).toEqual(originalOrgName)
+      expect(olOne.orgName).toEqual(orgName)
+      expect(olOne.orgCode).toEqual(orgCode)
+      const olTwo = data[1]
+      expect(olTwo.originalOrgName).toEqual(originalOrgNameTwo)
+      expect(olTwo.orgName).toEqual(orgName)
+      expect(olTwo.orgCode).toEqual(orgCode)
+    })
+
+    test('input of office location with an unrecognised orgCode returns an invalid response', async () => {
+      const stream = Readable.from(`${headers.join()}\n${originalOrgName},${orgName},${orgCode}`)
+      const db = { getOrganisationList: () => new Promise((resolve, reject) => { resolve([]) }) }
+
+      const { valid } = await convertReferenceDataCsvToJson(stream, type, db)
+
+      expect(valid).toEqual(false)
     })
 
     test('altered headers in file return invalid response', async () => {
@@ -168,12 +184,12 @@ describe('Converting CSV of reference data into JSON for upload', () => {
 
   describe('generic tests', () => {
     test.each([
-      { type: types.officeLocations },
-      { type: types.orgMap }
-    ])('no user data - %o', async ({ type }) => {
+      { type: types.officeLocations, db: { getOrganisationList: () => [] } },
+      { type: types.orgMap, db: { getOrganisationList: () => [] } }
+    ])('no user data - %o', async ({ type, db }) => {
       const stream = Readable.from('\n')
 
-      const { data, valid } = await convertReferenceDataCsvToJson(stream, type)
+      const { data, valid } = await convertReferenceDataCsvToJson(stream, type, db)
 
       expect(data).toHaveLength(0)
       expect(valid).toEqual(false)

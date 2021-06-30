@@ -8,7 +8,10 @@ const { types, typeInfo } = require('../lib/reference-data')
 const updateReferenceData = require('../lib/update-reference-data')
 
 const errorMessages = {
-  file: { '*': 'Select a valid CSV file' }
+  file: {
+    '*': 'Select a valid CSV file',
+    validity: 'Reference data was not valid.'
+  }
 }
 
 class Model extends BaseModel {
@@ -64,16 +67,11 @@ module.exports = [
       }
 
       try {
-        const { data, valid } = await convertReferenceDataCsvToJson(fileStream, type)
+        const { data, valid } = await convertReferenceDataCsvToJson(fileStream, type, request.server.methods.db)
         if (!valid) {
-          const errors = { file: errorMessages.file['*'] }
+          const errors = { file: errorMessages.file.validity }
           return h.view('data-reference-manage', new Model(typeInfo[type], errors))
         }
-
-        // TODO: Validate org-map reference data prior to uploading
-        //       Check all of the orgCodes are contained in the org-list and
-        //       use orgName from org-list rather than whatever was entered
-        //       into the org-map data
 
         const updateRes = await updateReferenceData(data, type)
         if (updateRes.statusCode !== 200) {
