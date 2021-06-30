@@ -63,13 +63,17 @@ module.exports = [
         return h.view('data-reference-manage', new Model(typeInfo[type], errors))
       }
 
-      // TODO: Convert CSV to JSON and upload
       try {
-        const data = await convertReferenceDataCsvToJson(fileStream, type)
+        const { data, valid } = await convertReferenceDataCsvToJson(fileStream, type)
+        if (!valid) {
+          const errors = { file: errorMessages.file['*'] }
+          return h.view('data-reference-manage', new Model(typeInfo[type], errors))
+        }
 
-        // TODO: Might need to validate reference data prior to uploading
-        // TODO: Need to make sure not all columns are used for data
-        // TODO: Need to generate (and upload) the areaToOfficeMap file for `officeLocations`
+        // TODO: Validate org-map reference data prior to uploading
+        //       Check all of the orgCodes are contained in the org-list and
+        //       use orgName from org-list rather than whatever was entered
+        //       into the org-map data
 
         const updateRes = await updateReferenceData(data, type)
         if (updateRes.statusCode !== 200) {
