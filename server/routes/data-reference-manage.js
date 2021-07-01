@@ -20,6 +20,8 @@ class Model extends BaseModel {
   }
 }
 
+const auth = { access: { scope: [`+${scopes.data.manage}`] } }
+
 const path = '/data-reference-manage/{type}'
 
 async function dropItemFromServerCache (request, type) {
@@ -42,11 +44,7 @@ module.exports = [
       return h.view('data-reference-manage', new Model(typeInfo[type]))
     },
     options: {
-      auth: {
-        access: {
-          scope: [`+${scopes.data.manage}`]
-        }
-      },
+      auth,
       validate: {
         params: Joi.object().keys({
           type: Joi.string().valid(types.officeLocations, types.orgList, types.orgMap).required()
@@ -82,15 +80,10 @@ module.exports = [
       }
 
       await dropItemFromServerCache(request, type)
-      // TODO: Potentially add some more info to view
       return h.view('data-reference-upload-results', new Model({ filename, heading: typeInfo[type].heading }))
     },
     options: {
-      auth: {
-        access: {
-          scope: [`+${scopes.data.manage}`]
-        }
-      },
+      auth,
       payload: {
         maxBytes: 1024 * 1024 * 8, // 8MB limit
         output: 'stream',
