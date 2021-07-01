@@ -243,7 +243,6 @@ describe('Message creation route', () => {
         payload
       })
 
-      const $ = cheerio.load(res.payload)
       expect(res.statusCode).toEqual(302)
       expect(res.headers.location).toEqual('/messages')
     })
