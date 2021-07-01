@@ -23,6 +23,8 @@ class Model extends BaseModel {
 
 const path = '/upload'
 
+const auth = { access: { scope: [`+${scopes.data.manage}`] } }
+
 function anyDuplicates (valid) {
   return new Map(valid.map(x => [x.emailAddress, x])).size !== valid.length
 }
@@ -38,11 +40,7 @@ module.exports = [
       return h.view('upload', new Model({ headers: orgDataFileHeaders, organisations }))
     },
     options: {
-      auth: {
-        access: {
-          scope: [`+${scopes.data.manage}`]
-        }
-      }
+      auth
     }
   },
   {
@@ -95,11 +93,7 @@ module.exports = [
       }
     },
     options: {
-      auth: {
-        access: {
-          scope: [`+${scopes.data.manage}`]
-        }
-      },
+      auth,
       payload: {
         maxBytes: 1024 * 1024 * 8, // 8MB limit
         output: 'stream',
