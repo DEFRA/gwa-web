@@ -1,12 +1,17 @@
-// const boom = require('@hapi/boom')
+const boom = require('@hapi/boom')
 const Joi = require('joi')
 
 const { scopes } = require('../permissions')
 const BaseModel = require('../lib/model')
+const convertReferenceDataCsvToJson = require('../lib/convert-reference-data-csv-to-json')
 const { types, typeInfo } = require('../lib/reference-data')
+const updateReferenceData = require('../lib/update-reference-data')
 
 const errorMessages = {
-  file: { '*': 'Select a valid CSV file' }
+  file: {
+    '*': 'Select a valid CSV file',
+    validity: 'Reference data was not valid.'
+  }
 }
 
 class Model extends BaseModel {
@@ -15,7 +20,20 @@ class Model extends BaseModel {
   }
 }
 
+const auth = { access: { scope: [`+${scopes.data.manage}`] } }
+
 const path = '/data-reference-manage/{type}'
+
+async function dropItemFromServerCache (request, type) {
+  switch (type) {
+    case types.officeLocations:
+      return Promise.all([
+        request.server.methods.db.getAreaToOfficeMap.cache.drop(),
+        request.server.methods.db.getStandardisedOfficeLocationMap.cache.drop()])
+    case types.orgList:
+      return request.server.methods.db.getOrganisationList.cache.drop()
+  }
+}
 
 module.exports = [
   {
@@ -26,11 +44,7 @@ module.exports = [
       return h.view('data-reference-manage', new Model(typeInfo[type]))
     },
     options: {
-      auth: {
-        access: {
-          scope: [`+${scopes.data.manage}`]
-        }
-      },
+      auth,
       validate: {
         params: Joi.object().keys({
           type: Joi.string().valid(types.officeLocations, types.orgList, types.orgMap).required()
@@ -40,18 +54,36 @@ module.exports = [
   }, {
     method: 'POST',
     path,
-    handler: (request, h) => {
-      console.log('POST to', path)
+    handler: async (request, h) => {
       const { type } = request.params
-      // TODO: convert CSV to JSON and upload
-      return h.view('data-reference-manage', new Model(typeInfo[type]))
+      const { file: fileStream } = request.payload
+      const { filename, headers } = fileStream.hapi
+
+      if (!filename || headers['content-type'] !== 'text/csv') {
+        const errors = { file: errorMessages.file['*'] }
+        return h.view('data-reference-manage', new Model(typeInfo[type], errors))
+      }
+
+      try {
+        const { data, valid } = await convertReferenceDataCsvToJson(fileStream, type, request.server.methods.db)
+        if (!valid) {
+          const errors = { file: errorMessages.file.validity }
+          return h.view('data-reference-manage', new Model(typeInfo[type], errors))
+        }
+
+        const updateRes = await updateReferenceData(data, type)
+        if (updateRes.statusCode !== 200) {
+          return boom.internal(`Problem uploading ${types[type]} reference data for file ${filename}.`, updateRes)
+        }
+      } catch (err) {
+        return boom.internal(`Problem uploading ${types[type]} reference data for file ${filename}.`, err)
+      }
+
+      await dropItemFromServerCache(request, type)
+      return h.view('data-reference-upload-results', new Model({ filename, heading: typeInfo[type].heading }))
     },
     options: {
-      auth: {
-        access: {
-          scope: [`+${scopes.data.manage}`]
-        }
-      },
+      auth,
       payload: {
         maxBytes: 1024 * 1024 * 8, // 8MB limit
         output: 'stream',

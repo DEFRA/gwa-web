@@ -1,6 +1,10 @@
 const { messagesContainer, refDataContainer, usersContainer } = require('../db/client')
 const { referenceData } = require('../constants')
 
+async function getReferenceData (id) {
+  return (await refDataContainer.item(id, id).read())?.resource?.data
+}
+
 /**
  * Delete a message by id (guid).
  *
@@ -22,7 +26,7 @@ async function deleteMessage (id) {
  * @returns {Array} list of areas with an array of `officeLocations`.
  */
 async function getAreaToOfficeMap () {
-  return (await refDataContainer.item(referenceData.areaToOfficeMap, referenceData.areaToOfficeMap).read())?.resource?.data
+  return getReferenceData(referenceData.areaToOfficeMap)
 }
 
 /**
@@ -56,7 +60,7 @@ async function getMessages (query) {
  * `orgName`.
  */
 async function getOrganisationList () {
-  return (await refDataContainer.item(referenceData.organisationList, referenceData.organisationList).read())?.resource?.data
+  return getReferenceData(referenceData.organisationList)
 }
 
 /**
@@ -66,7 +70,7 @@ async function getOrganisationList () {
  * organisation. Organisation consists of `orgCode` and `orgName`.
  */
 async function getOrganisationMap () {
-  return (await refDataContainer.item(referenceData.organisationMap, referenceData.organisationMap).read())?.resource?.data
+  return getReferenceData(referenceData.organisationMap)
 }
 
 /**
@@ -79,7 +83,7 @@ async function getOrganisationMap () {
  * @returns {Array} list of areas with an array of `officeLocations`.
  */
 async function getStandardisedOfficeLocationMap () {
-  return (await refDataContainer.item(referenceData.standardisedOfficeLocationMap, referenceData.standardisedOfficeLocationMap).read())?.resource?.data
+  return getReferenceData(referenceData.standardisedOfficeLocationMap)
 }
 
 /**
@@ -137,6 +141,17 @@ async function updateUser (user) {
   return usersContainer.item(user.id, user.id).replace(user)
 }
 
+/**
+ * Update a reference data item.
+ *
+ * @param {object} referenceDataItem with an `id` matching a referenceData item.
+ * @returns {Promise} Promise representing
+ * [ItemResponse](https://azuresdkdocs.blob.core.windows.net/$web/javascript/azure-cosmos/3.10.6/classes/itemresponse.html)
+ */
+async function updateReferenceData (referenceDataItem) {
+  return refDataContainer.item(referenceDataItem.id, referenceDataItem.id).replace(referenceDataItem)
+}
+
 module.exports = {
   deleteMessage,
   getAreaToOfficeMap,
@@ -149,5 +164,6 @@ module.exports = {
   getUsers,
   saveMessage,
   updateMessage,
+  updateReferenceData,
   updateUser
 }
