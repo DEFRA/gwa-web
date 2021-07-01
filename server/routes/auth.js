@@ -19,10 +19,6 @@ module.exports = [
       const { email } = profile
       const { roles, scope } = getPermissions(profile.raw.roles)
 
-      if (!roles || !scope) {
-        return boom.forbidden('Insufficient permissions')
-      }
-
       // Lowercased emails used as ids (at least atm)
       const user = await getUser(email.toLowerCase())
 
