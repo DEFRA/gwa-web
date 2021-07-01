@@ -85,7 +85,7 @@
       containerClasses: "govuk-width-container",
       serviceName: serviceName,
       serviceUrl: "/",
-      navigation: navigation
+      navigation: navigation if navigation else [{ href: '/logout', text: 'Sign out' }]
     })
   }}
 {% endblock %}
