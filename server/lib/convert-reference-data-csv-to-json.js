@@ -2,7 +2,7 @@ const csvtojson = require('csvtojson')
 const { typeInfo, types } = require('./reference-data')
 const generateOfficeCode = require('./generate-office-code')
 
-function validateOrgList (data, orgList) {
+function validateOrgs (data, orgList) {
   const orgMap = new Map(orgList.map(x => [x.orgCode, { orgName: x.orgName }]))
   for (const item of data) {
     const org = orgMap.get(item.orgCode)
@@ -28,11 +28,12 @@ function isValid (data, type) {
  * @param {string} type type of data, determining conversion attempted.
  * @param {object} db object reference to `request.server.methods.db`.
  * @returns {object} containing `data` - an array of the parsed reference data
- * if the input was valid or undefined if not valid. And `valid` - a boolean
- * indicating if the file was deemed OK.
+ * or empty if not valid. And `valid` - a boolean indicating if the file was
+ * deemed OK.
  */
 module.exports = async (readableStream, type, db) => {
-  let data
+  let data = []
+  let valid = false
   try {
     switch (type) {
       case types.officeLocations:
@@ -41,23 +42,33 @@ module.exports = async (readableStream, type, db) => {
           .subscribe(line => {
             line.officeCode = generateOfficeCode(line)
           })
+
+        valid = isValid(data, type)
         break
-      case types.orgList:
-        data = (await csvtojson({
+      case types.orgList: {
+        const temp = (await csvtojson({
           colParser: {
             active: item => item.toLowerCase() === 'true',
             core: item => item.toLowerCase() === 'true'
           }
         })
           .fromStream(readableStream))
-          .filter(x => x.orgCode !== 'UFD')
-          .concat({ orgName: 'Undefined', orgCode: 'UFD', active: true, core: false })
+        valid = isValid(temp, type)
+        if (valid) {
+          data = temp
+            .filter(x => x.orgCode !== 'UFD')
+            .concat({ orgName: 'Undefined', orgCode: 'UFD', active: true, core: false })
+        }
         break
+      }
       case types.orgMap: {
         const orgList = await db.getOrganisationList()
         data = await csvtojson().fromStream(readableStream)
-        if (!validateOrgList(data, orgList)) {
-          return { valid: false }
+        if (validateOrgs(data, orgList)) {
+          valid = isValid(data, type)
+        } else {
+          data = []
+          valid = false
         }
         break
       }
@@ -65,10 +76,10 @@ module.exports = async (readableStream, type, db) => {
         throw new Error(`Unknown reference data type: ${type}.`)
     }
   } catch (err) {
-    return { valid: false }
+    valid = false
   }
   return {
     data,
-    valid: isValid(data, type)
+    valid
   }
 }

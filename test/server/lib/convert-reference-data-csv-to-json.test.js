@@ -38,9 +38,10 @@ describe('Converting CSV of reference data into JSON for upload', () => {
     test('altered headers in file return invalid response', async () => {
       const stream = Readable.from(`a,b,c,d,e\n${originalOfficeLocation},${officeLocation},${areaCode},${areaName},${officeCode}`)
 
-      const { valid } = await convertReferenceDataCsvToJson(stream, type)
+      const { data, valid } = await convertReferenceDataCsvToJson(stream, type)
 
       expect(valid).toEqual(false)
+      expect(data).toEqual([])
     })
   })
 
@@ -80,7 +81,7 @@ describe('Converting CSV of reference data into JSON for upload', () => {
       expectUndefinedOrg(data[1])
     })
 
-    test('input including undefined org returns a instance that is active and not core', async () => {
+    test('input including undefined org returns the default instance i.e. active=true and core=false', async () => {
       const stream = Readable.from(`${headers.join()}\nUndefined,UFD,FALSE,TRUE`)
 
       const { data, valid } = await convertReferenceDataCsvToJson(stream, type)
@@ -117,19 +118,19 @@ describe('Converting CSV of reference data into JSON for upload', () => {
     test('altered headers in file return invalid response', async () => {
       const stream = Readable.from(`a,b,c,d\n${orgName},${orgCode},${active},${core}`)
 
-      const { valid } = await convertReferenceDataCsvToJson(stream, type)
+      const { data, valid } = await convertReferenceDataCsvToJson(stream, type)
 
       expect(valid).toEqual(false)
+      expect(data).toEqual([])
     })
 
-    test('no user data returns undefined org', async () => {
+    test('no user data is not valid', async () => {
       const stream = Readable.from('\n')
 
       const { data, valid } = await convertReferenceDataCsvToJson(stream, type)
 
-      expect(valid).toEqual(true)
-      expect(data).toHaveLength(1)
-      expectUndefinedOrg(data[0])
+      expect(valid).toEqual(false)
+      expect(data).toEqual([])
     })
   })
 
@@ -168,42 +169,44 @@ describe('Converting CSV of reference data into JSON for upload', () => {
       const stream = Readable.from(`${headers.join()}\n${originalOrgName},${orgName},${orgCode}`)
       const db = { getOrganisationList: () => new Promise((resolve, reject) => { resolve([]) }) }
 
-      const { valid } = await convertReferenceDataCsvToJson(stream, type, db)
+      const { data, valid } = await convertReferenceDataCsvToJson(stream, type, db)
 
       expect(valid).toEqual(false)
+      expect(data).toEqual([])
     })
 
     test('altered headers in file return invalid response', async () => {
       const stream = Readable.from(`a,b,c\n${originalOrgName},${orgName},${orgCode}`)
 
-      const { valid } = await convertReferenceDataCsvToJson(stream, type)
+      const { data, valid } = await convertReferenceDataCsvToJson(stream, type)
 
       expect(valid).toEqual(false)
+      expect(data).toEqual([])
     })
   })
 
   describe('generic tests', () => {
     test.each([
       { type: types.officeLocations, db: { getOrganisationList: () => [] } },
+      { type: types.orgList, db: { getOrganisationList: () => [] } },
       { type: types.orgMap, db: { getOrganisationList: () => [] } }
     ])('no user data - %o', async ({ type, db }) => {
       const stream = Readable.from('\n')
 
       const { data, valid } = await convertReferenceDataCsvToJson(stream, type, db)
 
-      expect(data).toHaveLength(0)
       expect(valid).toEqual(false)
+      expect(data).toEqual([])
     })
 
     test('result is not valid when type is not matched', async () => {
       const stream = Readable.from('\n')
       const type = 'unknown'
 
-      const res = await convertReferenceDataCsvToJson(stream, type)
+      const { data, valid } = await convertReferenceDataCsvToJson(stream, type)
 
-      expect(res).toHaveProperty('valid')
-      expect(res.valid).toEqual(false)
-      expect(res).not.toHaveProperty('data')
+      expect(valid).toEqual(false)
+      expect(data).toEqual([])
     })
   })
 })
