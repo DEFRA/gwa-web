@@ -33,7 +33,7 @@ function isValid (data, type) {
  */
 module.exports = async (readableStream, type, db) => {
   let data = []
-  let valid = false
+  let valid
   try {
     switch (type) {
       case types.officeLocations:
@@ -62,8 +62,9 @@ module.exports = async (readableStream, type, db) => {
         break
       }
       case types.orgMap: {
-        const orgList = await db.getOrganisationList()
-        data = await csvtojson().fromStream(readableStream)
+        const res = await Promise.all([db.getOrganisationList(), csvtojson().fromStream(readableStream)])
+        const orgList = res[0]
+        data = res[1]
         if (validateOrgs(data, orgList)) {
           valid = isValid(data, type)
         } else {
