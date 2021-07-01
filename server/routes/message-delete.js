@@ -41,6 +41,7 @@ module.exports = [
     path,
     handler: async (request, h) => {
       const message = await verifyRequest(request)
+      if (message.isBoom) { return message }
 
       const messageRows = getMessageRows(message)
 
@@ -53,6 +54,7 @@ module.exports = [
     path,
     handler: async (request, h) => {
       const message = await verifyRequest(request)
+      if (message.isBoom) { return message }
 
       const res = await deleteMessage(message.id)
       if (res.statusCode !== 204) {

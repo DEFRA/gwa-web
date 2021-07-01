@@ -4,6 +4,7 @@ const testEnvVars = require('../../test-env-vars')
 describe('Auth route', () => {
   const url = '/login'
   let server
+  const method = 'GET'
 
   jest.mock('../../../server/lib/db', () => {
     return {
@@ -24,62 +25,16 @@ describe('Auth route', () => {
 
   test('responds with 302 when no user exists', async () => {
     const res = await server.inject({
-      method: 'GET',
+      method,
       url
     })
 
     expect(res.statusCode).toEqual(302)
   })
 
-  test('responds with 403 when user has no roles', async () => {
-    const res = await server.inject({
-      method: 'GET',
-      url,
-      auth: {
-        credentials: {
-          profile: {
-            id: 'guid',
-            email: 'test@gwa.defra.co.uk',
-            displayName: 'test gwa',
-            raw: {
-              roles: JSON.stringify([])
-            }
-          },
-          scope: []
-        },
-        strategy: 'azuread'
-      }
-    })
-
-    expect(res.statusCode).toEqual(403)
-  })
-
-  test('responds with 403 when user has no scope', async () => {
-    const res = await server.inject({
-      method: 'GET',
-      url,
-      auth: {
-        credentials: {
-          profile: {
-            id: 'guid',
-            email: 'test@gwa.defra.co.uk',
-            displayName: 'test gwa',
-            raw: {
-              roles: JSON.stringify(['Not-recognised-role'])
-            }
-          },
-          scope: []
-        },
-        strategy: 'azuread'
-      }
-    })
-
-    expect(res.statusCode).toEqual(403)
-  })
-
   test('responds with 404 when user is not found', async () => {
     const res = await server.inject({
-      method: 'GET',
+      method,
       url,
       auth: {
         credentials: {
@@ -102,7 +57,7 @@ describe('Auth route', () => {
 
   test('responds with 404 when user is found but is not active', async () => {
     const res = await server.inject({
-      method: 'GET',
+      method,
       url,
       auth: {
         credentials: {
@@ -123,9 +78,55 @@ describe('Auth route', () => {
     expect(res.statusCode).toEqual(404)
   })
 
+  test('responds with 302 to /account when user is active and has no roles', async () => {
+    const res = await server.inject({
+      method,
+      url,
+      auth: {
+        credentials: {
+          profile: {
+            id: 'guid',
+            email: 'test@gwa.defra.co.uk',
+            displayName: 'test gwa',
+            raw: { }
+          },
+          scope: []
+        },
+        strategy: 'azuread'
+      }
+    })
+
+    expect(res.statusCode).toEqual(302)
+    expect(res.headers.location).toEqual('/account')
+  })
+
+  test('responds with 302 to /account when user is active and has no recognised roles', async () => {
+    const res = await server.inject({
+      method,
+      url,
+      auth: {
+        credentials: {
+          profile: {
+            id: 'guid',
+            email: 'test@gwa.defra.co.uk',
+            displayName: 'test gwa',
+            raw: {
+              roles: JSON.stringify(['Not-recognised-role'])
+            }
+          },
+          scope: []
+        },
+        strategy: 'azuread'
+      }
+    })
+
+    expect(res.statusCode).toEqual(302)
+    expect(res.headers.location).toEqual('/account')
+  })
+
   test('responds with 302 to /account when active user is found', async () => {
     const res = await server.inject({
-      method: 'GET',
+      method,
       url,
       auth: {
         credentials: {
@@ -150,7 +151,7 @@ describe('Auth route', () => {
   test('responds with 302 to the redirectTo query (when available), when active user is found', async () => {
     const redirectTo = '/a-different-route'
     const res = await server.inject({
-      method: 'GET',
+      method,
       url,
       auth: {
         credentials: {
@@ -177,7 +178,7 @@ describe('Auth route', () => {
 
   test('responds with 302 to the microsoftonline logout URL', async () => {
     const res = await server.inject({
-      method: 'GET',
+      method,
       url: '/logout'
     })
 

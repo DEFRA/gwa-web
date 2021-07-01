@@ -1,18 +1,22 @@
 describe('Permissions and scopes', () => {
   const { getPermissions, scopes } = require('../../server/permissions')
 
-  test('no roles or scopes are returned when no roles are supplied', () => {
+  test('User role with no scopes is returned when no roles are supplied', () => {
     const { roles, scope } = getPermissions()
 
-    expect(roles).toBe(undefined)
-    expect(scope).toBe(undefined)
+    expect(roles).toHaveLength(1)
+    expect(roles).toEqual(expect.arrayContaining(['User']))
+    expect(scope).toHaveLength(0)
+    expect(scope).toEqual(expect.arrayContaining([]))
   })
 
-  test('no roles or scopes are returned when no recognised roles are supplied', () => {
+  test('User role with no scopes is returned when no recognised roles are supplied', () => {
     const { roles, scope } = getPermissions(JSON.stringify(['Unknown']))
 
-    expect(roles).toBe(undefined)
-    expect(scope).toBe(undefined)
+    expect(roles).toHaveLength(1)
+    expect(roles).toEqual(expect.arrayContaining(['User']))
+    expect(scope).toHaveLength(0)
+    expect(scope).toEqual(expect.arrayContaining([]))
   })
 
   test('known roles and scopes are returned when recognised roles are supplied', () => {

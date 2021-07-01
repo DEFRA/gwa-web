@@ -24,6 +24,7 @@ const permissions = {
 
 /**
  * Return the known role(s) and scope(s) for the role(s) requested.
+ * If no roles are provided, default them to `User` (own account access).
  *
  * @param {Array} userRoles from the Azure AD response.
  * @return {object} consisting of (matched, known - if any) `roles` and `scope`
@@ -45,7 +46,10 @@ function getPermissions (userRoles) {
     }
   }
 
-  return {}
+  return {
+    roles: [roles.User],
+    scope: []
+  }
 }
 
 module.exports = {
