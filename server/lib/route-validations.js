@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const { textMessages: { maxMessageLength } } = require('../constants')
+const { textMessages: { maxInfoLength, maxMessageLength } } = require('../constants')
 
 module.exports = {
   message: {
@@ -12,7 +12,7 @@ module.exports = {
       }),
       orgCodes: Joi.alternatives().try(Joi.string(), Joi.array().min(1).items(Joi.string())).required(),
       text: Joi.string().max(maxMessageLength).required(),
-      info: Joi.string().max(2000).allow('').empty('')
+      info: Joi.string().max(maxInfoLength).allow('').empty('')
     })
   }
 }

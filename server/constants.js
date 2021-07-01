@@ -29,6 +29,7 @@ module.exports = {
     oneMessageLength: 160,
     twoMessageLength: 306,
     additionalMessageIncrement: 153,
-    maxMessageLength: 918
+    maxMessageLength: 918,
+    maxInfoLength: 2000
   }
 }
