@@ -173,14 +173,12 @@ describe('Message send route', () => {
       const cost = 0.016
       const contactCount = 1
       const updatedState = 'edited'
-      const temp = { ...message }
-      delete temp.state
       expect(updateMessage).toHaveBeenCalledWith({
         cost,
         contactCount,
         lastUpdatedAt: editTime,
-        state: updatedState,
-        ...temp
+        ...message,
+        state: updatedState
       })
 
       const $ = cheerio.load(res.payload)
@@ -282,15 +280,13 @@ describe('Message send route', () => {
       const cost = 0.016
       const contactCount = 1
       const updatedState = 'sent'
-      const temp = { ...message }
-      delete temp.state
       const updatedMessage = {
         cost,
         contactCount,
         contacts: [number],
         lastUpdatedAt: editTime,
-        state: updatedState,
-        ...temp
+        ...message,
+        state: updatedState
       }
       expect(dropMock).toHaveBeenCalled()
       expect(uploadContactList).toHaveBeenCalledWith(updatedMessage)
