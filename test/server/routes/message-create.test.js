@@ -1,7 +1,7 @@
 const cheerio = require('cheerio')
+const { textMessages: { maxInfoLength, maxMessageLength } } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
-const { textMessages: { maxInfoLength, maxMessageLength } } = require('../../../server/constants')
 const { message } = require('../../../server/lib/error-messages')
 
 describe('Message creation route', () => {
@@ -20,6 +20,7 @@ describe('Message creation route', () => {
   const { saveMessage } = require('../../../server/lib/db')
 
   beforeEach(async () => {
+    jest.clearAllMocks()
     server = await createServer()
     server.methods.db.getOrganisationList = jest.fn().mockResolvedValue(orgList)
     server.methods.db.getAreaToOfficeMap = jest.fn().mockResolvedValue([{ areaCode: 'ABC', areaName, officeLocations: [{ officeCode: 'officeCode', officeLocation }, { officeCode: 'officeCodeTwo', officeLocation: officeLocationTwo }] }])
@@ -159,7 +160,6 @@ describe('Message creation route', () => {
       [{ allOffices: false, officeCodes: [], orgCodes: 'orgCode', text: 'message to send', info: 'valid' }, message.officeCodes],
       [{ allOffices: false, officeCodes: ['ABC:one'], orgCodes: [], text: 'message to send', info: 'valid' }, message.orgCodes]
     ])('responds with 200 and errors when request is invalid - ', async (payload, error) => {
-      saveMessage.mockResolvedValue({ statusCode: 201 })
       const res = await server.inject({
         method,
         url,
