@@ -22,16 +22,18 @@ describe('Contact remove route', () => {
   jest.mock('../../../server/lib/db')
   const { getUser, updateUser } = require('../../../server/lib/db')
   getUser
-    .mockResolvedValue(activeUserWithPhoneNumbers)
+  // GET requests
     .mockResolvedValueOnce(undefined)
     .mockResolvedValueOnce({ active: false })
     .mockResolvedValueOnce({ active: true, phoneNumbers: [] })
     .mockResolvedValueOnce(activeUserWithPhoneNumbers)
     .mockResolvedValueOnce(activeUserWithPhoneNumbers)
+  // POST requests
     .mockResolvedValueOnce(undefined)
     .mockResolvedValueOnce({ active: false })
     .mockResolvedValueOnce(activeUserWithPhoneNumbers)
     .mockResolvedValueOnce({ active: true, phoneNumbers: [{ id: toDeleteNumberId, type: 'personal' }] })
+    .mockResolvedValueOnce(activeUserWithPhoneNumbers)
 
   const createServer = require('../../../server/index')
 
