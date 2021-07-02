@@ -1,6 +1,6 @@
 const boom = require('@hapi/boom')
 
-const { getUser } = require('../lib/db')
+const { getUser } = require('./db')
 
 module.exports = {
   getUser: {
