@@ -8,28 +8,30 @@ describe('Contact remove route', () => {
   const mockPersonalPhoneNumberId = uuid()
   const email = 'test@gwa.defra.co.uk'
   const id = uuid()
+  const toDeleteNumberId = uuid()
   const url = `/contact-remove/${mockCorporatePhoneNumberId}`
   let server
 
-  jest.mock('../../../server/lib/db', () => {
-    return {
-      getAreaToOfficeMap: jest.fn(),
-      getOrganisationList: jest.fn(),
-      getStandardisedOfficeLocationMap: jest.fn(),
-      getUsers: jest.fn(),
-      getUser: jest.fn()
-        .mockResolvedValue({
-          active: true,
-          phoneNumbers: [
-            { id: mockCorporatePhoneNumberId, type: 'corporate', number: mockCorporatePhoneNumber, subscribedTo: ['COR:office-one'] },
-            { id: mockPersonalPhoneNumberId, type: 'personal', number: mockPersonalPhoneNumber, subscribedTo: ['PER:office-one', 'PER:office-two'] }
-          ]
-        })
-        .mockResolvedValueOnce(undefined)
-        .mockResolvedValueOnce({ active: false })
-        .mockResolvedValueOnce({ active: true, phoneNumbers: [] })
-    }
-  })
+  const activeUserWithPhoneNumbers = {
+    active: true,
+    phoneNumbers: [
+      { id: mockCorporatePhoneNumberId, type: 'corporate', number: mockCorporatePhoneNumber, subscribedTo: ['COR:office-one'] },
+      { id: mockPersonalPhoneNumberId, type: 'personal', number: mockPersonalPhoneNumber, subscribedTo: ['PER:office-one', 'PER:office-two'] }
+    ]
+  }
+  jest.mock('../../../server/lib/db')
+  const { getUser, updateUser } = require('../../../server/lib/db')
+  getUser
+    .mockResolvedValue(activeUserWithPhoneNumbers)
+    .mockResolvedValueOnce(undefined)
+    .mockResolvedValueOnce({ active: false })
+    .mockResolvedValueOnce({ active: true, phoneNumbers: [] })
+    .mockResolvedValueOnce(activeUserWithPhoneNumbers)
+    .mockResolvedValueOnce(activeUserWithPhoneNumbers)
+    .mockResolvedValueOnce(undefined)
+    .mockResolvedValueOnce({ active: false })
+    .mockResolvedValueOnce(activeUserWithPhoneNumbers)
+    .mockResolvedValueOnce({ active: true, phoneNumbers: [{ id: toDeleteNumberId, type: 'personal' }] })
 
   const createServer = require('../../../server/index')
 
@@ -41,19 +43,21 @@ describe('Contact remove route', () => {
     await server.stop()
   })
 
-  test('responds with 302 when no user is logged in - GET', async () => {
-    const res = await server.inject({
-      method: 'GET',
-      url
+  describe('GET requests', () => {
+    const method = 'GET'
+
+    test('responds with 302 when no user is logged in', async () => {
+      const res = await server.inject({
+        method,
+        url
+      })
+
+      expect(res.statusCode).toEqual(302)
     })
 
-    expect(res.statusCode).toEqual(302)
-  })
-
-  describe('client errors', () => {
     test('responds with 404 when user is not found', async () => {
       const res = await server.inject({
-        method: 'GET',
+        method,
         url,
         auth: {
           credentials: {
@@ -78,7 +82,7 @@ describe('Contact remove route', () => {
 
     test('responds with 404 when user is not active', async () => {
       const res = await server.inject({
-        method: 'GET',
+        method,
         url,
         auth: {
           credentials: {
@@ -103,7 +107,7 @@ describe('Contact remove route', () => {
 
     test('responds with 404 when user\'s phone number is not found', async () => {
       const res = await server.inject({
-        method: 'GET',
+        method,
         url,
         auth: {
           credentials: {
@@ -128,7 +132,7 @@ describe('Contact remove route', () => {
 
     test('responds with 400 when phone number is not a guid', async () => {
       const res = await server.inject({
-        method: 'GET',
+        method,
         url: '/contact-remove/not-a-guid',
         auth: {
           credentials: {
@@ -154,7 +158,7 @@ describe('Contact remove route', () => {
 
     test('responds with 403 when phone number is corporate', async () => {
       const res = await server.inject({
-        method: 'GET',
+        method,
         url,
         auth: {
           credentials: {
@@ -177,12 +181,10 @@ describe('Contact remove route', () => {
       const body = $('.govuk-body').text()
       expect(body).toMatch('Unable to remove corporate phone number.')
     })
-  })
 
-  describe('successful requests', () => {
     test('responds with 200 and correct view for corporate phone number when active user logged in', async () => {
       const res = await server.inject({
-        method: 'GET',
+        method,
         url: `/contact-remove/${mockPersonalPhoneNumberId}`,
         auth: {
           credentials: {
@@ -210,6 +212,148 @@ describe('Contact remove route', () => {
       expect(buttons).toHaveLength(2)
       expect(buttons.eq(0).text()).toMatch('Cancel')
       expect(buttons.eq(1).text()).toMatch('Continue')
+    })
+  })
+
+  describe('POST requests', () => {
+    const method = 'POST'
+
+    test('responds with 302 when no user is logged in', async () => {
+      const res = await server.inject({
+        method,
+        url
+      })
+
+      expect(res.statusCode).toEqual(302)
+    })
+
+    test('responds with 404 when user is not found', async () => {
+      const res = await server.inject({
+        method,
+        url,
+        auth: {
+          credentials: {
+            user: {
+              id,
+              email,
+              displayName: 'test gwa',
+              raw: {
+                roles: JSON.stringify([])
+              }
+            },
+            scope: []
+          },
+          strategy: 'azuread'
+        }
+      })
+
+      expect(res.statusCode).toEqual(404)
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-body').text()).toEqual(`No active user found for ${id}.`)
+    })
+
+    test('responds with 404 when user is not active', async () => {
+      const res = await server.inject({
+        method,
+        url,
+        auth: {
+          credentials: {
+            user: {
+              id,
+              email,
+              displayName: 'test gwa',
+              raw: {
+                roles: JSON.stringify([])
+              }
+            },
+            scope: []
+          },
+          strategy: 'azuread'
+        }
+      })
+
+      expect(res.statusCode).toEqual(404)
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-body').text()).toEqual(`No active user found for ${id}.`)
+    })
+
+    test('responds with 403 when attempting to remove corporate phone number', async () => {
+      const res = await server.inject({
+        method,
+        url,
+        auth: {
+          credentials: {
+            user: {
+              id,
+              email,
+              displayName: 'test gwa',
+              officeCode: 'ABC:office-code',
+              raw: {
+                roles: JSON.stringify([])
+              }
+            },
+            scope: []
+          },
+          strategy: 'azuread'
+        }
+      })
+
+      expect(res.statusCode).toEqual(403)
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-body').text()).toEqual('Unable to remove corporate phone number.')
+    })
+
+    test('responds with 302 to /account when attempting to remove phone number is successful', async () => {
+      const res = await server.inject({
+        method,
+        url: `/contact-remove/${toDeleteNumberId}`,
+        auth: {
+          credentials: {
+            user: {
+              id,
+              email,
+              displayName: 'test gwa',
+              officeCode: 'ABC:office-code',
+              raw: {
+                roles: JSON.stringify([])
+              }
+            },
+            scope: []
+          },
+          strategy: 'azuread'
+        }
+      })
+
+      expect(res.statusCode).toEqual(302)
+      expect(updateUser).toBeCalledWith(expect.objectContaining({
+        phoneNumbers: []
+      }))
+    })
+
+    test('responds with 404 when attempting to remove phone number that does not exist', async () => {
+      const res = await server.inject({
+        method,
+        url: `/contact-remove/${uuid()}`,
+        auth: {
+          credentials: {
+            user: {
+              id,
+              email,
+              displayName: 'test gwa',
+              officeCode: 'ABC:office-code',
+              raw: {
+                roles: JSON.stringify([])
+              }
+            },
+            scope: []
+          },
+          strategy: 'azuread'
+        }
+      })
+
+      expect(res.statusCode).toEqual(404)
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-body').text()).toEqual('Phone number not found.')
     })
   })
 })
