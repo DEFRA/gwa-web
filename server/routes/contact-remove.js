@@ -40,13 +40,17 @@ module.exports = [
     }
   },
   {
-    // TODO: test this
     method: 'POST',
     path,
     handler: async (request, h) => {
       const { phoneNumberId } = request.params
       const user = request.pre.user
       const phoneNumber = user.phoneNumbers.find(x => x.id === phoneNumberId)
+
+      if (!phoneNumber) {
+        return boom.notFound('Phone number not found.')
+      }
+
       if (phoneNumber.type === phoneNumberTypes.corporate) {
         return boom.forbidden(`Unable to remove ${phoneNumberTypes.corporate} phone number.`)
       }
