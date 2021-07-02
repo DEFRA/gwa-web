@@ -9,7 +9,7 @@ describe('Message deletion route', () => {
   const url = `/message-delete/${uuid()}`
   let server
   const state = 'created'
-  const orgCodes = ['ABC:first', 'XYZ:last']
+  const orgCodes = ['ABC', 'XYZ']
   const text = 'some message'
   const info = 'additional info'
   const createTime = new Date('2020-12-31T12:34:56')
