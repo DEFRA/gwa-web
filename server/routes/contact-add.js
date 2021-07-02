@@ -45,7 +45,6 @@ module.exports = [
     }
   },
   {
-    // TODO: test this
     method: 'POST',
     path,
     handler: async (request, h) => {
@@ -73,7 +72,6 @@ module.exports = [
       // Check there aren't too many personal phone numbers already
       if (user.phoneNumbers.filter(x => x.type === phoneNumberTypes.personal).length >= maxPersonalPhoneNumbers) {
         const errors = { mobile: errorMessages.mobile.tooMany }
-        // Potentially return the account view
         return h.view(routeId, new Model(request.payload, errors))
       }
 
@@ -86,7 +84,7 @@ module.exports = [
 
       const response = await updateUser(user)
       if (response.statusCode !== 200) {
-        boom.internal('Error updating user.', response)
+        return boom.internal('Error updating user.', response)
       }
 
       return h.redirect('/account')
