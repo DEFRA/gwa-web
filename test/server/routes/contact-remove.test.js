@@ -328,6 +328,7 @@ describe('Contact remove route', () => {
 
       expect(res.statusCode).toEqual(302)
       expect(updateUser).toBeCalledWith(expect.objectContaining({
+        active: true,
         phoneNumbers: []
       }))
     })
