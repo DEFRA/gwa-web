@@ -160,39 +160,6 @@ describe('Upload route', () => {
         expect(errorMessage).toMatch('Select an organisation')
       })
 
-      test('responds with 200 and errors when file is not CSV', async () => {
-        const form = new FormData()
-        form.append('file', Readable.from('data,cols'), { filename: 'test.txt' })
-        form.append('orgCode', 'ABC')
-        const res = await server.inject({
-          method,
-          url,
-          auth: {
-            credentials: {
-              user: {
-                id,
-                email,
-                displayName: 'test gwa',
-                raw: {
-                  roles: JSON.stringify([])
-                }
-              },
-              scope: [scopes.data.manage]
-            },
-            strategy: 'azuread'
-          },
-          headers: form.getHeaders(),
-          payload: await getStream(form)
-        })
-
-        expect(res.statusCode).toEqual(200)
-        const $ = cheerio.load(res.payload)
-
-        const errorMessage = $('.govuk-error-summary__list').text()
-        expect(errorMessage).toMatch('Select a valid CSV file')
-        expect(errorMessage).not.toMatch('Select an organisation')
-      })
-
       test('responds with 200 and errors when file contains errors', async () => {
         const filename = 'test.csv'
         const userCount = 2

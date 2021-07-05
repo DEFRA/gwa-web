@@ -57,9 +57,9 @@ module.exports = [
     handler: async (request, h) => {
       const { type } = request.params
       const { file: fileStream } = request.payload
-      const { filename, headers } = fileStream.hapi
+      const { filename } = fileStream.hapi
 
-      if (!filename || headers['content-type'] !== 'text/csv') {
+      if (!filename) {
         const errors = { file: errorMessages.file['*'] }
         return h.view('data-reference-manage', new Model(typeInfo[type], errors))
       }
