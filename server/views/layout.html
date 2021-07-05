@@ -144,17 +144,6 @@
 <script src="{{ assetPath }}/all.js"></script>
 <script>window.GOVUKFrontend.initAll()</script>
 
-{% if analyticsAccountId %}
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id={{ analyticsAccountId }}"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', '{{ analyticsAccountId }}');
-</script>
-{% endif %}
-
 {% block scripts %}
 {% endblock %}
 {% endblock %}
