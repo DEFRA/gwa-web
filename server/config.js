@@ -3,7 +3,6 @@ const Joi = require('joi')
 const envs = ['local', 'development', 'test', 'production']
 
 const schema = Joi.object().keys({
-  analyticsAccountId: Joi.string().optional(),
   aadClientId: Joi.string().guid(),
   aadClientSecret: Joi.string().required(),
   aadTenantId: Joi.string().guid(),

@@ -2,7 +2,6 @@ const path = require('path')
 const nunjucks = require('nunjucks')
 const config = require('../config')
 const pkg = require('../../package.json')
-const analyticsAccountId = config.analyticsAccountId
 const serviceName = 'Group wide alert'
 
 module.exports = {
@@ -38,7 +37,6 @@ module.exports = {
       assetPath: '/assets',
       serviceName: serviceName,
       pageTitle: `${serviceName}`,
-      analyticsAccountId: analyticsAccountId,
       phaseBannerTag: config.phaseBannerTag,
       phaseBannerHtml: config.phaseBannerHtml
     }
