@@ -9,6 +9,9 @@ const getMessageRows = require('../lib/get-message-rows')
 
 class Model extends BaseModel {}
 
+const routeId = 'message-delete'
+const path = `/${routeId}/{messageId}`
+
 const options = {
   auth: { access: { scope: [`+${scopes.message.manage}`] } },
   validate: {
@@ -17,22 +20,20 @@ const options = {
     })
   }
 }
-const routeId = 'message-delete'
-const path = `/${routeId}/{messageId}`
 
 async function verifyRequest (request) {
   const { messageId } = request.params
   const message = await getMessage(messageId)
 
   if (!message) {
-    return boom.notFound()
+    return { error: boom.notFound() }
   }
 
   if (message.state === messageStates.sent) {
-    return boom.unauthorized('Sent messages can not be deleted.')
+    return { error: boom.unauthorized('Sent messages can not be deleted.') }
   }
 
-  return message
+  return { message }
 }
 
 module.exports = [
@@ -40,8 +41,8 @@ module.exports = [
     method: 'GET',
     path,
     handler: async (request, h) => {
-      const message = await verifyRequest(request)
-      if (message.isBoom) { return message }
+      const { error, message } = await verifyRequest(request)
+      if (error) { return error }
 
       const messageRows = getMessageRows(message)
 
@@ -53,8 +54,8 @@ module.exports = [
     method: 'POST',
     path,
     handler: async (request, h) => {
-      const message = await verifyRequest(request)
-      if (message.isBoom) { return message }
+      const { error, message } = await verifyRequest(request)
+      if (error) { return error }
 
       const res = await deleteMessage(message.id)
       if (res.statusCode !== 204) {

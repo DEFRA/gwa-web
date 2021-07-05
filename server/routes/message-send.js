@@ -16,20 +16,6 @@ class Model extends BaseModel {}
 const routeId = 'message-send'
 const path = `/${routeId}/{messageId}`
 
-async function verifyRequest (request) {
-  const { messageId } = request.params
-  const message = await getMessage(messageId)
-
-  if (!message) {
-    return boom.notFound()
-  }
-
-  if (message.state === messageStates.sent) {
-    return boom.unauthorized('Sent messages can not be sent again.')
-  }
-  return message
-}
-
 const options = {
   auth: { access: { scope: [`+${scopes.message.manage}`] } },
   validate: {
@@ -39,13 +25,27 @@ const options = {
   }
 }
 
+async function verifyRequest (request) {
+  const { messageId } = request.params
+  const message = await getMessage(messageId)
+
+  if (!message) {
+    return { error: boom.notFound() }
+  }
+
+  if (message.state === messageStates.sent) {
+    return { error: boom.unauthorized('Sent messages can not be sent again.') }
+  }
+  return { message }
+}
+
 module.exports = [
   {
     method: 'GET',
     path,
     handler: async (request, h) => {
-      const message = await verifyRequest(request)
-      if (message.isBoom) { return message }
+      const { error, message } = await verifyRequest(request)
+      if (error) { return error }
 
       const users = await request.server.methods.db.getUsers()
 
@@ -71,8 +71,8 @@ module.exports = [
     method: 'POST',
     path,
     handler: async (request, h) => {
-      const message = await verifyRequest(request)
-      if (message.isBoom) { return message }
+      const { error, message } = await verifyRequest(request)
+      if (error) { return error }
 
       // Drop from cache to run a fresh query, getting the most up-to-date info
       await request.server.methods.db.getUsers.cache.drop()
