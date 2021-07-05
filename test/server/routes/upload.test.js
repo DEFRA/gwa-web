@@ -160,9 +160,9 @@ describe('Upload route', () => {
         expect(errorMessage).toMatch('Select an organisation')
       })
 
-      test('responds with 200 and errors when file is not CSV', async () => {
+      test('responds with 200 and errors when file does not CSV extension', async () => {
         const form = new FormData()
-        form.append('file', Readable.from('data,cols'), { filename: 'test.txt' })
+        form.append('file', Readable.from('data,cols'), { filename: 'csv.not' })
         form.append('orgCode', 'ABC')
         const res = await server.inject({
           method,

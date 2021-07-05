@@ -48,11 +48,11 @@ module.exports = [
     path,
     handler: async (request, h) => {
       const { file: fileStream, orgCode } = request.payload
-      const { filename, headers } = fileStream.hapi
+      const { filename } = fileStream.hapi
       const orgList = await request.server.methods.db.getOrganisationList()
       const organisations = generateNonCoreOrgSelectItems(orgList, orgCode)
 
-      if (!filename || headers['content-type'] !== 'text/csv') {
+      if (!filename || !filename.endsWith('.csv')) {
         const errors = { file: errorMessages.file['*'] }
         return h.view('upload', new Model({ headers: orgDataFileHeaders, organisations }, errors))
       }

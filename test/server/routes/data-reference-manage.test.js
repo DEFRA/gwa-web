@@ -188,9 +188,9 @@ describe('Data reference manage route', () => {
       expect(errorText).toMatch('Invalid request payload input')
     })
 
-    test.each(routes)('responds with 200 and errors when file is not CSV', async ({ type }) => {
+    test.each(routes)('responds with 200 and errors when filename does not end with csv', async ({ type }) => {
       const form = new FormData()
-      form.append('file', Readable.from('data,cols'), { filename: 'test.txt' })
+      form.append('file', Readable.from('data,cols'), { filename: 'csv.not' })
       const res = await server.inject({
         method,
         url: `${baseUrl}/${type}`,
