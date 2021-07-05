@@ -59,7 +59,7 @@ module.exports = [
       const { file: fileStream } = request.payload
       const { filename } = fileStream.hapi
 
-      if (!filename) {
+      if (!filename || !filename.endsWith('.csv')) {
         const errors = { file: errorMessages.file['*'] }
         return h.view('data-reference-manage', new Model(typeInfo[type], errors))
       }

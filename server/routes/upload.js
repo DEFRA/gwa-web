@@ -52,7 +52,7 @@ module.exports = [
       const orgList = await request.server.methods.db.getOrganisationList()
       const organisations = generateNonCoreOrgSelectItems(orgList, orgCode)
 
-      if (!filename) {
+      if (!filename || !filename.endsWith('.csv')) {
         const errors = { file: errorMessages.file['*'] }
         return h.view('upload', new Model({ headers: orgDataFileHeaders, organisations }, errors))
       }

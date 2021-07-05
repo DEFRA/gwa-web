@@ -188,6 +188,37 @@ describe('Data reference manage route', () => {
       expect(errorText).toMatch('Invalid request payload input')
     })
 
+    test.each(routes)('responds with 200 and errors when filename does not end with csv', async ({ type }) => {
+      const form = new FormData()
+      form.append('file', Readable.from('data,cols'), { filename: 'csv.not' })
+      const res = await server.inject({
+        method,
+        url: `${baseUrl}/${type}`,
+        auth: {
+          credentials: {
+            user: {
+              id,
+              email,
+              displayName: 'test gwa',
+              raw: {
+                roles: JSON.stringify([])
+              }
+            },
+            scope: [scopes.data.manage]
+          },
+          strategy: 'azuread'
+        },
+        headers: form.getHeaders(),
+        payload: await getStream(form)
+      })
+
+      expect(res.statusCode).toEqual(200)
+      const $ = cheerio.load(res.payload)
+
+      const errorMessage = $('.govuk-error-summary__list').text()
+      expect(errorMessage).toMatch('Select a valid CSV file')
+    })
+
     test.each(routes)('responds with 200 and errors when file is not validated correctly - %o', async ({ type }) => {
       server.methods.db.getOrganisationList = jest.fn().mockResolvedValue([{ orgCode: 'orgCode', orgName: 'orgName', active: true, core: true }])
       const form = new FormData()
