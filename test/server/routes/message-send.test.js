@@ -3,12 +3,13 @@ const { v4: uuid } = require('uuid')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
 
-describe('Message deletion route', () => {
+describe('Message send route', () => {
   const email = 'test@gwa.defra.co.uk'
   const id = 'guid'
-  const url = `/message-delete/${uuid()}`
+  const url = `/message-send/${uuid()}`
   let server
-  const state = 'created'
+  const initialState = 'created'
+  const orgCode = 'ABC'
   const orgCodes = ['ABC', 'XYZ']
   const text = 'some message'
   const info = 'additional info'
@@ -16,25 +17,34 @@ describe('Message deletion route', () => {
   const updateTime = new Date('2021-01-02T08:00:00')
   const createUser = 'creating-things'
   const edituser = 'editing-things'
+  const officeCode = 'OFF:office'
+  const number = '07777111111'
+  const userList = [{ active: true, orgCode, phoneNumbers: [{ subscribedTo: [officeCode], number }] }]
+  const message = {
+    auditEvents: [
+      { user: { id: createUser }, type: 'create', time: createTime },
+      { user: { id: edituser }, type: 'create', time: updateTime }
+    ],
+    orgCodes,
+    officeCodes: [],
+    state: initialState,
+    allOffices: true,
+    text,
+    info
+  }
 
+  jest.mock('../../../server/lib/upload-contact-list')
+  const uploadContactList = require('../../../server/lib/upload-contact-list')
   jest.mock('../../../server/lib/db')
-  const { deleteMessage, getMessage } = require('../../../server/lib/db')
+  const { getMessage, updateMessage } = require('../../../server/lib/db')
+  const editTime = Date.now()
+  Date.now = jest.fn(() => editTime)
 
   beforeEach(async () => {
     jest.clearAllMocks()
     server = await createServer()
-    getMessage.mockResolvedValue({
-      auditEvents: [
-        { user: { id: createUser }, type: 'create', time: createTime },
-        { user: { id: edituser }, type: 'create', time: updateTime }
-      ],
-      orgCodes,
-      officeCodes: [],
-      state,
-      allOffices: true,
-      text,
-      info
-    })
+    server.methods.db.getUsers = jest.fn().mockResolvedValue(userList)
+    getMessage.mockResolvedValue({ ...message })
   })
 
   afterEach(async () => {
@@ -81,7 +91,7 @@ describe('Message deletion route', () => {
 
     test.each([
       { message: undefined, status: 404, error: 'Not Found' },
-      { message: { state: 'sent' }, status: 401, error: 'Sent messages can not be deleted.' }
+      { message: { state: 'sent' }, status: 401, error: 'Sent messages can not be sent again.' }
     ])('responds with errors when problem with message', async ({ message, status, error }) => {
       getMessage.mockResolvedValueOnce(message)
       const res = await server.inject({
@@ -109,7 +119,36 @@ describe('Message deletion route', () => {
       expect($('.govuk-body').text()).toEqual(error)
     })
 
-    test('responds with 200 when user has sufficient scope', async () => {
+    test('responds with 500 when user message update fails', async () => {
+      updateMessage.mockResolvedValue({ statusCode: 500 })
+      const res = await server.inject({
+        method,
+        url,
+        auth: {
+          credentials: {
+            user: {
+              id,
+              email,
+              displayName: 'test gwa',
+              raw: {
+                roles: JSON.stringify([])
+              }
+            },
+            scope: [scopes.message.manage]
+          },
+          strategy: 'azuread'
+        }
+      })
+
+      expect(res.statusCode).toEqual(500)
+
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-body').text()).toEqual('Please try again later.')
+    })
+
+    test('responds with 200 and updates message when user has sufficient scope', async () => {
+      updateMessage.mockResolvedValue({ statusCode: 200 })
+
       const res = await server.inject({
         method,
         url,
@@ -131,13 +170,24 @@ describe('Message deletion route', () => {
 
       expect(res.statusCode).toEqual(200)
 
+      const cost = 0.016
+      const contactCount = 1
+      const updatedState = 'edited'
+      expect(updateMessage).toHaveBeenCalledWith({
+        cost,
+        contactCount,
+        lastUpdatedAt: editTime,
+        ...message,
+        state: updatedState
+      })
+
       const $ = cheerio.load(res.payload)
-      expect($('.govuk-heading-l').text()).toMatch('Delete message')
-      expect($('.govuk-warning-text').text()).toMatch('Are you sure you would like to delete this message?')
+      expect($('.govuk-heading-l').text()).toMatch('Send message')
+      expect($('.govuk-warning-text').text()).toMatch(`Are you sure you would like to send this message? It will be sent to approximately ${contactCount} contact(s) at an approximate cost of £${cost} (excluding VAT).`)
       const rows = $('.govuk-table .govuk-table__row')
       expect(rows).toHaveLength(9)
       expect($('th', rows.eq(0)).text()).toMatch('Message state')
-      expect($('td', rows.eq(0)).text()).toMatch(state)
+      expect($('td', rows.eq(0)).text()).toMatch(updatedState)
       expect($('th', rows.eq(1)).text()).toMatch('Office location recipients')
       expect($('td', rows.eq(1)).text()).toMatch('All offices')
       expect($('th', rows.eq(2)).text()).toMatch('Organisation recipients')
@@ -151,9 +201,9 @@ describe('Message deletion route', () => {
       expect($('th', rows.eq(6)).text()).toMatch('Created by')
       expect($('td', rows.eq(6)).text()).toMatch(createUser)
       expect($('th', rows.eq(7)).text()).toMatch('Last updated at')
-      expect($('td', rows.eq(7)).text()).toMatch(new Date(updateTime).toLocaleString())
+      expect($('td', rows.eq(7)).text()).toMatch(new Date(editTime).toLocaleString())
       expect($('th', rows.eq(8)).text()).toMatch('Last updated by')
-      expect($('td', rows.eq(8)).text()).toMatch(edituser)
+      expect($('td', rows.eq(8)).text()).toMatch(id)
       const buttons = $('.govuk-button')
       expect(buttons).toHaveLength(2)
       expect(buttons.eq(0).text()).toMatch('Cancel')
@@ -199,8 +249,12 @@ describe('Message deletion route', () => {
       expect($('.govuk-body').text()).toEqual('Insufficient scope')
     })
 
-    test('responds with 302 to /messages when message has been deleted', async () => {
-      deleteMessage.mockResolvedValue({ statusCode: 204 })
+    test('uploads contact list, updates message and responds with 302 to /messages when message has been sent', async () => {
+      const dropMock = jest.fn()
+      server.methods.db.getUsers.cache = { drop: dropMock }
+      updateMessage.mockResolvedValue({ statusCode: 200 })
+      uploadContactList.mockResolvedValue(true)
+
       const res = await server.inject({
         method,
         url,
@@ -222,11 +276,28 @@ describe('Message deletion route', () => {
 
       expect(res.statusCode).toEqual(302)
       expect(res.headers.location).toEqual('/messages')
+
+      const cost = 0.016
+      const contactCount = 1
+      const updatedState = 'sent'
+      const updatedMessage = {
+        cost,
+        contactCount,
+        contacts: [number],
+        lastUpdatedAt: editTime,
+        ...message,
+        state: updatedState
+      }
+      expect(dropMock).toHaveBeenCalled()
+      expect(uploadContactList).toHaveBeenCalledWith(updatedMessage)
+      expect(updateMessage).toHaveBeenCalledWith({
+        ...updatedMessage
+      })
     })
 
     test.each([
       { message: undefined, status: 404, error: 'Not Found' },
-      { message: { state: 'sent' }, status: 401, error: 'Sent messages can not be deleted.' }
+      { message: { state: 'sent' }, status: 401, error: 'Sent messages can not be sent again.' }
     ])('responds with errors when problem with message', async ({ message, status, error }) => {
       getMessage.mockResolvedValueOnce(message)
       const res = await server.inject({
@@ -254,8 +325,70 @@ describe('Message deletion route', () => {
       expect($('.govuk-body').text()).toEqual(error)
     })
 
-    test('responds with 500 when problem deleting message', async () => {
-      deleteMessage.mockResolvedValue({ statusCode: 500 })
+    test('responds with 400 when no users to send message to', async () => {
+      server.methods.db.getUsers = jest.fn().mockResolvedValue([])
+      server.methods.db.getUsers.cache = { drop: jest.fn() }
+
+      const res = await server.inject({
+        method,
+        url,
+        auth: {
+          credentials: {
+            user: {
+              id,
+              email,
+              displayName: 'test gwa',
+              raw: {
+                roles: JSON.stringify([])
+              }
+            },
+            scope: [scopes.message.manage]
+          },
+          strategy: 'azuread'
+        }
+      })
+
+      expect(res.statusCode).toEqual(400)
+
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-body').text()).toEqual('Sending to 0 contacts is not allowed.')
+    })
+
+    test('responds with 500 when problem updating message', async () => {
+      server.methods.db.getUsers.cache = { drop: jest.fn() }
+      updateMessage.mockResolvedValue({ statusCode: 500 })
+      uploadContactList.mockResolvedValue(true)
+
+      const res = await server.inject({
+        method,
+        url,
+        auth: {
+          credentials: {
+            user: {
+              id,
+              email,
+              displayName: 'test gwa',
+              raw: {
+                roles: JSON.stringify([])
+              }
+            },
+            scope: [scopes.message.manage]
+          },
+          strategy: 'azuread'
+        }
+      })
+
+      expect(res.statusCode).toEqual(500)
+
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-body').text()).toEqual('Please try again later.')
+    })
+
+    test('responds with 500 when problem uploading contact list', async () => {
+      server.methods.db.getUsers.cache = { drop: jest.fn() }
+      updateMessage.mockResolvedValue({ statusCode: 200 })
+      uploadContactList.mockResolvedValue(false)
+
       const res = await server.inject({
         method,
         url,

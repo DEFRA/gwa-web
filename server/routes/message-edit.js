@@ -23,21 +23,27 @@ const auth = { access: { scope: [`+${scopes.message.manage}`] } }
 const routeId = 'message-edit'
 const path = `/${routeId}/{messageId}`
 
+async function verifyRequest (request) {
+  const { messageId } = request.params
+  const message = await getMessage(messageId)
+
+  if (!message) {
+    return { error: boom.notFound() }
+  }
+
+  if (message.state === messageStates.sent) {
+    return { error: boom.unauthorized('Sent messages can not be edited.') }
+  }
+  return { message }
+}
+
 module.exports = [
   {
     method: 'GET',
     path,
     handler: async (request, h) => {
-      const { messageId } = request.params
-      const message = await getMessage(messageId)
-
-      if (!message) {
-        return boom.notFound()
-      }
-
-      if (message.state === messageStates.sent) {
-        return boom.unauthorized('Sent messages can not be edited.')
-      }
+      const { error, message } = await verifyRequest(request)
+      if (error) { return error }
 
       const [areaToOfficeMap, organisationList] = await Promise.all([
         request.server.methods.db.getAreaToOfficeMap(),
@@ -62,19 +68,11 @@ module.exports = [
     method: 'POST',
     path,
     handler: async (request, h) => {
-      const { messageId } = request.params
+      const { error, message } = await verifyRequest(request)
+      if (error) { return error }
+
       const { user } = request.auth.credentials
       const { allOffices, info, officeCodes, orgCodes, text } = request.payload
-
-      const message = await getMessage(messageId)
-
-      if (!message) {
-        return boom.notFound()
-      }
-
-      if (message.state === messageStates.sent) {
-        return boom.unauthorized('Sent messages can not be edited.')
-      }
 
       message.allOffices = allOffices
       message.info = info

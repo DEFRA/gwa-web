@@ -10,29 +10,37 @@ describe('Contact edit route', () => {
   const id = uuid()
   const url = `/contact-edit/${mockCorporatePhoneNumberId}`
   let server
+  const officeCode = 'XYZ:location'
 
-  jest.mock('../../../server/lib/db', () => {
-    return {
-      getAreaToOfficeMap: jest.fn().mockResolvedValue([
-        { areaCode: 'COR', areaName: 'Corporate', officeLocations: [{ officeCode: 'COR:office-one', officeLocation: 'office one' }] },
-        { areaCode: 'PER', areaName: 'Personal', officeLocations: [{ officeCode: 'PER:office-one', officeLocation: 'office one' }, { officeCode: 'PER:office-two', officeLocation: 'office two' }] }
-      ]),
-      getOrganisationList: jest.fn(),
-      getStandardisedOfficeLocationMap: jest.fn(),
-      getUsers: jest.fn(),
-      getUser: jest.fn()
-        .mockResolvedValue({
-          active: true,
-          phoneNumbers: [
-            { id: mockCorporatePhoneNumberId, type: 'corporate', number: mockCorporatePhoneNumber, subscribedTo: ['COR:office-one'] },
-            { id: mockPersonalPhoneNumberId, type: 'personal', number: mockPersonalPhoneNumber, subscribedTo: ['PER:office-one', 'PER:office-two'] }
-          ]
-        })
-        .mockResolvedValueOnce(undefined)
-        .mockResolvedValueOnce({ active: false })
-        .mockResolvedValueOnce({ active: true, phoneNumbers: [] })
-    }
-  })
+  jest.mock('../../../server/lib/db')
+  const { getAreaToOfficeMap, getUser, updateUser } = require('../../../server/lib/db')
+  getAreaToOfficeMap
+    .mockResolvedValue([
+      { areaCode: 'COR', areaName: 'Corporate', officeLocations: [{ officeCode: 'COR:office-one', officeLocation: 'office one' }] },
+      { areaCode: 'PER', areaName: 'Personal', officeLocations: [{ officeCode: 'PER:office-one', officeLocation: 'office one' }, { officeCode: 'PER:office-two', officeLocation: 'office two' }] }
+    ])
+  const activeUserWithPhoneNumbers = {
+    active: true,
+    officeCode,
+    phoneNumbers: [
+      { id: mockCorporatePhoneNumberId, type: 'corporate', number: mockCorporatePhoneNumber, subscribedTo: ['COR:office-one'] },
+      { id: mockPersonalPhoneNumberId, type: 'personal', number: mockPersonalPhoneNumber, subscribedTo: ['PER:office-one', 'PER:office-two'] }
+    ]
+  }
+  getUser
+  // GET requests
+    .mockResolvedValueOnce(undefined)
+    .mockResolvedValueOnce({ active: false })
+    .mockResolvedValueOnce({ active: true, phoneNumbers: [] })
+    .mockResolvedValueOnce(activeUserWithPhoneNumbers)
+    .mockResolvedValueOnce(activeUserWithPhoneNumbers)
+  // POST requests
+    .mockResolvedValueOnce(undefined)
+    .mockResolvedValueOnce({ active: false })
+    .mockResolvedValueOnce({ active: true, phoneNumbers: [] })
+    .mockResolvedValueOnce(activeUserWithPhoneNumbers)
+    .mockResolvedValueOnce(activeUserWithPhoneNumbers)
+    .mockResolvedValueOnce(activeUserWithPhoneNumbers)
 
   const createServer = require('../../../server/index')
 
@@ -44,19 +52,21 @@ describe('Contact edit route', () => {
     await server.stop()
   })
 
-  test('responds with 302 when no user is logged in - GET', async () => {
-    const res = await server.inject({
-      method: 'GET',
-      url
+  describe('GET requests', () => {
+    const method = 'GET'
+
+    test('responds with 302 when no user is logged in', async () => {
+      const res = await server.inject({
+        method,
+        url
+      })
+
+      expect(res.statusCode).toEqual(302)
     })
 
-    expect(res.statusCode).toEqual(302)
-  })
-
-  describe('client errors', () => {
     test('responds with 404 when user is not found', async () => {
       const res = await server.inject({
-        method: 'GET',
+        method,
         url,
         auth: {
           credentials: {
@@ -81,7 +91,7 @@ describe('Contact edit route', () => {
 
     test('responds with 404 when user is not active', async () => {
       const res = await server.inject({
-        method: 'GET',
+        method,
         url,
         auth: {
           credentials: {
@@ -106,7 +116,7 @@ describe('Contact edit route', () => {
 
     test('responds with 404 when user\'s phone number is not found', async () => {
       const res = await server.inject({
-        method: 'GET',
+        method,
         url,
         auth: {
           credentials: {
@@ -131,7 +141,7 @@ describe('Contact edit route', () => {
 
     test('responds with 400 when phone number is not a guid', async () => {
       const res = await server.inject({
-        method: 'GET',
+        method,
         url: '/contact-edit/not-a-guid',
         auth: {
           credentials: {
@@ -155,12 +165,10 @@ describe('Contact edit route', () => {
       const body = $('.govuk-body').text()
       expect(body).toMatch('Invalid request params input')
     })
-  })
 
-  describe('successful requests', () => {
     test('responds with 200 and correct view for corporate phone number when active user logged in', async () => {
       const res = await server.inject({
-        method: 'GET',
+        method,
         url,
         auth: {
           credentials: {
@@ -190,7 +198,7 @@ describe('Contact edit route', () => {
 
     test('responds with 200 and correct view for personal phone number when active user logged in', async () => {
       const res = await server.inject({
-        method: 'GET',
+        method,
         url: `/contact-edit/${mockPersonalPhoneNumberId}`,
         auth: {
           credentials: {
@@ -216,6 +224,255 @@ describe('Contact edit route', () => {
       expect(heading).toMatch(`Personal phone number: ${mockPersonalPhoneNumber}`)
       const removeContactButton = $('.govuk-button--danger')
       expect(removeContactButton).toHaveLength(1)
+    })
+  })
+
+  describe('POST requests', () => {
+    const method = 'POST'
+
+    test('responds with 302 when no user is logged in', async () => {
+      const res = await server.inject({
+        method,
+        url
+      })
+
+      expect(res.statusCode).toEqual(302)
+    })
+
+    test('responds with 404 when user is not found', async () => {
+      const res = await server.inject({
+        method,
+        url,
+        auth: {
+          credentials: {
+            user: {
+              id,
+              email,
+              displayName: 'test gwa',
+              raw: {
+                roles: JSON.stringify([])
+              }
+            },
+            scope: []
+          },
+          strategy: 'azuread'
+        },
+        payload: {
+          officeCodes: ['ABC:office']
+        }
+      })
+
+      expect(res.statusCode).toEqual(404)
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-body').text()).toEqual(`No active user found for ${id}.`)
+    })
+
+    test('responds with 404 when user is not active', async () => {
+      const res = await server.inject({
+        method,
+        url,
+        auth: {
+          credentials: {
+            user: {
+              id,
+              email,
+              displayName: 'test gwa',
+              raw: {
+                roles: JSON.stringify([])
+              }
+            },
+            scope: []
+          },
+          strategy: 'azuread'
+        },
+        payload: {
+          officeCodes: ['ABC:office']
+        }
+      })
+
+      expect(res.statusCode).toEqual(404)
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-body').text()).toEqual(`No active user found for ${id}.`)
+    })
+
+    test('responds with 404 when user\'s phone number is not found', async () => {
+      const res = await server.inject({
+        method,
+        url,
+        auth: {
+          credentials: {
+            user: {
+              id,
+              email,
+              displayName: 'test gwa',
+              raw: {
+                roles: JSON.stringify([])
+              }
+            },
+            scope: []
+          },
+          strategy: 'azuread'
+        },
+        payload: {
+          officeCodes: ['ABC:office']
+        }
+      })
+
+      expect(res.statusCode).toEqual(404)
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-body').text()).toEqual('Phone number not found.')
+    })
+
+    test('responds with 500 when problem updating user', async () => {
+      updateUser.mockResolvedValueOnce({ statusCode: 500 })
+      const res = await server.inject({
+        method,
+        url,
+        auth: {
+          credentials: {
+            user: {
+              id,
+              email,
+              displayName: 'test gwa',
+              raw: {
+                roles: JSON.stringify([])
+              }
+            },
+            scope: []
+          },
+          strategy: 'azuread'
+        },
+        payload: {
+          officeCodes: ['ABC:office']
+        }
+      })
+
+      expect(res.statusCode).toEqual(500)
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-body').text()).toEqual('Please try again later.')
+    })
+
+    test('responds with 302 to /account and updates user when user is updated for corporate number', async () => {
+      const newOfficeCode = 'ABC:office'
+      updateUser.mockResolvedValueOnce({ statusCode: 200 })
+
+      const res = await server.inject({
+        method,
+        url: `/contact-edit/${mockCorporatePhoneNumberId}`,
+        auth: {
+          credentials: {
+            user: {
+              id,
+              email,
+              displayName: 'test gwa',
+              raw: {
+                roles: JSON.stringify([])
+              }
+            },
+            scope: []
+          },
+          strategy: 'azuread'
+        },
+        payload: {
+          officeCodes: [newOfficeCode]
+        }
+      })
+
+      expect(res.statusCode).toEqual(302)
+      expect(res.headers.location).toEqual('/account')
+      expect(updateUser).toBeCalledWith(expect.objectContaining({
+        phoneNumbers: expect.arrayContaining([{ id: mockCorporatePhoneNumberId, number: mockCorporatePhoneNumber, subscribedTo: [newOfficeCode, officeCode], type: 'corporate' }])
+      }))
+    })
+
+    test('responds with 302 to /account and updates user when user is updated for personal number', async () => {
+      const newOfficeCode = 'ABC:office'
+      updateUser.mockResolvedValueOnce({ statusCode: 200 })
+
+      const res = await server.inject({
+        method,
+        url: `/contact-edit/${mockPersonalPhoneNumberId}`,
+        auth: {
+          credentials: {
+            user: {
+              id,
+              email,
+              displayName: 'test gwa',
+              raw: {
+                roles: JSON.stringify([])
+              }
+            },
+            scope: []
+          },
+          strategy: 'azuread'
+        },
+        payload: {
+          officeCodes: [newOfficeCode]
+        }
+      })
+
+      expect(res.statusCode).toEqual(302)
+      expect(res.headers.location).toEqual('/account')
+      expect(updateUser).toBeCalledWith(expect.objectContaining({
+        phoneNumbers: expect.arrayContaining([{ id: mockPersonalPhoneNumberId, number: mockPersonalPhoneNumber, subscribedTo: [newOfficeCode], type: 'personal' }])
+      }))
+    })
+
+    test('responds with 400 when phone number is not a guid', async () => {
+      const res = await server.inject({
+        method,
+        url: '/contact-edit/not-a-guid',
+        auth: {
+          credentials: {
+            user: {
+              id,
+              email,
+              displayName: 'test gwa',
+              raw: {
+                roles: JSON.stringify([])
+              }
+            },
+            scope: []
+          },
+          strategy: 'azuread'
+        },
+        payload: {
+          officeCodes: ['ABC:office']
+        }
+      })
+
+      expect(res.statusCode).toEqual(400)
+      const $ = cheerio.load(res.payload)
+
+      const body = $('.govuk-body').text()
+      expect(body).toMatch('Invalid request params input')
+    })
+
+    test('responds with 400 when office codes are not included in request', async () => {
+      const res = await server.inject({
+        method,
+        url,
+        auth: {
+          credentials: {
+            user: {
+              id,
+              email,
+              displayName: 'test gwa',
+              raw: {
+                roles: JSON.stringify([])
+              }
+            },
+            scope: []
+          },
+          strategy: 'azuread'
+        }
+      })
+
+      expect(res.statusCode).toEqual(400)
+      const $ = cheerio.load(res.payload)
+
+      const body = $('.govuk-body').text()
+      expect(body).toMatch('Invalid request payload input')
     })
   })
 })

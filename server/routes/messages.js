@@ -27,9 +27,11 @@ module.exports = [
     method: 'GET',
     path: '/messages',
     handler: async (request, h) => {
-      const recentlyCreated = await getRecentMessages(messageStates.created)
-      const recentlyEdited = await getRecentMessages(messageStates.edited)
-      const recentlySent = await getRecentMessages(messageStates.sent)
+      const [recentlyCreated, recentlyEdited, recentlySent] = await Promise.all([
+        getRecentMessages(messageStates.created),
+        getRecentMessages(messageStates.edited),
+        getRecentMessages(messageStates.sent)
+      ])
 
       return h.view('messages', new Model({ recentlyCreated, recentlyEdited, recentlySent }))
     },

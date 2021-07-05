@@ -49,7 +49,6 @@ module.exports = [
     }
   },
   {
-    // TODO: test this
     method: 'POST',
     path,
     handler: async (request, h) => {
@@ -57,6 +56,11 @@ module.exports = [
       const { officeCodes = [] } = request.payload
       const user = request.pre.user
       const phoneNumber = user.phoneNumbers.find(x => x.id === phoneNumberId)
+
+      if (!phoneNumber) {
+        return boom.notFound('Phone number not found.')
+      }
+
       if (phoneNumber.type === phoneNumberTypes.corporate) {
         officeCodes.push(user.officeCode)
       }
@@ -64,7 +68,7 @@ module.exports = [
 
       const response = await updateUser(user)
       if (response.statusCode !== 200) {
-        boom.internal('Error updating user.', response)
+        return boom.internal('Error updating user.', response)
       }
 
       return h.redirect('/account')
