@@ -16,7 +16,6 @@ const routes = [].concat(
   require('../routes/message-view'),
   require('../routes/messages'),
   require('../routes/public'),
-  // TODO: Look into what the status route provides
   require('../routes/status'),
   require('../routes/upload')
 )
