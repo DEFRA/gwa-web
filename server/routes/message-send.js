@@ -18,7 +18,7 @@ const path = `/${routeId}/{messageId}`
 
 async function refreshUsers (request) {
   await request.server.methods.db.getUsers.cache.drop()
-  return await request.server.methods.db.getUsers()
+  return request.server.methods.db.getUsers()
 }
 
 module.exports = [
