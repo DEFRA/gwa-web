@@ -26,16 +26,17 @@ describe('Uploading contact list', () => {
     mockBlockBlobClient.prototype.upload = mockUpload
     const contacts = [{ phoneNumber: '07777111222' }]
     const text = 'nice to meet you'
-    const message = { contacts, id: 'your-id', text }
+    const messageId = '8be12e37-880b-4775-a6d0-a02d9d6c038c'
+    const message = { contacts, id: messageId, text }
 
     const res = await uploadContactList(message)
 
     expect(mockBlockBlobClient).toHaveBeenCalledTimes(1)
-    expect(mockBlockBlobClient).toHaveBeenCalledWith(mockContactListStorageConnectionString, mockContactListContainer, `${message.id}.json`)
+    expect(mockBlockBlobClient).toHaveBeenCalledWith(mockContactListStorageConnectionString, mockContactListContainer, `${messageId}.json`)
     expect(mockUpload).toHaveBeenCalledTimes(1)
     const data = JSON.stringify({
       contacts: contacts.map(c => { return { phoneNumber: c } }),
-      message: text
+      message: { id: messageId, text }
     })
     expect(mockUpload).toHaveBeenCalledWith(data, data.length, { blobHTTPHeaders: { blobContentType: 'application/json' } })
     expect(res).toBe(true)

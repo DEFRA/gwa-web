@@ -13,7 +13,7 @@ module.exports = async (message) => {
   const { contacts, id, text } = message
   const data = JSON.stringify({
     contacts: contacts.map(c => { return { phoneNumber: c } }),
-    message: text
+    message: { id, text }
   })
   const client = new BlockBlobClient(contactListStorageConnectionString, contactListContainer, `${id}.json`)
   const res = await client.upload(data, data.length, { blobHTTPHeaders: { blobContentType: 'application/json' } })
