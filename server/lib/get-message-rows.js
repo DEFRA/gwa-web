@@ -27,7 +27,7 @@ module.exports = (message) => {
     rows.push(
       [{ text: 'Sent at' }, { text: new Date(sentEvent.time).toLocaleString() }],
       [{ text: 'Sent by' }, { text: sentEvent.user.id }],
-      [{ text: 'Approx cost' }, { text: `£${message.cost}` }],
+      [{ text: 'Approx cost' }, { text: `£${message.cost.toFixed(2)}` }],
       [{ text: 'Approx message sent count' }, { text: message.contactCount }]
     )
   }

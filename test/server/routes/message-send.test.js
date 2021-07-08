@@ -183,7 +183,7 @@ describe('Message send route', () => {
 
       const $ = cheerio.load(res.payload)
       expect($('.govuk-heading-l').text()).toMatch('Send message')
-      expect($('.govuk-warning-text').text()).toMatch(`Are you sure you would like to send this message? It will be sent to approximately ${contactCount} contact(s) at an approximate cost of £${cost} (excluding VAT).`)
+      expect($('.govuk-warning-text').text()).toMatch(`Are you sure you would like to send this message? It will be sent to approximately ${contactCount} contact(s) at an approximate cost of £${cost.toFixed(2)} (excluding VAT).`)
       const rows = $('.govuk-table .govuk-table__row')
       expect(rows).toHaveLength(9)
       expect($('th', rows.eq(0)).text()).toMatch('Message state')

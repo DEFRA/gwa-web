@@ -199,7 +199,7 @@ describe('Message view route', () => {
       expect($('th', rows.eq(10)).text()).toMatch('Sent by')
       expect($('td', rows.eq(10)).text()).toMatch(id)
       expect($('th', rows.eq(11)).text()).toMatch('Approx cost')
-      expect($('td', rows.eq(11)).text()).toMatch(`£${cost}`)
+      expect($('td', rows.eq(11)).text()).toMatch(`£${cost.toFixed(2)}`)
       expect($('th', rows.eq(12)).text()).toMatch('Approx message sent count')
       expect($('td', rows.eq(12)).text()).toMatch(`${contactCount}`)
     })
