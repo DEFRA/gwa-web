@@ -72,11 +72,15 @@ describe('Get message rows', () => {
     expect(messageRows[1][1].text).toEqual('All offices')
   })
 
-  test('when message has sent state, correct rows are returned', () => {
+  test.each([
+    { cost: 4.2, rounded: '4.20' },
+    { cost: 4.204, rounded: '4.20' },
+    { cost: 4.205, rounded: '4.21' }
+  ])('when message has sent state, correct rows are returned', ({ cost, rounded }) => {
     const message = { ...messageTemplate }
     message.state = messageStates.created
     addAuditEvent(message, user) // use actual function to add audit events for simplicity
-    message.cost = 4.20
+    message.cost = cost
     message.contactCount = 343
     message.state = messageStates.sent
     addAuditEvent(message, user) // use actual function to add audit events for simplicity
@@ -92,7 +96,7 @@ describe('Get message rows', () => {
     expect(messageRows[10][0].text).toEqual('Sent by')
     expect(messageRows[10][1].text).toEqual(sentEvent.user.id)
     expect(messageRows[11][0].text).toEqual('Approx cost')
-    expect(messageRows[11][1].text).toEqual(`£${message.cost}`)
+    expect(messageRows[11][1].text).toEqual(`£${rounded}`)
     expect(messageRows[12][0].text).toEqual('Approx message sent count')
     expect(messageRows[12][1].text).toEqual(message.contactCount)
   })
