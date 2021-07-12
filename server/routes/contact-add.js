@@ -2,12 +2,13 @@ const boom = require('@hapi/boom')
 const Joi = require('joi')
 const { v4: uuid } = require('uuid')
 
-const BaseModel = require('../lib/model')
-const { getMappedErrors } = require('../lib/errors')
-const { getUser } = require('../lib/route-pre-handlers')
-const { updateUser } = require('../lib/db')
-const { parsePhoneNumber, types } = require('../lib/phone-number')
 const { phoneNumberTypes } = require('../constants')
+const { updateUser } = require('../lib/db')
+const { getMappedErrors } = require('../lib/errors')
+const { getAreaOfficeCode } = require('../lib/helpers')
+const BaseModel = require('../lib/model')
+const { parsePhoneNumber, types } = require('../lib/phone-number')
+const { getUser } = require('../lib/route-pre-handlers')
 
 const maxPersonalPhoneNumbers = 2
 const errorMessages = {
@@ -81,7 +82,7 @@ module.exports = [
         id: uuid(),
         type: phoneNumberTypes.personal,
         number: e164,
-        subscribedTo: [user.officeCode]
+        subscribedTo: [getAreaOfficeCode(user)]
       })
 
       const response = await updateUser(user)

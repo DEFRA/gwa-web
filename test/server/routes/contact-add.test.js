@@ -1,5 +1,6 @@
 const cheerio = require('cheerio')
 const createServer = require('../../../server/index')
+const { getAreaOfficeCode } = require('../../../server/lib/helpers')
 
 describe('Contact add route', () => {
   const officeCode = 'ABC:office'
@@ -278,12 +279,12 @@ describe('Contact add route', () => {
         phoneNumbers: [{
           id: expect.stringMatching(uuidRegex),
           number: '+447777111111',
-          subscribedTo: [officeCode],
+          subscribedTo: [getAreaOfficeCode({ officeCode })],
           type: 'personal'
         }, {
           id: expect.stringMatching(uuidRegex),
           number: '+447777111222',
-          subscribedTo: [officeCode],
+          subscribedTo: [getAreaOfficeCode({ officeCode })],
           type: 'personal'
         }]
       }))

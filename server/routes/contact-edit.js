@@ -3,6 +3,7 @@ const Joi = require('joi')
 
 const { phoneNumberTypes } = require('../constants')
 const { updateUser } = require('../lib/db')
+const { getAreaOfficeCode } = require('../lib/helpers')
 const generateOfficeCheckboxes = require('../lib/office-checkboxes')
 const BaseModel = require('../lib/model')
 const { getUser } = require('../lib/route-pre-handlers')
@@ -33,7 +34,7 @@ module.exports = [
 
       const isCorporate = phoneNumber.type === phoneNumberTypes.corporate
       const checked = [...new Set(phoneNumber.subscribedTo.flat())]
-      const disabled = isCorporate ? [user.officeCode] : []
+      const disabled = isCorporate ? [getAreaOfficeCode(user)] : []
       const areaToOfficeMap = await request.server.methods.db.getAreaToOfficeMap()
       const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, checked, disabled)
 

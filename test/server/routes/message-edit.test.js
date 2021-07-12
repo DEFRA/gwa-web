@@ -4,6 +4,7 @@ const { textMessages: { maxInfoLength, maxMessageLength } } = require('../../../
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
 const { message } = require('../../../server/lib/error-messages')
+const { getAreaOfficeCode } = require('../../../server/lib/helpers')
 
 describe('Message edit route', () => {
   const email = 'test@gwa.defra.co.uk'
@@ -25,6 +26,7 @@ describe('Message edit route', () => {
   const officeLocation = 'officeLocation'
   const officeLocationTwo = 'officeLocationTwo'
   const officeCode = 'ABC:office-code'
+  const areaOfficeCode = getAreaOfficeCode({ officeCode })
 
   jest.mock('../../../server/lib/db')
   const { getMessage, updateMessage } = require('../../../server/lib/db')
@@ -40,7 +42,7 @@ describe('Message edit route', () => {
         { user: { id: edituser }, type: 'create', time: updateTime }
       ],
       orgCodes,
-      officeCodes: [officeCode],
+      officeCodes: [areaOfficeCode],
       state,
       allOffices: true,
       text,
@@ -145,7 +147,7 @@ describe('Message edit route', () => {
       const $ = cheerio.load(res.payload)
       expect($('.govuk-heading-l').text()).toMatch('Edit message')
       const formGroups = $('.govuk-form-group')
-      expect(formGroups).toHaveLength(6)
+      expect(formGroups).toHaveLength(7)
       expect($('label', formGroups.eq(0)).text()).toMatch('Text message')
       expect($('textarea', formGroups.eq(0)).text()).toMatch(text)
       expect($('.govuk-hint', formGroups.eq(0)).text()).toMatch('Enter the message you wish to send.')
@@ -163,13 +165,15 @@ describe('Message edit route', () => {
       expect($('.govuk-accordion__section')).toHaveLength(1)
       expect($('.govuk-accordion__section-header').eq(0).text()).toMatch(areaName)
       const officeCheckboxes = $('.govuk-accordion__section-content .govuk-checkboxes__item')
-      expect(officeCheckboxes).toHaveLength(3)
+      expect(officeCheckboxes).toHaveLength(1)
       expect(officeCheckboxes.eq(0).text()).toMatch(`All office locations in the ${areaName} area`)
-      expect(officeCheckboxes.eq(1).text()).toMatch(officeLocation)
-      expect(officeCheckboxes.eq(2).text()).toMatch(officeLocationTwo)
       const officeCheckboxesChecked = $('input[name="officeCodes"]:checked')
       expect(officeCheckboxesChecked).toHaveLength(1)
-      expect(officeCheckboxesChecked.val()).toEqual(officeCode)
+      expect(officeCheckboxesChecked.val()).toEqual(areaOfficeCode)
+      const officeListItems = $('.govuk-list.govuk-list--bullet li')
+      expect(officeListItems).toHaveLength(2)
+      expect(officeListItems.eq(0).text()).toMatch(officeLocation)
+      expect(officeListItems.eq(1).text()).toMatch(officeLocationTwo)
     })
   })
 
