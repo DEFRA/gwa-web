@@ -36,6 +36,18 @@ class Model extends BaseModel {
 const routeId = 'contact-add'
 const path = `/${routeId}`
 
+function isNumberAlreadyRegistered (user, e164) {
+  return user.phoneNumbers.find(x => x.number === e164)
+}
+
+function isNumberMobile (type) {
+  return type === types.MOBILE
+}
+
+function areMaxNumbersAlreadyRegistered (user) {
+  return user.phoneNumbers.filter(x => x.type === phoneNumberTypes.personal).length >= maxPersonalPhoneNumbers
+}
+
 module.exports = [
   {
     method: 'GET',
@@ -49,30 +61,20 @@ module.exports = [
     path,
     handler: async (request, h) => {
       const { mobile } = request.payload
-      const phoneNumber = parsePhoneNumber(mobile)
-      const { e164, type } = phoneNumber
+      const { e164, type } = parsePhoneNumber(mobile)
 
-      // Only allow MOBILE
-      const isCorrectType = type === types.MOBILE
-
-      if (!isCorrectType) {
-        const errors = { mobile: errorMessages.mobile['*'] }
-        return h.view(routeId, new Model(request.payload, errors))
+      if (!isNumberMobile(type)) {
+        return h.view(routeId, new Model(request.payload, { mobile: errorMessages.mobile['*'] }))
       }
 
       const user = request.pre.user
 
-      // check if the number already exists
-      const existingPhoneNumber = user.phoneNumbers.find(x => x.number === e164)
-      if (existingPhoneNumber) {
-        const errors = { mobile: errorMessages.mobile.unique }
-        return h.view(routeId, new Model(request.payload, errors))
+      if (isNumberAlreadyRegistered(user, e164)) {
+        return h.view(routeId, new Model(request.payload, { mobile: errorMessages.mobile.unique }))
       }
 
-      // Check there aren't too many personal phone numbers already
-      if (user.phoneNumbers.filter(x => x.type === phoneNumberTypes.personal).length >= maxPersonalPhoneNumbers) {
-        const errors = { mobile: errorMessages.mobile.tooMany }
-        return h.view(routeId, new Model(request.payload, errors))
+      if (areMaxNumbersAlreadyRegistered(user)) {
+        return h.view(routeId, new Model(request.payload, { mobile: errorMessages.mobile.tooMany }))
       }
 
       user.phoneNumbers.push({
