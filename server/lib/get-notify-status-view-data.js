@@ -6,7 +6,7 @@ const { getComponentTag, getServiceTag } = require('./helpers')
  *
  * @returns {object} the data from
  * https://status.notifications.service.gov.uk/api/v2/summary.json including an
- * additional property `_lastChecked` to indicate when the request was made.
+ * additional property `lastChecked` to indicate when the request was made.
  */
 async function getNotifyStatus () {
   const url = 'https://status.notifications.service.gov.uk/api/v2/summary.json'

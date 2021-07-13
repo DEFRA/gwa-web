@@ -41,7 +41,7 @@ function getComponentTag (status) {
  * component based on the `status`.
  *
  * @param {string} indicator from Notify's StatusPage API JSON.
- * @return {string} govuk-tag--<colour> based on `status`.
+ * @return {string} govuk-tag--<colour> based on `indicator.status`.
  */
 function getServiceTag (indicator) {
   switch (indicator) {
