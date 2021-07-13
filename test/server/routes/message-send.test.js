@@ -32,6 +32,17 @@ describe('Message send route', () => {
     text,
     info
   }
+  const notifyStatusViewData = {
+    service: {
+      description: 'All Systems Go!',
+      tag: 'govuk-tag--green'
+    },
+    componentRows: [[
+      { text: 'component name' },
+      { html: '<strong class="govuk-tag govuk-tag--green">operational</strong>' }
+    ]],
+    lastChecked: Date.now()
+  }
 
   jest.mock('../../../server/lib/upload-contact-list')
   const uploadContactList = require('../../../server/lib/upload-contact-list')
@@ -44,6 +55,7 @@ describe('Message send route', () => {
     jest.clearAllMocks()
     server = await createServer()
     server.methods.db.getUsers = jest.fn().mockResolvedValue(userList)
+    server.methods.getNotifyStatusViewData = jest.fn().mockResolvedValue(notifyStatusViewData)
     getMessage.mockResolvedValue({ ...message })
   })
 
@@ -209,6 +221,14 @@ describe('Message send route', () => {
       expect(buttons).toHaveLength(2)
       expect(buttons.eq(0).text()).toMatch('Cancel')
       expect(buttons.eq(1).text()).toMatch('Continue')
+
+      const notifyStatus = $('.govuk-grid-column-one-third')
+      expect(notifyStatus).toHaveLength(1)
+      expect($('h2', notifyStatus).text()).toEqual('GOV.UK Notify Status')
+      const statusTags = $('.govuk-tag', notifyStatus)
+      expect(statusTags).toHaveLength(notifyStatusViewData.componentRows.length + 1)
+      expect($(statusTags).eq(0).text()).toEqual(notifyStatusViewData.service.description)
+      expect($(statusTags).eq(1).text()).toEqual($(notifyStatusViewData.componentRows[0][1].html).text())
     })
   })
 
