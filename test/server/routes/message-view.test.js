@@ -136,7 +136,8 @@ describe('Message view route', () => {
 
       const $ = cheerio.load(res.payload)
       expect($('.govuk-heading-l').text()).toMatch('View message')
-      const rows = $('.govuk-table .govuk-table__row')
+      const mainContent = $('.govuk-grid-column-two-thirds')
+      const rows = $('.govuk-table .govuk-table__row', mainContent)
       expect(rows).toHaveLength(9)
       expect($('th', rows.eq(0)).text()).toMatch('Message state')
       expect($('td', rows.eq(0)).text()).toMatch(state)
@@ -192,7 +193,8 @@ describe('Message view route', () => {
 
       const $ = cheerio.load(res.payload)
       expect($('.govuk-button')).toHaveLength(0)
-      const rows = $('.govuk-table .govuk-table__row')
+      const mainContent = $('.govuk-grid-column-two-thirds')
+      const rows = $('.govuk-table .govuk-table__row', mainContent)
       expect(rows).toHaveLength(13)
       expect($('th', rows.eq(9)).text()).toMatch('Sent at')
       expect($('td', rows.eq(9)).text()).toMatch(new Date(sentTime).toLocaleString())
