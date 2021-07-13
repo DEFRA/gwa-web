@@ -2,6 +2,7 @@ const hapi = require('@hapi/hapi')
 
 const config = require('./config')
 const { getAreaToOfficeMap, getOrganisationList, getStandardisedOfficeLocationMap, getUsers } = require('./lib/db')
+const getNotifyStatusViewData = require('./lib/get-notify-status-view-data')
 
 async function createServer () {
   const server = hapi.server({
@@ -24,14 +25,16 @@ async function createServer () {
     }
   })
 
-  // Areas and offices change infrequently. Expire cache daily. Query _should_ take < 2 seconds, allows 3x before error.
+  // Areas and offices change infrequently. Expire cache hourly. Query _should_ take < 2 seconds, allows 3x before error.
   server.method('db.getAreaToOfficeMap', getAreaToOfficeMap, { cache: { expiresIn: 60 * 60 * 1000, generateTimeout: 6 * 1000 } })
-  // Organisations change infrequently. Expire cache daily. Query _should_ take < 2 seconds, allows 3x before error.
+  // Organisations change infrequently. Expire cache hourly. Query _should_ take < 2 seconds, allows 3x before error.
   server.method('db.getOrganisationList', getOrganisationList, { cache: { expiresIn: 60 * 60 * 1000, generateTimeout: 6 * 1000 } })
-  // Office locations change infrequently. Expire cache daily. Query _should_ take < 2 seconds, allows 3x before error.
+  // Office locations change infrequently. Expire cache hourly. Query _should_ take < 2 seconds, allows 3x before error.
   server.method('db.getStandardisedOfficeLocationMap', getStandardisedOfficeLocationMap, { cache: { expiresIn: 60 * 60 * 1000, generateTimeout: 6 * 1000 } })
   // Users are scheduled to refresh weekly. Expire cache daily. Query _should_ take ~10 seconds, allows 3x before error.
   server.method('db.getUsers', getUsers, { cache: { expiresAt: '00:05', generateTimeout: 30 * 1000 } })
+  // Notify status doesn't change frequently but is important to be up to date. Expire cache every 5 minutes. Query _should_ take < 2 seconds, allows 3x before error.
+  server.method('getNotifyStatusViewData', getNotifyStatusViewData, { cache: { expiresIn: 5 * 60 * 1000, generateTimeout: 6 * 1000 } })
 
   // Register the plugins
   await server.register(require('@hapi/inert'))

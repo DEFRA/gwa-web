@@ -12,6 +12,54 @@ function getAreaOfficeCode (user) {
   return user.officeCode.split(':')[0] + ':*'
 }
 
+/**
+ * Gets the coloured class for the
+ * [GOV.UK tag](https://design-system.service.gov.uk/components/tag/)
+ * component based on the `status`.
+ *
+ * @param {string} status of a component from Notify's StatusPage API JSON.
+ * @return {string} govuk-tag--<colour> based on `status`.
+ */
+function getComponentTag (status) {
+  switch (status) {
+    case 'operational':
+      return 'govuk-tag--green'
+    case 'degraded_performance':
+      return 'govuk-tag--yellow'
+    case 'partial_outage':
+      return 'govuk-tag--orange'
+    case 'major_outage':
+      return 'govuk-tag--red'
+    default:
+      return 'govuk-tag--grey'
+  }
+}
+
+/**
+ * Gets the coloured class for the
+ * [GOV.UK tag](https://design-system.service.gov.uk/components/tag/)
+ * component based on the `status`.
+ *
+ * @param {string} indicator from Notify's StatusPage API JSON.
+ * @return {string} govuk-tag--<colour> based on `status`.
+ */
+function getServiceTag (indicator) {
+  switch (indicator) {
+    case 'none':
+      return 'govuk-tag--green'
+    case 'minor':
+      return 'govuk-tag--yellow'
+    case 'major':
+      return 'govuk-tag--orange'
+    case 'critical':
+      return 'govuk-tag--red'
+    default:
+      return 'govuk-tag--grey'
+  }
+}
+
 module.exports = {
-  getAreaOfficeCode
+  getAreaOfficeCode,
+  getComponentTag,
+  getServiceTag
 }
