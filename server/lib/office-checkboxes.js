@@ -24,8 +24,9 @@ function generateOfficeList (officeLocations) {
  *
  * @param {object} areaToOfficeMap map of areas with `officeLocations`.
  * @param {Array} [checked=[]] list of office codes to be checked - only
- * applicable to area level office codes.  @param {Array} [disabled=[]] list of
- * office codes to be disabled - only applicable to area level office codes.
+ * applicable to area level office codes.
+ * @param {Array} [disabled=[]] list of office codes to be disabled - only
+ * applicable to area level office codes.
  * @returns {Array} `items` for GOV.UK accordion.
  */
 module.exports = (areaToOfficeMap, checked = [], disabled = []) => {
