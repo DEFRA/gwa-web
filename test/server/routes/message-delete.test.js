@@ -16,6 +16,17 @@ describe('Message deletion route', () => {
   const updateTime = new Date('2021-01-02T08:00:00')
   const createUser = 'creating-things'
   const edituser = 'editing-things'
+  const notifyStatusViewData = {
+    service: {
+      description: 'All Systems Go!',
+      tag: 'govuk-tag--green'
+    },
+    componentRows: [[
+      { text: 'component name' },
+      { html: '<strong class="govuk-tag govuk-tag--green">operational</strong>' }
+    ]],
+    lastChecked: Date.now()
+  }
 
   jest.mock('../../../server/lib/db')
   const { deleteMessage, getMessage } = require('../../../server/lib/db')
@@ -23,6 +34,7 @@ describe('Message deletion route', () => {
   beforeEach(async () => {
     jest.clearAllMocks()
     server = await createServer()
+    server.methods.getNotifyStatusViewData = jest.fn().mockResolvedValue(notifyStatusViewData)
     getMessage.mockResolvedValue({
       auditEvents: [
         { user: { id: createUser }, type: 'create', time: createTime },
@@ -134,7 +146,8 @@ describe('Message deletion route', () => {
       const $ = cheerio.load(res.payload)
       expect($('.govuk-heading-l').text()).toMatch('Delete message')
       expect($('.govuk-warning-text').text()).toMatch('Are you sure you would like to delete this message?')
-      const rows = $('.govuk-table .govuk-table__row')
+      const mainContent = $('.govuk-grid-column-two-thirds')
+      const rows = $('.govuk-table .govuk-table__row', mainContent)
       expect(rows).toHaveLength(9)
       expect($('th', rows.eq(0)).text()).toMatch('Message state')
       expect($('td', rows.eq(0)).text()).toMatch(state)
@@ -158,6 +171,14 @@ describe('Message deletion route', () => {
       expect(buttons).toHaveLength(2)
       expect(buttons.eq(0).text()).toMatch('Cancel')
       expect(buttons.eq(1).text()).toMatch('Continue')
+
+      const notifyStatus = $('.govuk-grid-column-one-third')
+      expect(notifyStatus).toHaveLength(1)
+      expect($('h2', notifyStatus).text()).toEqual('GOV.UK Notify Status')
+      const statusTags = $('.govuk-tag', notifyStatus)
+      expect(statusTags).toHaveLength(notifyStatusViewData.componentRows.length + 1)
+      expect($(statusTags).eq(0).text()).toEqual(notifyStatusViewData.service.description)
+      expect($(statusTags).eq(1).text()).toEqual($(notifyStatusViewData.componentRows[0][1].html).text())
     })
   })
 

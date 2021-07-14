@@ -27,6 +27,17 @@ describe('Message edit route', () => {
   const officeLocationTwo = 'officeLocationTwo'
   const officeCode = 'ABC:office-code'
   const areaOfficeCode = getAreaOfficeCode({ officeCode })
+  const notifyStatusViewData = {
+    service: {
+      description: 'All Systems Go!',
+      tag: 'govuk-tag--green'
+    },
+    componentRows: [[
+      { text: 'component name' },
+      { html: '<strong class="govuk-tag govuk-tag--green">operational</strong>' }
+    ]],
+    lastChecked: Date.now()
+  }
 
   jest.mock('../../../server/lib/db')
   const { getMessage, updateMessage } = require('../../../server/lib/db')
@@ -48,6 +59,7 @@ describe('Message edit route', () => {
       text,
       info
     })
+    server.methods.getNotifyStatusViewData = jest.fn().mockResolvedValue(notifyStatusViewData)
   })
 
   afterEach(async () => {
@@ -174,6 +186,14 @@ describe('Message edit route', () => {
       expect(officeListItems).toHaveLength(2)
       expect(officeListItems.eq(0).text()).toMatch(officeLocation)
       expect(officeListItems.eq(1).text()).toMatch(officeLocationTwo)
+
+      const notifyStatus = $('.govuk-grid-column-one-third')
+      expect(notifyStatus).toHaveLength(1)
+      expect($('h2', notifyStatus).text()).toEqual('GOV.UK Notify Status')
+      const statusTags = $('.govuk-tag', notifyStatus)
+      expect(statusTags).toHaveLength(notifyStatusViewData.componentRows.length + 1)
+      expect($(statusTags).eq(0).text()).toEqual(notifyStatusViewData.service.description)
+      expect($(statusTags).eq(1).text()).toEqual($(notifyStatusViewData.componentRows[0][1].html).text())
     })
   })
 

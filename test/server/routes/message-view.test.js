@@ -16,6 +16,17 @@ describe('Message view route', () => {
   const updateTime = new Date('2021-01-02T08:00:00')
   const createUser = 'creating-things'
   const edituser = 'editing-things'
+  const notifyStatusViewData = {
+    service: {
+      description: 'All Systems Go!',
+      tag: 'govuk-tag--green'
+    },
+    componentRows: [[
+      { text: 'component name' },
+      { html: '<strong class="govuk-tag govuk-tag--green">operational</strong>' }
+    ]],
+    lastChecked: Date.now()
+  }
 
   jest.mock('../../../server/lib/db')
   const { getMessage } = require('../../../server/lib/db')
@@ -38,6 +49,7 @@ describe('Message view route', () => {
   beforeEach(async () => {
     jest.clearAllMocks()
     server = await createServer()
+    server.methods.getNotifyStatusViewData = jest.fn().mockResolvedValue(notifyStatusViewData)
     getMessage.mockResolvedValue(message)
   })
 
@@ -136,7 +148,8 @@ describe('Message view route', () => {
 
       const $ = cheerio.load(res.payload)
       expect($('.govuk-heading-l').text()).toMatch('View message')
-      const rows = $('.govuk-table .govuk-table__row')
+      const mainContent = $('.govuk-grid-column-two-thirds')
+      const rows = $('.govuk-table .govuk-table__row', mainContent)
       expect(rows).toHaveLength(9)
       expect($('th', rows.eq(0)).text()).toMatch('Message state')
       expect($('td', rows.eq(0)).text()).toMatch(state)
@@ -161,6 +174,14 @@ describe('Message view route', () => {
       expect(buttons.eq(0).text()).toMatch('Edit message')
       expect(buttons.eq(1).text()).toMatch('Delete message')
       expect(buttons.eq(2).text()).toMatch('Send message')
+
+      const notifyStatus = $('.govuk-grid-column-one-third')
+      expect(notifyStatus).toHaveLength(1)
+      expect($('h2', notifyStatus).text()).toEqual('GOV.UK Notify Status')
+      const statusTags = $('.govuk-tag', notifyStatus)
+      expect(statusTags).toHaveLength(notifyStatusViewData.componentRows.length + 1)
+      expect($(statusTags).eq(0).text()).toEqual(notifyStatusViewData.service.description)
+      expect($(statusTags).eq(1).text()).toEqual($(notifyStatusViewData.componentRows[0][1].html).text())
     })
 
     test('responds with 200 with extra rows and no buttons when message is sent and user has sufficient scope', async () => {
@@ -192,7 +213,8 @@ describe('Message view route', () => {
 
       const $ = cheerio.load(res.payload)
       expect($('.govuk-button')).toHaveLength(0)
-      const rows = $('.govuk-table .govuk-table__row')
+      const mainContent = $('.govuk-grid-column-two-thirds')
+      const rows = $('.govuk-table .govuk-table__row', mainContent)
       expect(rows).toHaveLength(13)
       expect($('th', rows.eq(9)).text()).toMatch('Sent at')
       expect($('td', rows.eq(9)).text()).toMatch(new Date(sentTime).toLocaleString())

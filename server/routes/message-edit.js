@@ -45,15 +45,16 @@ module.exports = [
       const { error, message } = await verifyRequest(request)
       if (error) { return error }
 
-      const [areaToOfficeMap, organisationList] = await Promise.all([
+      const [areaToOfficeMap, organisationList, notifyStatus] = await Promise.all([
         request.server.methods.db.getAreaToOfficeMap(),
-        request.server.methods.db.getOrganisationList()
+        request.server.methods.db.getOrganisationList(),
+        request.server.methods.getNotifyStatusViewData()
       ])
       const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, message.officeCodes)
       const orgCheckboxes = generateOrganisationCheckboxes(organisationList, message.orgCodes)
       const allOfficeRadios = generateSendToAllOrgsRadios(message.allOffices)
 
-      return h.view(routeId, new Model({ ...message, allOfficeRadios, maxMessageLength, officeCheckboxes, orgCheckboxes }))
+      return h.view(routeId, new Model({ ...message, allOfficeRadios, maxMessageLength, notifyStatus, officeCheckboxes, orgCheckboxes }))
     },
     options: {
       auth,
