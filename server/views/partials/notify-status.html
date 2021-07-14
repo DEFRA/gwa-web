@@ -1,16 +1,18 @@
 <aside class="app-related-items" role="complementary">
   <h2 class="govuk-heading-m govuk-!-margin-bottom-3">GOV.UK Notify Status</h2>
   <strong class="govuk-tag {{ data.notifyStatus.service.tag }} govuk-!-margin-bottom-3">{{ data.notifyStatus.service.description }}</strong>
-  {{
-    govukTable({
-    classes: 'govuk-!-font-size-16',
-    head: [
-      { text: 'Component' },
-      { text: 'Status' }
-    ],
-    rows: data.notifyStatus.componentRows
-  })
-  }}
+  {% if data.notifyStatus.componentRows %}
+    {{
+      govukTable({
+      classes: 'govuk-!-font-size-16',
+      head: [
+        { text: 'Component' },
+        { text: 'Status' }
+      ],
+      rows: data.notifyStatus.componentRows
+    })
+    }}
+  {% endif %}
   <p class="govuk-!-font-size-16">
     Status last checked:<br>
     <strong>{{ data.notifyStatus.lastChecked }}</strong><br>

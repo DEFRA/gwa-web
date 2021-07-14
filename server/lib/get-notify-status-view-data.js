@@ -6,15 +6,31 @@ const { getComponentTag, getServiceTag } = require('./helpers')
  *
  * @returns {object} the data from
  * https://status.notifications.service.gov.uk/api/v2/summary.json including an
- * additional property `lastChecked` to indicate when the request was made.
+ * additional property `lastChecked` to indicate when the request was made. If
+ * there was a problem with the request a default object with the key
+ * properties required for the view data will be returned.
  */
 async function getNotifyStatus () {
   const url = 'https://status.notifications.service.gov.uk/api/v2/summary.json'
-  const response = await fetch(url)
-  const data = await response.json()
+  const lastChecked = Date.now()
 
-  data.lastChecked = Date.now()
-  return data
+  try {
+    const response = await fetch(url)
+    const data = await response.json()
+
+    data.lastChecked = lastChecked
+    return data
+  } catch (err) {
+    console.log('Error occurred during fetch of Notify Status', err)
+  }
+  return {
+    status: {
+      description: 'Unknown',
+      indicator: 'unknown'
+    },
+    components: [],
+    lastChecked
+  }
 }
 
 /**

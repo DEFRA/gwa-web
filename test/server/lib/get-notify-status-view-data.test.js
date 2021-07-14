@@ -88,4 +88,15 @@ describe('Notify status view data', () => {
     expect(actualComponents[0][1].html).toEqual(`<strong class="govuk-tag ${expectedTag}">${status}</strong>`)
     expect(data.service.tag).toEqual(getServiceTag(mockResponse.status.indicator))
   })
+
+  test('data is correctly constructed for view when error occurs during Notify status retrieval', async () => {
+    fetch.mockRejectedValueOnce({ json: async () => { return new Error('busted') } })
+
+    const data = await getNotifyStatusViewData()
+
+    expect(data.service.description).toEqual('Unknown')
+    expect(data.service.tag).toEqual('govuk-tag--grey')
+    expect(data.componentRows).toEqual([])
+    expect(data.lastChecked).toEqual(new Date(lastCheckDate).toLocaleString())
+  })
 })
