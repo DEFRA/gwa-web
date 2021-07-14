@@ -1,7 +1,9 @@
 function generateCheckbox (officeLocation, checked, disabled) {
   const officeCode = officeLocation.officeCode
+  const officeArea = officeCode.split(':')[0]
+  const checkedAreas = checked.map(x => x.split(':')[0])
   return '<div class="govuk-checkboxes__item">' +
-           `<input class="govuk-checkboxes__input" id="officeLocations_${officeCode}" name="officeCodes" type="checkbox" value="${officeCode}" ${checked.includes(officeCode) ? 'checked=""' : ''} ${disabled.includes(officeCode) ? 'disabled=""' : ''}>` +
+           `<input class="govuk-checkboxes__input" id="officeLocations_${officeCode}" name="officeCodes" type="checkbox" value="${officeCode}" ${checkedAreas.includes(officeArea) ? 'checked=""' : ''} ${disabled.includes(officeCode) ? 'disabled=""' : ''}>` +
            `<label class="govuk-label govuk-checkboxes__label" for="officeLocations_${officeCode}">${officeLocation.officeLocation}</label>` +
          '</div>'.replace(/\n/g, '').replace(/> +</g, '><')
 }
@@ -24,8 +26,9 @@ function generateOfficeList (officeLocations) {
  *
  * @param {object} areaToOfficeMap map of areas with `officeLocations`.
  * @param {Array} [checked=[]] list of office codes to be checked - only
- * applicable to area level office codes.  @param {Array} [disabled=[]] list of
- * office codes to be disabled - only applicable to area level office codes.
+ * applicable to area level office codes.
+ * @param {Array} [disabled=[]] list of office codes to be disabled - only
+ * applicable to area level office codes.
  * @returns {Array} `items` for GOV.UK accordion.
  */
 module.exports = (areaToOfficeMap, checked = [], disabled = []) => {

@@ -65,9 +65,10 @@ describe('Generate office checkboxes', () => {
     })
   })
 
-  test('when an area is identified as checked, the area is checked and it is expanded', async () => {
-    const checked = [`${areaCode1}:*`]
-
+  test.each([
+    { checked: [`${areaCode1}:*`] },
+    { checked: [`${areaCode1}:office1`] }
+  ])('when an office or area is identified as checked, the area is checked and it is expanded', async ({ checked }) => {
     const checkboxes = await generateOfficeCheckboxes(areaToOfficeMap, checked)
 
     expect(checkboxes).toHaveLength(areaToOfficeMap.length)
