@@ -3,6 +3,10 @@
 {% block content %}
   <h1 class="govuk-heading-l">Sent messages</h1>
 
+  <p class="govuk-body">
+  Messages are ordered to show the most recently sent messages first
+  </p>
+
   {{
     govukTable({
       firstCellIsHeader: true,
@@ -13,7 +17,32 @@
         { text: "Sent by" },
         { text: "View" }
       ],
-      rows: data.recentlySent
+      rows: data.messages
     })
   }}
+
+  <nav class="govuk-pagination" id="pagination-label">
+    <p class="govuk-visually-hidden" aria-labelledby="pagination-label">Pagination navigation</p>
+
+    {% if data.pagination.shouldDisplay  %}
+      <ul class="govuk-pagination__list">
+    {% endif %}
+
+    {% if data.pagination.links.previous %}
+        <li class="govuk-pagination__item  govuk-pagination__item--prev">
+          <a class="govuk-pagination__link" href="{{ data.pagination.links.previous }}">Previous<span class="govuk-visually-hidden"> page</span></a>
+        </li>
+    {% endif %}
+
+    {% if data.pagination.links.next %}
+      <li class="govuk-pagination__item  govuk-pagination__item--next">
+        <a class="govuk-pagination__link" href="{{ data.pagination.links.next }}">Next<span class="govuk-visually-hidden"> page</span></a>
+      </li>
+    {% endif %}
+
+    {% if data.pagination.shouldDisplay %}
+      </ul>
+      <p class="govuk-pagination__results">Showing <b>{{ data.pagination.resultsFrom }}</b> to <b>{{ data.pagination.resultsTo }}</b> of <b>{{ data.pagination.numberOfResults }}</b> results</p>
+    {% endif %}
+  </nav>
 {% endblock %}
