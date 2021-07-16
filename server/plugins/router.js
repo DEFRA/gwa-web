@@ -15,6 +15,7 @@ const routes = [].concat(
   require('../routes/message-send'),
   require('../routes/message-view'),
   require('../routes/messages'),
+  require('../routes/messages-sent'),
   require('../routes/public'),
   require('../routes/status'),
   require('../routes/upload')
