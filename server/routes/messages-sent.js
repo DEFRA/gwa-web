@@ -1,3 +1,4 @@
+const boom = require('@hapi/boom')
 const Joi = require('joi')
 const { messages: { sentMessagePageSize } } = require('../constants')
 const { scopes } = require('../permissions')
@@ -10,8 +11,9 @@ const routeId = 'messages-sent'
 const path = `/${routeId}/{page?}`
 
 function generatePagination (page, numberOfResults) {
-  const resultsFrom = 1 + (page - 1) * sentMessagePageSize
-  const maxOnPage = page * sentMessagePageSize
+  const pageSize = sentMessagePageSize
+  const resultsFrom = 1 + (page - 1) * pageSize
+  const maxOnPage = page * pageSize
   const resultsTo = numberOfResults <= maxOnPage ? numberOfResults : maxOnPage
 
   const previous = page > 1 ? `/messages-sent/${page - 1}` : ''
@@ -23,7 +25,9 @@ function generatePagination (page, numberOfResults) {
       previous,
       next
     },
+    numberOfPages: (numberOfResults % pageSize) + 1,
     numberOfResults,
+    pageSize,
     resultsFrom,
     resultsTo
   }
@@ -40,8 +44,11 @@ module.exports = [
       const numberOfResults = sentMessages.length
 
       const pagination = generatePagination(page, numberOfResults)
+      if (page > pagination.numberOfPages) {
+        return boom.notFound('No messages found')
+      }
 
-      const messagesSlice = sentMessages.slice(pagination.resultsFrom - 1, pagination.resultsFrom + sentMessagePageSize - 1)
+      const messagesSlice = sentMessages.slice(pagination.resultsFrom - 1, pagination.resultsFrom + pagination.pageSize - 1)
       const messages = getMessageRows(messagesSlice)
       return h.view(routeId, new Model({ pagination, messages }))
     },
@@ -49,7 +56,7 @@ module.exports = [
       auth: { access: { scope: [`+${scopes.message.manage}`] } },
       validate: {
         params: Joi.object().keys({
-          page: Joi.number().default(1)
+          page: Joi.number().min(1).default(1)
         })
       }
     }
