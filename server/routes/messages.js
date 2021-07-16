@@ -9,9 +9,6 @@ const routeId = 'messages'
 const path = `/${routeId}`
 
 async function getRecentMessages (state) {
-  // NOTE: Keep this query simple by using a property on the item root.
-  // `_ts` doesn't work well because that is updated by the server and is
-  // out of band of the application changes.
   const messages = await getMessages(`SELECT TOP 10 * FROM c WHERE c.state = "${state}" ORDER BY c.lastUpdatedAt DESC`)
 
   return messages.map(message => {
