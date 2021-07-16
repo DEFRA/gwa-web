@@ -7,7 +7,6 @@ module.exports = {
     edit: 'edit',
     send: 'send'
   },
-  orgDataFileHeaders: ['emailAddress', 'givenName', 'surname', 'officeLocation', 'phoneNumber'],
   messageStates: {
     created: 'created',
     edited: 'edited',
@@ -17,6 +16,7 @@ module.exports = {
     unmappedOfficeCode: 'UNM:Unmapped-office-location',
     unmappedOfficeLocation: 'Unmapped office location'
   },
+  orgDataFileHeaders: ['emailAddress', 'givenName', 'surname', 'officeLocation', 'phoneNumber'],
   phoneNumberTypes: {
     corporate: 'corporate',
     personal: 'personal'
