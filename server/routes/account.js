@@ -1,5 +1,4 @@
-const { maxPersonalPhoneNumbers } = require('../config')
-const { phoneNumberTypes } = require('../constants')
+const { contacts: { maxPersonalPhoneNumbers }, phoneNumberTypes } = require('../constants')
 const BaseModel = require('../lib/model')
 const { getUser } = require('../lib/route-pre-handlers')
 
