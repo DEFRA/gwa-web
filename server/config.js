@@ -27,7 +27,8 @@ const schema = Joi.object().keys({
   forceHttps: Joi.boolean().required(),
   logoutRedirectUri: Joi.string().uri(),
   phaseBannerTag: Joi.string().required(),
-  phaseBannerHtml: Joi.string().required()
+  phaseBannerHtml: Joi.string().required(),
+  serviceName: Joi.string().default('Group Wide Alert')
 })
 
 const config = {
