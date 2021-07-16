@@ -1,4 +1,5 @@
 const cheerio = require('cheerio')
+const { contacts: { maxPersonalPhoneNumbers } } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { getAreaOfficeCode } = require('../../../server/lib/helpers')
 
@@ -196,7 +197,7 @@ describe('Contact add route', () => {
 
       const $ = cheerio.load(res.payload)
       const errorMessage = $('.govuk-error-summary__list').text()
-      expect(errorMessage).toMatch('The maximum number (2) of personal phone numbers is already taken')
+      expect(errorMessage).toMatch(`Only ${maxPersonalPhoneNumbers} personal phone number can be registered`)
     })
 
     test('responds with 200 and errors when phone number is not mobile', async () => {
@@ -250,7 +251,7 @@ describe('Contact add route', () => {
       expect($('.govuk-grid-column-two-thirds').text()).toMatch('Sorry, there is a problem with the service')
     })
 
-    test('responds with 302 to /account when user is updated', async () => {
+    test.only('responds with 302 to /account when user is updated', async () => {
       updateUser.mockResolvedValueOnce({ statusCode: 200 })
 
       const res = await server.inject({
@@ -277,11 +278,6 @@ describe('Contact add route', () => {
         active: true,
         officeCode,
         phoneNumbers: [{
-          id: expect.stringMatching(uuidRegex),
-          number: '+447777111111',
-          subscribedTo: [getAreaOfficeCode({ officeCode })],
-          type: 'personal'
-        }, {
           id: expect.stringMatching(uuidRegex),
           number: '+447777111222',
           subscribedTo: [getAreaOfficeCode({ officeCode })],

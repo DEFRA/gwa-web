@@ -13,7 +13,7 @@ const { getUser } = require('../lib/route-pre-handlers')
 const errorMessages = {
   mobile: {
     tooMany: {
-      summary: `The maximum number (${maxPersonalPhoneNumbers}) of personal phone numbers is already taken`,
+      summary: `Only ${maxPersonalPhoneNumbers} personal phone number can be registered`,
       text: 'Maximum personal phone numbers already registered'
     },
     unique: {

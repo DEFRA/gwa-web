@@ -13,23 +13,30 @@ describe('Account route', () => {
   const officeLocation = 'where the office is'
   const surname = 'surname'
   const url = '/account'
+  const baseUser = {
+    id: email,
+    active: true,
+    givenName,
+    surname,
+    officeLocation,
+    orgName
+  }
+  const userWithTwoNumbers = {
+    ...baseUser,
+    phoneNumbers: mockPhoneNumbers
+  }
+  const userWithOneNumber = {
+    ...baseUser,
+    phoneNumbers: [mockPhoneNumbers[0]]
+  }
 
-  jest.mock('../../../server/lib/db', () => {
-    return {
-      getUser: jest.fn()
-        .mockResolvedValue({
-          id: email,
-          active: true,
-          phoneNumbers: mockPhoneNumbers,
-          givenName,
-          surname,
-          officeLocation,
-          orgName
-        })
-        .mockResolvedValueOnce(undefined)
-        .mockResolvedValueOnce({ active: false })
-    }
-  })
+  jest.mock('../../../server/lib/db')
+  const { getUser } = require('../../../server/lib/db')
+  getUser
+    .mockResolvedValueOnce(undefined)
+    .mockResolvedValueOnce({ active: false })
+    .mockResolvedValueOnce(userWithTwoNumbers)
+    .mockResolvedValueOnce(userWithOneNumber)
 
   beforeEach(async () => {
     jest.clearAllMocks()
@@ -92,7 +99,7 @@ describe('Account route', () => {
     expect(res.statusCode).toEqual(404)
   })
 
-  test('responds with 200 and account view when active user is found', async () => {
+  test('responds with 200 and account view with correctly grouped phone numbers when active user is found', async () => {
     const roles = ['Zanns', 'Toaster', 'Adder']
     const res = await server.inject({
       method: 'GET',
@@ -121,27 +128,6 @@ describe('Account route', () => {
     expect(accountOverview.eq(2).text()).toMatch(`Office Location: ${officeLocation}`)
     expect(accountOverview.eq(3).text()).toMatch(`Organisation: ${orgName}`)
     expect(accountOverview.eq(4).text()).toMatch(`Role(s): ${roles.sort().join(', ')}`)
-  })
-
-  test('phone numbers are grouped correctly when active user is found', async () => {
-    const res = await server.inject({
-      method: 'GET',
-      url,
-      auth: {
-        credentials: {
-          user: {
-            id: 'guid',
-            email: 'test@gwa.defra.co.uk',
-            displayName: 'test gwa'
-          },
-          roles: [],
-          scope: []
-        },
-        strategy: 'azuread'
-      }
-    })
-
-    const $ = cheerio.load(res.payload)
 
     const phoneNumberTables = $('table.govuk-table')
     expect(phoneNumberTables).toHaveLength(2)
@@ -151,16 +137,15 @@ describe('Account route', () => {
     expect($('caption', phoneNumberTables[1]).text()).toEqual('Personal phone number(s)')
     expect($('.govuk-table__header', phoneNumberTables[1]).text()).toEqual(mockPhoneNumbers[1].number)
     expect($('.govuk-table__cell', phoneNumberTables[1]).eq(0).text()).toEqual('member of 2 groups')
+
     const buttons = $('.govuk-button')
-    expect(buttons).toHaveLength(4)
+    expect(buttons).toHaveLength(3)
     expect(buttons.eq(0).text()).toEqual('Edit')
     expect(buttons.eq(1).text()).toEqual('Edit')
-    expect(buttons.eq(2).text()).toMatch('Add new contact')
-    expect(buttons.eq(3).text()).toMatch('Sign out')
+    expect(buttons.eq(2).text()).toMatch('Sign out')
   })
 
-  test('add new contact button is not displayed when user has max personal phone numbers', async () => {
-    mockPhoneNumbers.push({ type: 'personal', number: '07777333333', subscribedTo: ['CAFE', 'HOME', 'MORE'] })
+  test('add new contact button is available when user has fewer than max number possible', async () => {
     const res = await server.inject({
       method: 'GET',
       url,
@@ -180,22 +165,10 @@ describe('Account route', () => {
 
     const $ = cheerio.load(res.payload)
 
-    const phoneNumberTables = $('table.govuk-table')
-    expect(phoneNumberTables).toHaveLength(2)
-    const [corporate, personal] = phoneNumberTables
-    expect($('caption', corporate).text()).toEqual('Corporate phone number(s)')
-    expect($('.govuk-table__header', corporate).text()).toEqual(mockPhoneNumbers[0].number)
-    expect($('.govuk-table__cell', corporate).eq(0).text()).toEqual('member of 1 group')
-    expect($('caption', personal).text()).toEqual('Personal phone number(s)')
-    expect($('.govuk-table__header', personal).eq(0).text()).toEqual(mockPhoneNumbers[1].number)
-    expect($('.govuk-table__cell', personal).eq(0).text()).toEqual('member of 2 groups')
-    expect($('.govuk-table__header', personal).eq(1).text()).toEqual(mockPhoneNumbers[2].number)
-    expect($('.govuk-table__cell', personal).eq(2).text()).toEqual('member of 3 groups')
     const buttons = $('.govuk-button')
-    expect(buttons).toHaveLength(4)
+    expect(buttons).toHaveLength(3)
     expect(buttons.eq(0).text()).toEqual('Edit')
-    expect(buttons.eq(1).text()).toEqual('Edit')
-    expect(buttons.eq(2).text()).toMatch('Edit')
-    expect(buttons.eq(3).text()).toMatch('Sign out')
+    expect(buttons.eq(1).text()).toMatch('Add new contact')
+    expect(buttons.eq(2).text()).toMatch('Sign out')
   })
 })

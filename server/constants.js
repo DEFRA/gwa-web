@@ -8,7 +8,7 @@ module.exports = {
     send: 'send'
   },
   contacts: {
-    maxPersonalPhoneNumbers: 2
+    maxPersonalPhoneNumbers: 1
   },
   messageStates: {
     created: 'created',
