@@ -7,6 +7,9 @@ module.exports = {
     edit: 'edit',
     send: 'send'
   },
+  contacts: {
+    maxPersonalPhoneNumbers: 2
+  },
   messageStates: {
     created: 'created',
     edited: 'edited',
