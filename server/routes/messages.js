@@ -5,6 +5,9 @@ const { getMessages } = require('../lib/db')
 
 class Model extends BaseModel {}
 
+const routeId = 'messages'
+const path = `/${routeId}`
+
 async function getRecentMessages (state) {
   // NOTE: Keep this query simple by using a property on the item root.
   // `_ts` doesn't work well because that is updated by the server and is
@@ -25,7 +28,7 @@ async function getRecentMessages (state) {
 module.exports = [
   {
     method: 'GET',
-    path: '/messages',
+    path,
     handler: async (request, h) => {
       const [recentlyCreated, recentlyEdited, recentlySent] = await Promise.all([
         getRecentMessages(messageStates.created),
@@ -33,7 +36,7 @@ module.exports = [
         getRecentMessages(messageStates.sent)
       ])
 
-      return h.view('messages', new Model({ recentlyCreated, recentlyEdited, recentlySent }))
+      return h.view(routeId, new Model({ recentlyCreated, recentlyEdited, recentlySent }))
     },
     options: {
       auth: { access: { scope: [`+${scopes.message.manage}`] } }
