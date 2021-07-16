@@ -21,13 +21,13 @@ describe('Account route', () => {
     officeLocation,
     orgName
   }
-  const userWithTwoNumbers = {
+  const userWithCorpAndPersonalNumber = {
     ...baseUser,
     phoneNumbers: mockPhoneNumbers
   }
-  const userWithOneNumber = {
+  const userWithTwoCorpNoPersonalNumbers = {
     ...baseUser,
-    phoneNumbers: [mockPhoneNumbers[0]]
+    phoneNumbers: [mockPhoneNumbers[0], mockPhoneNumbers[0]]
   }
 
   jest.mock('../../../server/lib/db')
@@ -35,8 +35,8 @@ describe('Account route', () => {
   getUser
     .mockResolvedValueOnce(undefined)
     .mockResolvedValueOnce({ active: false })
-    .mockResolvedValueOnce(userWithTwoNumbers)
-    .mockResolvedValueOnce(userWithOneNumber)
+    .mockResolvedValueOnce(userWithCorpAndPersonalNumber)
+    .mockResolvedValueOnce(userWithTwoCorpNoPersonalNumbers)
 
   beforeEach(async () => {
     jest.clearAllMocks()
@@ -131,10 +131,10 @@ describe('Account route', () => {
 
     const phoneNumberTables = $('table.govuk-table')
     expect(phoneNumberTables).toHaveLength(2)
-    expect($('caption', phoneNumberTables[0]).text()).toEqual('Corporate phone number(s)')
+    expect($('caption', phoneNumberTables[0]).text()).toEqual('Corporate phone number')
     expect($('.govuk-table__header', phoneNumberTables[0]).text()).toEqual(mockPhoneNumbers[0].number)
     expect($('.govuk-table__cell', phoneNumberTables[0]).eq(0).text()).toEqual('member of 1 group')
-    expect($('caption', phoneNumberTables[1]).text()).toEqual('Personal phone number(s)')
+    expect($('caption', phoneNumberTables[1]).text()).toEqual('Personal phone number')
     expect($('.govuk-table__header', phoneNumberTables[1]).text()).toEqual(mockPhoneNumbers[1].number)
     expect($('.govuk-table__cell', phoneNumberTables[1]).eq(0).text()).toEqual('member of 2 groups')
 
@@ -145,7 +145,7 @@ describe('Account route', () => {
     expect(buttons.eq(2).text()).toMatch('Sign out')
   })
 
-  test('add new contact button is available when user has fewer than max number possible', async () => {
+  test('add new contact button is available when user has fewer than max personal phone numbers possible', async () => {
     const res = await server.inject({
       method: 'GET',
       url,
@@ -165,10 +165,14 @@ describe('Account route', () => {
 
     const $ = cheerio.load(res.payload)
 
+    const phoneNumberTables = $('table.govuk-table')
+    expect($('caption', phoneNumberTables[0]).text()).toEqual('Corporate phone numbers')
+
     const buttons = $('.govuk-button')
-    expect(buttons).toHaveLength(3)
+    expect(buttons).toHaveLength(4)
     expect(buttons.eq(0).text()).toEqual('Edit')
-    expect(buttons.eq(1).text()).toMatch('Add new contact')
-    expect(buttons.eq(2).text()).toMatch('Sign out')
+    expect(buttons.eq(1).text()).toEqual('Edit')
+    expect(buttons.eq(2).text()).toMatch('Add new contact')
+    expect(buttons.eq(3).text()).toMatch('Sign out')
   })
 })

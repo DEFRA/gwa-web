@@ -12,7 +12,7 @@
   {% if data.corporatePhoneNumbers.length %}
     {{
       govukTable({
-        caption: 'Corporate phone number(s)',
+      caption: 'Corporate phone number' if data.corporatePhoneNumbers.length < 2 else 'Corporate phone numbers',
         captionClasses: "govuk-table__caption--m",
         firstCellIsHeader: true,
         rows: data.corporatePhoneNumbers
@@ -23,7 +23,7 @@
   {% if data.personalPhoneNumbers.length %}
     {{
       govukTable({
-        caption: 'Personal phone number(s)',
+        caption: 'Personal phone number',
         captionClasses: "govuk-table__caption--m",
         firstCellIsHeader: true,
         rows: data.personalPhoneNumbers
