@@ -10,7 +10,7 @@ function getPhoneNumbersForView (contact) {
       text: contact.number
     },
     {
-      html: `member of <b>${contact.subscribedTo?.length}</b> ${contact.subscribedTo?.length === 1 ? 'group' : 'groups'}`
+      html: `subscribed to <b>${contact.subscribedTo?.length}</b> ${contact.subscribedTo?.length === 1 ? 'area' : 'areas'}`
     },
     {
       html: `<a class="govuk-button govuk-button--secondary" href="/contact-edit/${encodeURIComponent(contact.id)}" style="margin-bottom: 0">Edit</a>`

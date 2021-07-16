@@ -133,10 +133,10 @@ describe('Account route', () => {
     expect(phoneNumberTables).toHaveLength(2)
     expect($('caption', phoneNumberTables[0]).text()).toEqual('Corporate phone number')
     expect($('.govuk-table__header', phoneNumberTables[0]).text()).toEqual(mockPhoneNumbers[0].number)
-    expect($('.govuk-table__cell', phoneNumberTables[0]).eq(0).text()).toEqual('member of 1 group')
+    expect($('.govuk-table__cell', phoneNumberTables[0]).eq(0).text()).toEqual('subscribed to 1 area')
     expect($('caption', phoneNumberTables[1]).text()).toEqual('Personal phone number')
     expect($('.govuk-table__header', phoneNumberTables[1]).text()).toEqual(mockPhoneNumbers[1].number)
-    expect($('.govuk-table__cell', phoneNumberTables[1]).eq(0).text()).toEqual('member of 2 groups')
+    expect($('.govuk-table__cell', phoneNumberTables[1]).eq(0).text()).toEqual('subscribed to 2 areas')
 
     const buttons = $('.govuk-button')
     expect(buttons).toHaveLength(3)
