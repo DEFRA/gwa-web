@@ -23,8 +23,7 @@ const auth = { access: { scope: [`+${scopes.message.manage}`] } }
 const routeId = 'message-edit'
 const path = `/${routeId}/{messageId}`
 
-async function verifyRequest (request) {
-  const { messageId } = request.params
+async function verifyRequest (messageId) {
   const message = await getMessage(messageId)
 
   if (!message) {
@@ -42,7 +41,8 @@ module.exports = [
     method: 'GET',
     path,
     handler: async (request, h) => {
-      const { error, message } = await verifyRequest(request)
+      const { messageId } = request.params
+      const { error, message } = await verifyRequest(messageId)
       if (error) { return error }
 
       const [areaToOfficeMap, organisationList, notifyStatus] = await Promise.all([
@@ -69,7 +69,8 @@ module.exports = [
     method: 'POST',
     path,
     handler: async (request, h) => {
-      const { error, message } = await verifyRequest(request)
+      const { messageId } = request.params
+      const { error, message } = await verifyRequest(messageId)
       if (error) { return error }
 
       const { user } = request.auth.credentials
@@ -88,7 +89,7 @@ module.exports = [
         return boom.internal('Problem updating message.', res)
       }
 
-      return h.redirect('/messages')
+      return h.redirect(`/message-view/${messageId}`)
     },
     options: {
       auth,

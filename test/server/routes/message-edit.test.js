@@ -9,7 +9,8 @@ const { getAreaOfficeCode } = require('../../../server/lib/helpers')
 describe('Message edit route', () => {
   const email = 'test@gwa.defra.co.uk'
   const id = 'guid'
-  const url = `/message-edit/${uuid()}`
+  const messageId = uuid()
+  const url = `/message-edit/${messageId}`
   let server
   const state = 'created'
   const text = 'some message'
@@ -367,7 +368,7 @@ describe('Message edit route', () => {
       })
 
       expect(res.statusCode).toEqual(302)
-      expect(res.headers.location).toEqual('/messages')
+      expect(res.headers.location).toEqual(`/message-view/${messageId}`)
     })
   })
 })
