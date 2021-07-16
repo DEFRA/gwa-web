@@ -2,7 +2,7 @@ const boom = require('@hapi/boom')
 const Joi = require('joi')
 const { v4: uuid } = require('uuid')
 
-const { phoneNumberTypes } = require('../constants')
+const { contacts: { maxPersonalPhoneNumbers }, phoneNumberTypes } = require('../constants')
 const { updateUser } = require('../lib/db')
 const { getMappedErrors } = require('../lib/errors')
 const { getAreaOfficeCode } = require('../lib/helpers')
@@ -10,11 +10,10 @@ const BaseModel = require('../lib/model')
 const { parsePhoneNumber, types } = require('../lib/phone-number')
 const { getUser } = require('../lib/route-pre-handlers')
 
-const maxPersonalPhoneNumbers = 2
 const errorMessages = {
   mobile: {
     tooMany: {
-      summary: `The maximum number (${maxPersonalPhoneNumbers}) of personal phone numbers is already taken`,
+      summary: `Only ${maxPersonalPhoneNumbers} personal phone number can be registered`,
       text: 'Maximum personal phone numbers already registered'
     },
     unique: {

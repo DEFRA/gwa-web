@@ -26,7 +26,6 @@ const schema = Joi.object().keys({
   isLocal: Joi.boolean().default(false),
   forceHttps: Joi.boolean().required(),
   logoutRedirectUri: Joi.string().uri(),
-  maxPersonalPhoneNumbers: Joi.number().integer().default(2),
   phaseBannerTag: Joi.string().required(),
   phaseBannerHtml: Joi.string().required()
 })
