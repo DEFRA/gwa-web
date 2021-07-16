@@ -13,11 +13,13 @@ describe('Contact add route', () => {
   const { getUser, updateUser } = require('../../../server/lib/db')
 
   getUser
-    .mockResolvedValue({ active: true, phoneNumbers: [], officeCode })
     .mockResolvedValueOnce({ active: false })
     .mockResolvedValueOnce(undefined)
     .mockResolvedValueOnce({ active: true, phoneNumbers: [{ number: '+447777111111' }] })
     .mockResolvedValueOnce({ active: true, phoneNumbers: [{ number: '07777111111', type: 'personal' }, { number: '07777111111', type: 'personal' }] })
+    .mockResolvedValueOnce({ active: true, phoneNumbers: [], officeCode })
+    .mockResolvedValueOnce({ active: true, phoneNumbers: [], officeCode })
+    .mockResolvedValueOnce({ active: true, phoneNumbers: [], officeCode })
 
   beforeEach(async () => {
     jest.clearAllMocks()
@@ -251,7 +253,7 @@ describe('Contact add route', () => {
       expect($('.govuk-grid-column-two-thirds').text()).toMatch('Sorry, there is a problem with the service')
     })
 
-    test.only('responds with 302 to /account when user is updated', async () => {
+    test('responds with 302 to /account when user is updated', async () => {
       updateUser.mockResolvedValueOnce({ statusCode: 200 })
 
       const res = await server.inject({
