@@ -2,7 +2,6 @@ const path = require('path')
 const nunjucks = require('nunjucks')
 const config = require('../config')
 const pkg = require('../../package.json')
-const serviceName = 'Group wide alert'
 
 module.exports = {
   plugin: require('@hapi/vision'),
@@ -35,8 +34,8 @@ module.exports = {
     context: {
       appVersion: pkg.version,
       assetPath: '/assets',
-      serviceName: serviceName,
-      pageTitle: `${serviceName}`,
+      serviceName: config.serviceName,
+      pageTitle: `${config.serviceName}`,
       phaseBannerTag: config.phaseBannerTag,
       phaseBannerHtml: config.phaseBannerHtml
     }

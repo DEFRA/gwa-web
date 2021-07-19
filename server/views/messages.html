@@ -54,4 +54,11 @@
       rows: data.recentlySent
     })
   }}
+  {{
+    govukButton({
+      href: '/messages-sent',
+      text: 'View all sent messages',
+      isStartButton: true
+    })
+  }}
 {% endblock %}

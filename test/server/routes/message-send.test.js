@@ -271,8 +271,10 @@ describe('Message send route', () => {
     })
 
     test('uploads contact list, updates message and responds with 302 to /messages when message has been sent', async () => {
-      const dropMock = jest.fn()
-      server.methods.db.getUsers.cache = { drop: dropMock }
+      const dropGetUsersMock = jest.fn()
+      server.methods.db.getUsers.cache = { drop: dropGetUsersMock }
+      const dropGetSentMessagesMock = jest.fn()
+      server.methods.db.getSentMessages.cache = { drop: dropGetSentMessagesMock }
       updateMessage.mockResolvedValue({ statusCode: 200 })
       uploadContactList.mockResolvedValue(true)
 
@@ -309,8 +311,9 @@ describe('Message send route', () => {
         ...message,
         state: updatedState
       }
-      expect(dropMock).toHaveBeenCalled()
+      expect(dropGetUsersMock).toHaveBeenCalled()
       expect(uploadContactList).toHaveBeenCalledWith(updatedMessage)
+      expect(dropGetUsersMock).toHaveBeenCalled()
       expect(updateMessage).toHaveBeenCalledWith({
         ...updatedMessage
       })

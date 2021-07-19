@@ -10,6 +10,9 @@ module.exports = {
   contacts: {
     maxPersonalPhoneNumbers: 1
   },
+  messages: {
+    sentMessagePageSize: 25
+  },
   messageStates: {
     created: 'created',
     edited: 'edited',

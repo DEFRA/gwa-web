@@ -81,6 +81,7 @@ module.exports = [
       if (res.statusCode !== 200) {
         return boom.internal('Problem sending message.', res)
       }
+      await request.server.methods.db.getSentMessages.cache.drop()
 
       return h.redirect('/messages')
     },

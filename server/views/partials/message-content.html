@@ -3,34 +3,50 @@
     id: "text",
     name: "text",
     label: {
-      text: "Text message"
+      text: "Message text",
+      classes: "govuk-label--s"
     },
     hint: {
-      text: "Enter the message you wish to send."
+      text: "Enter the message to send."
     },
     maxlength: data.maxMessageLength,
     value: data.text,
     errorMessage: errors.text
   })
 }}
+
+{{
+  govukDetails({
+    summaryText: "Help with message content",
+    html: "This is some additional guidance about the type of content to be sent for a message."
+  })
+}}
+
 {{
   govukCharacterCount({
     id: "info",
     name: "info",
     label: {
-      text: "Additional information"
+      text: "Additional information",
+      classes: "govuk-label--s"
     },
     hint: {
-      text: "Use this as an aide memoire relating to the message. It is optional, feel free to leave empty."
-    },
-    countMessage: {
-      classes: 'govuk-!-margin-bottom-9'
+      text: "Enter any useful additional information."
     },
     maxlength: 2000,
     value: data.info,
     errorMessage: errors.info
   })
 }}
+
+{{
+  govukDetails({
+    summaryText: "Help with additional information content",
+    html: "The information entered here is only seen by administrators of this service. It might be useful to enter some notes as to what the message was for or when it needs to be sent.<br>Use this as an aide memoire relating to the message. It is optional, feel free to leave empty.",
+    classes: "govuk-!-margin-bottom-9"
+  })
+}}
+
 {{
   govukCheckboxes({
     id: 'orgCodes',

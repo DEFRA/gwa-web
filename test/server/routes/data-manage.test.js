@@ -78,6 +78,8 @@ describe('Data manage route', () => {
     const button = $('.govuk-button')
     expect(button).toHaveLength(2)
     expect(button.eq(0).text()).toMatch('Upload')
+    expect(button.eq(0).attr('href')).toEqual('/upload')
     expect(button.eq(1).text()).toMatch('Reference data')
+    expect(button.eq(1).attr('href')).toEqual('/data-reference')
   })
 })
