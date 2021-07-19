@@ -11,7 +11,7 @@ module.exports = {
     maxPersonalPhoneNumbers: 1
   },
   messages: {
-    sentMessagePageSize: 10
+    sentMessagePageSize: 25
   },
   messageStates: {
     created: 'created',
