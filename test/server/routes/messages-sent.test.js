@@ -250,7 +250,6 @@ describe('Messages sent route', () => {
       const sentMessages = generateMessages(sentMessagePageSize * 2 + 1, messageStates.sent)
       server.methods.db.getSentMessages = jest.fn().mockResolvedValue(sentMessages)
 
-      console.log(sentMessages.length)
       const res = await server.inject({
         method,
         url: `${url}/2`,

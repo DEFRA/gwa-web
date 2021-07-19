@@ -186,11 +186,13 @@ describe('Messages route', () => {
       expect(msgCreatedRows).toHaveLength(createdMessages.length)
       expect(cleanUpTableText(msgCreatedRows.text())).toMatch(`${new Date(createMessageBase.lastUpdatedAt).toLocaleString()} ${createMessageBase.text} ${edituser} View`)
       expect($('a', msgCreatedRows).eq(0).attr('href')).toEqual(`mailto:${edituser}`)
+      expect($('a', msgCreatedRows).eq(1).attr('href')).toEqual(`/message-view/${createMessageBase.id}`)
 
       const msgEditedRows = $('tbody tr', msgTables.eq(1))
       expect(msgEditedRows).toHaveLength(editedMessages.length)
       expect(cleanUpTableText(msgEditedRows.text())).toMatch(`${new Date(editedMessageBase.lastUpdatedAt).toLocaleString()} ${editedMessageBase.text} ${edituser} View`)
       expect($('a', msgEditedRows).eq(0).attr('href')).toEqual(`mailto:${edituser}`)
+      expect($('a', msgEditedRows).eq(1).attr('href')).toEqual(`/message-view/${editedMessageBase.id}`)
 
       const msgSentRows = $('tbody tr', msgTables.eq(2))
       expect(msgSentRows).toHaveLength(sentMessages.length)
