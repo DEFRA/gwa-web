@@ -1,7 +1,7 @@
 const boom = require('@hapi/boom')
 const Joi = require('joi')
-const { messages: { sentMessagePageSize } } = require('../constants')
 const { scopes } = require('../permissions')
+const generatePagination = require('../lib/generate-pagination')
 const { getMessageRows } = require('../lib/helpers')
 const BaseModel = require('../lib/model')
 
@@ -9,29 +9,6 @@ class Model extends BaseModel {}
 
 const routeId = 'messages-sent'
 const path = `/${routeId}/{page?}`
-
-function generatePagination (page, numberOfResults) {
-  const pageSize = sentMessagePageSize
-  const resultsFrom = 1 + (page - 1) * pageSize
-  const maxOnPage = page * pageSize
-  const resultsTo = numberOfResults <= maxOnPage ? numberOfResults : maxOnPage
-
-  const previous = page > 1 ? `/messages-sent/${page - 1}` : ''
-  const next = numberOfResults > maxOnPage ? `/messages-sent/${page + 1}` : ''
-
-  return {
-    shouldDisplay: previous || next,
-    links: {
-      previous,
-      next
-    },
-    numberOfPages: (numberOfResults % pageSize) + 1,
-    numberOfResults,
-    pageSize,
-    resultsFrom,
-    resultsTo
-  }
-}
 
 module.exports = [
   {
@@ -44,7 +21,7 @@ module.exports = [
       const numberOfResults = sentMessages.length
 
       const pagination = generatePagination(page, numberOfResults)
-      if (page > pagination.numberOfPages) {
+      if (page > 1 && page > pagination.numberOfPages) {
         return boom.notFound('No messages found')
       }
 
