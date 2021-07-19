@@ -1,5 +1,6 @@
 const cheerio = require('cheerio')
-const { v4: uuid } = require('uuid')
+const generateMessages = require('../../helpers/generate-messages')
+const { auditEventTypes, messages: { sentMessagePageSize }, messageStates } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
 
@@ -14,6 +15,24 @@ describe('Messages sent route', () => {
 
   function cleanUpTableText (header) {
     return header.trim().replace(/[\n\r\t]/g, '').replace(/ +/g, ' ')
+  }
+
+  function expectMessagesSentTableOk ($, messagesOnPage) {
+    expect($('.govuk-heading-l').text()).toEqual('Sent messages')
+
+    const msgTables = $('.govuk-table')
+    expect(msgTables).toHaveLength(1)
+    expect(cleanUpTableText($('thead', msgTables.eq(0)).text())).toMatch('Last updated Text Sent by View')
+
+    const sentUser = messagesOnPage[0].auditEvents.find(x => x.type === auditEventTypes.send).user.id
+    const messageRows = $('tbody tr', msgTables.eq(0))
+    expect(messageRows).toHaveLength(messagesOnPage.length)
+    messageRows.each((i, row) => {
+      const msg = messagesOnPage[i]
+      expect(cleanUpTableText($(row).text())).toMatch(`${new Date(msg.lastUpdatedAt).toLocaleString()} ${msg.text} ${sentUser} View`)
+      expect($('a', row).eq(0).attr('href')).toEqual(`mailto:${sentUser}`)
+      expect($('a', row).eq(1).attr('href')).toEqual(`/message-view/${msg.id}`)
+    })
   }
 
   beforeEach(async () => {
@@ -151,26 +170,9 @@ describe('Messages sent route', () => {
       expect(cleanUpTableText($('thead', msgTables.eq(0)).text())).toMatch('Last updated Text Sent by View')
     })
 
-    test.skip('responds with 200 and paged messages when paging is required', async () => {
-      const text = 'some message'
-      const createUser = 'creating-things'
-      const edituser = 'editing-things'
-      const createTime = new Date('2020-12-31T12:34:56')
-      const updateTime = new Date('2021-01-02T08:00:00')
-      const baseMessage = {
-        auditEvents: [
-          { user: { id: createUser }, type: 'create', time: createTime },
-          { user: { id: edituser }, type: 'create', time: updateTime }
-        ],
-        lastUpdatedAt: new Date('2021-02-03T09:00:00'),
-        text
-      }
-      const createMessageBase = { ...baseMessage, state: 'created', id: uuid() }
-      const editedMessageBase = { ...baseMessage, state: 'edited', id: uuid() }
-      const sentMessageBase = { ...baseMessage, state: 'sent', id: uuid() }
-      const createdMessages = [createMessageBase]
-      const editedMessages = [editedMessageBase]
-      const sentMessages = [sentMessageBase]
+    test('responds with 200 and paged messages when on first page of two', async () => {
+      const sentMessages = generateMessages(sentMessagePageSize + 1, messageStates.sent)
+      server.methods.db.getSentMessages = jest.fn().mockResolvedValue(sentMessages)
 
       const res = await server.inject({
         method,
@@ -194,40 +196,94 @@ describe('Messages sent route', () => {
       expect(res.statusCode).toEqual(200)
 
       const $ = cheerio.load(res.payload)
-      expect($('.govuk-heading-l').text()).toEqual('Messages')
-      const msgHeadings = $('.govuk-heading-m')
-      expect(msgHeadings).toHaveLength(3)
-      const buttons = $('.govuk-button')
-      expect(buttons).toHaveLength(2)
-      expect(buttons.eq(0).text()).toMatch('Create message')
-      expect(buttons.eq(0).attr('href')).toEqual('/message-create')
-      expect(buttons.eq(1).text()).toMatch('View all sent messages')
-      expect(buttons.eq(1).attr('href')).toEqual('/messages-sent')
+      expect($('.govuk-heading-l').text()).toEqual('Sent messages')
 
-      expect(msgHeadings.eq(0).text()).toMatch('Messages recently created')
-      expect(msgHeadings.eq(1).text()).toMatch('Messages recently updated')
-      expect(msgHeadings.eq(2).text()).toMatch('Messages recently sent')
-      const msgTables = $('.govuk-table')
-      expect(msgTables).toHaveLength(3)
-      expect(cleanUpTableText($('thead', msgTables.eq(0)).text())).toMatch('Last updated Text Created by View')
-      expect(cleanUpTableText($('thead', msgTables.eq(1)).text())).toMatch('Last updated Text Updated by View')
-      expect(cleanUpTableText($('thead', msgTables.eq(2)).text())).toMatch('Last updated Text Sent by View')
+      expectMessagesSentTableOk($, sentMessages.slice(0, sentMessagePageSize))
 
-      const msgCreatedRows = $('tbody tr', msgTables.eq(0))
-      expect(msgCreatedRows).toHaveLength(createdMessages.length)
-      expect(cleanUpTableText(msgCreatedRows.text())).toMatch(`${new Date(createMessageBase.lastUpdatedAt).toLocaleString()} ${createMessageBase.text} ${edituser} View`)
-      expect($('a', msgCreatedRows).eq(0).attr('href')).toEqual(`mailto:${edituser}`)
+      const previousLink = $('.govuk-pagination__item--prev')
+      expect(previousLink.length).toEqual(0)
+      const nextLink = $('.govuk-pagination__item--next')
+      expect(nextLink.text()).toMatch('Next')
+      expect($('a', nextLink).attr('href')).toEqual('/messages-sent/2')
+      expect($('.govuk-pagination__results').text()).toMatch(`Showing 1 to ${sentMessagePageSize} of ${sentMessages.length} results`)
+    })
 
-      const msgEditedRows = $('tbody tr', msgTables.eq(1))
-      expect(msgEditedRows).toHaveLength(editedMessages.length)
-      expect(cleanUpTableText(msgEditedRows.text())).toMatch(`${new Date(editedMessageBase.lastUpdatedAt).toLocaleString()} ${editedMessageBase.text} ${edituser} View`)
-      expect($('a', msgEditedRows).eq(0).attr('href')).toEqual(`mailto:${edituser}`)
+    test('responds with 200 and paged messages when on second page of two', async () => {
+      const sentMessages = generateMessages(sentMessagePageSize + 1, messageStates.sent)
+      server.methods.db.getSentMessages = jest.fn().mockResolvedValue(sentMessages)
 
-      const msgSentRows = $('tbody tr', msgTables.eq(2))
-      expect(msgSentRows).toHaveLength(sentMessages.length)
-      expect(cleanUpTableText(msgSentRows.text())).toMatch(`${new Date(sentMessageBase.lastUpdatedAt).toLocaleString()} ${sentMessageBase.text} ${edituser} View`)
-      expect($('a', msgSentRows).eq(0).attr('href')).toEqual(`mailto:${edituser}`)
-      expect($('a', msgSentRows).eq(1).attr('href')).toEqual(`/message-view/${sentMessageBase.id}`)
+      const res = await server.inject({
+        method,
+        url: `${url}/2`,
+        auth: {
+          credentials: {
+            user: {
+              id,
+              email,
+              displayName: 'test gwa',
+              raw: {
+                roles: JSON.stringify([])
+              }
+            },
+            scope: [scopes.message.manage]
+          },
+          strategy: 'azuread'
+        }
+      })
+
+      expect(res.statusCode).toEqual(200)
+
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-heading-l').text()).toEqual('Sent messages')
+
+      expectMessagesSentTableOk($, sentMessages.slice(sentMessagePageSize))
+
+      const previousLink = $('.govuk-pagination__item--prev')
+      expect(previousLink.text()).toMatch('Previous')
+      expect($('a', previousLink).attr('href')).toEqual('/messages-sent/1')
+      const nextLink = $('.govuk-pagination__item--next')
+      expect(nextLink.length).toEqual(0)
+      expect($('.govuk-pagination__results').text()).toMatch(`Showing ${sentMessagePageSize + 1} to ${sentMessages.length} of ${sentMessages.length} results`)
+    })
+
+    test('responds with 200 and paged messages when on second page of three', async () => {
+      const sentMessages = generateMessages(sentMessagePageSize * 2 + 1, messageStates.sent)
+      server.methods.db.getSentMessages = jest.fn().mockResolvedValue(sentMessages)
+
+      console.log(sentMessages.length)
+      const res = await server.inject({
+        method,
+        url: `${url}/2`,
+        auth: {
+          credentials: {
+            user: {
+              id,
+              email,
+              displayName: 'test gwa',
+              raw: {
+                roles: JSON.stringify([])
+              }
+            },
+            scope: [scopes.message.manage]
+          },
+          strategy: 'azuread'
+        }
+      })
+
+      expect(res.statusCode).toEqual(200)
+
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-heading-l').text()).toEqual('Sent messages')
+
+      expectMessagesSentTableOk($, sentMessages.slice(sentMessagePageSize, sentMessagePageSize * 2))
+
+      const previousLink = $('.govuk-pagination__item--prev')
+      expect(previousLink.text()).toMatch('Previous')
+      expect($('a', previousLink).attr('href')).toEqual('/messages-sent/1')
+      const nextLink = $('.govuk-pagination__item--next')
+      expect(nextLink.text()).toMatch('Next')
+      expect($('a', nextLink).attr('href')).toEqual('/messages-sent/3')
+      expect($('.govuk-pagination__results').text()).toMatch(`Showing ${sentMessagePageSize + 1} to ${sentMessagePageSize * 2} of ${sentMessages.length} results`)
     })
   })
 })
