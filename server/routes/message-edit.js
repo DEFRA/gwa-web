@@ -3,7 +3,7 @@ const Joi = require('joi')
 
 const { errorMessages, textMessages: { maxMessageLength }, messageStates } = require('../constants')
 const { scopes } = require('../permissions')
-const addAuditEvent = require('../lib/add-audit-event')
+const addAuditEvent = require('../lib/messages/add-audit-event')
 const { getMessage, updateMessage } = require('../lib/db')
 const generateOfficeCheckboxes = require('../lib/office-checkboxes')
 const generateOrganisationCheckboxes = require('../lib/organisation-checkboxes')

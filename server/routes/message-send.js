@@ -1,8 +1,8 @@
 const boom = require('@hapi/boom')
 
 const { messageStates } = require('../constants')
-const addAuditEvent = require('../lib/add-audit-event')
-const costOfMessageSend = require('../lib/cost-of-message-send')
+const addAuditEvent = require('../lib/messages/add-audit-event')
+const costOfMessageSend = require('../lib/messages/cost-of-message-send')
 const { updateMessage } = require('../lib/db')
 const getMessageRows = require('../lib/get-message-rows')
 const BaseModel = require('../lib/model')

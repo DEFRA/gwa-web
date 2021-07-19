@@ -1,4 +1,4 @@
-const { auditEventTypes, messageStates } = require('../constants')
+const { auditEventTypes, messageStates } = require('../../constants')
 
 /**
  * Adds audit events to the `auditEvents` property on a message, based on

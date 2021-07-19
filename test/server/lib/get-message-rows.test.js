@@ -1,6 +1,6 @@
 describe('Get message rows', () => {
   const { auditEventTypes, messageStates } = require('../../../server/constants')
-  const addAuditEvent = require('../../../server/lib/add-audit-event')
+  const addAuditEvent = require('../../../server/lib/messages/add-audit-event')
   const getMessageRows = require('../../../server/lib/get-message-rows')
   const user = { id: 'create-user-id', companyName: 'companyName', givenName: 'givenName', surname: 'surname' }
 

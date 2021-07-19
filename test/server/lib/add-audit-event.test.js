@@ -1,5 +1,5 @@
 describe('Add audit events', () => {
-  const addAuditEvent = require('../../../server/lib/add-audit-event')
+  const addAuditEvent = require('../../../server/lib/messages/add-audit-event')
   const { auditEventTypes, messageStates } = require('../../../server/constants')
 
   const now = Date.now()

@@ -1,4 +1,4 @@
-const { textMessages: { oneMessageCost, oneMessageLength, twoMessageLength, additionalMessageIncrement } } = require('../constants')
+const { textMessages: { oneMessageCost, oneMessageLength, twoMessageLength, additionalMessageIncrement } } = require('../../constants')
 
 /**
  * Calculate the cost of sending the message.
