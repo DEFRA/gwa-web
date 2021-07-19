@@ -1,9 +1,8 @@
 const cheerio = require('cheerio')
 const { v4: uuid } = require('uuid')
-const { textMessages: { maxInfoLength, maxMessageLength } } = require('../../../server/constants')
+const { errorMessages, textMessages: { maxInfoLength, maxMessageLength } } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
-const { message } = require('../../../server/lib/error-messages')
 const { getAreaOfficeCode } = require('../../../server/lib/helpers')
 
 describe('Message edit route', () => {
@@ -244,13 +243,13 @@ describe('Message edit route', () => {
     })
 
     test.each([
-      [{ officeCodes: ['ABC:one', 'XYZ:two'], orgCodes: ['orgCode'], text: 'message to send', info: 'valid' }, message.allOffices],
-      [{ officeCodes: 'ABC:one', orgCodes: ['orgCode'], text: 'message to send', info: 'valid' }, message.allOffices],
-      [{ allOffices: true, orgCodes: ['orgCode'], text: 'message to send', info: 'a'.repeat(maxInfoLength + 1) }, message.info],
-      [{ allOffices: true, orgCodes: ['orgCode'], text: 'a'.repeat(maxMessageLength + 1) }, message.text],
-      [{ allOffices: false, officeCodes: [], orgCodes: ['orgCode', 'another'], text: 'message to send', info: 'valid' }, message.officeCodes],
-      [{ allOffices: false, officeCodes: [], orgCodes: 'orgCode', text: 'message to send', info: 'valid' }, message.officeCodes],
-      [{ allOffices: false, officeCodes: ['ABC:one'], orgCodes: [], text: 'message to send', info: 'valid' }, message.orgCodes]
+      [{ officeCodes: ['ABC:one', 'XYZ:two'], orgCodes: ['orgCode'], text: 'message to send', info: 'valid' }, errorMessages.allOffices],
+      [{ officeCodes: 'ABC:one', orgCodes: ['orgCode'], text: 'message to send', info: 'valid' }, errorMessages.allOffices],
+      [{ allOffices: true, orgCodes: ['orgCode'], text: 'message to send', info: 'a'.repeat(maxInfoLength + 1) }, errorMessages.info],
+      [{ allOffices: true, orgCodes: ['orgCode'], text: 'a'.repeat(maxMessageLength + 1) }, errorMessages.text],
+      [{ allOffices: false, officeCodes: [], orgCodes: ['orgCode', 'another'], text: 'message to send', info: 'valid' }, errorMessages.officeCodes],
+      [{ allOffices: false, officeCodes: [], orgCodes: 'orgCode', text: 'message to send', info: 'valid' }, errorMessages.officeCodes],
+      [{ allOffices: false, officeCodes: ['ABC:one'], orgCodes: [], text: 'message to send', info: 'valid' }, errorMessages.orgCodes]
     ])('responds with 200 and errors when request is invalid - ', async (payload, error) => {
       const res = await server.inject({
         method,

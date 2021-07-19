@@ -3,8 +3,7 @@ const { getMappedErrors } = require('./errors')
 const generateOfficeCheckboxes = require('./office-checkboxes')
 const generateOrganisationCheckboxes = require('./organisation-checkboxes')
 const generateSendToAllOrgsRadios = require('./send-to-all-radios')
-const { message: errorMessages } = require('./error-messages')
-const { textMessages: { maxMessageLength } } = require('../constants')
+const { errorMessages, textMessages: { maxMessageLength } } = require('../constants')
 
 class Model extends BaseModel {
   constructor (data, err) {

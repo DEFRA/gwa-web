@@ -1,11 +1,10 @@
 const boom = require('@hapi/boom')
 const Joi = require('joi')
 
-const { textMessages: { maxMessageLength }, messageStates } = require('../constants')
+const { errorMessages, textMessages: { maxMessageLength }, messageStates } = require('../constants')
 const { scopes } = require('../permissions')
 const addAuditEvent = require('../lib/add-audit-event')
 const { getMessage, updateMessage } = require('../lib/db')
-const { message: errorMessages } = require('../lib/error-messages')
 const generateOfficeCheckboxes = require('../lib/office-checkboxes')
 const generateOrganisationCheckboxes = require('../lib/organisation-checkboxes')
 const BaseModel = require('../lib/model')
