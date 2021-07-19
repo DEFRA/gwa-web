@@ -57,6 +57,7 @@ $govuk-global-styles: true;
 
 .govuk-pagination__item {
   @include govuk-font(19);
+
   display: inline-block;
 }
 
@@ -87,6 +88,7 @@ $govuk-global-styles: true;
 .govuk-pagination__link {
   @include govuk-link-common;
   @include govuk-link-style-default;
+
   display: block;
   padding: govuk-spacing(1);
   text-align: center;
@@ -111,6 +113,7 @@ $govuk-global-styles: true;
   list-style: none;
   margin: 0;
   padding: 0;
+
   @include govuk-media-query($from: desktop) {
     display: inline-block;
     margin-bottom: 0;
@@ -120,11 +123,14 @@ $govuk-global-styles: true;
 
 .govuk-pagination__results {
   @include govuk-font(19);
+
   margin-top: 0;
+
   @include govuk-media-query($from: desktop) {
     display: inline-block;
     margin-bottom: 0;
     vertical-align: middle;
   }
+
   padding: govuk-spacing(1);
 }
