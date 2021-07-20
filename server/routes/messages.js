@@ -9,8 +9,15 @@ class Model extends BaseModel {}
 const routeId = 'messages'
 const path = `/${routeId}`
 
-async function getRecentMessages (state) {
-  const messages = await getMessages(`SELECT TOP 10 * FROM c WHERE c.state = "${state}" ORDER BY c.lastUpdatedAt DESC`)
+async function getRecentMessages (state, request) {
+  const numberOfMessages = 10
+
+  let messages
+  if (state === messageStates.sent) {
+    messages = (await request.server.methods.db.getSentMessages()).slice(0, numberOfMessages)
+  } else {
+    messages = await getMessages(`SELECT TOP ${numberOfMessages} * FROM c WHERE c.state = "${state}" ORDER BY c.lastUpdatedAt DESC`)
+  }
 
   return getMessageRows(messages)
 }
@@ -23,7 +30,7 @@ module.exports = [
       const [recentlyCreated, recentlyEdited, recentlySent] = await Promise.all([
         getRecentMessages(messageStates.created),
         getRecentMessages(messageStates.edited),
-        getRecentMessages(messageStates.sent)
+        getRecentMessages(messageStates.sent, request)
       ])
 
       return h.view(routeId, new Model({ recentlyCreated, recentlyEdited, recentlySent }))
