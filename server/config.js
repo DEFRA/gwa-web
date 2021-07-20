@@ -56,8 +56,8 @@ const config = {
   logoutRedirectUri: process.env.LOGOUT_REDIRECT_URI,
   isLocal: process.env.NODE_ENV === 'local',
   // TODO: change this based on environment
-  phaseBannerTag: 'local',
-  phaseBannerHtml: 'This is a TEST service - messages will not be sent'
+  phaseBannerTag: process.env.PHASE_BANNER_TAG,
+  phaseBannerHtml: process.env.PHASE_BANNER_HTML
 }
 
 const { error, value } = schema.validate(config)
