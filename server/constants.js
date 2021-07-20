@@ -25,6 +25,30 @@ module.exports = {
     edited: 'edited',
     sent: 'sent'
   },
+  navigation: {
+    header: {
+      account: {
+        text: 'Account',
+        href: '/account'
+      },
+      messages: {
+        text: 'Messages',
+        href: '/messages'
+      },
+      data: {
+        text: 'Manage Data',
+        href: '/data-manage'
+      },
+      signIn: {
+        text: 'Sign in',
+        href: '/login'
+      },
+      signOut: {
+        text: 'Sign out',
+        href: '/logout'
+      }
+    }
+  },
   officeLocationMappings: {
     unmappedOfficeCode: 'UNM:Unmapped-office-location',
     unmappedOfficeLocation: 'Unmapped office location'

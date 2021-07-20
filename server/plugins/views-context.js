@@ -1,4 +1,5 @@
 const { scopes } = require('../permissions')
+const { navigation: { header } } = require('../constants')
 
 /**
  * Adds an `onPreResponse` listener to apply
@@ -26,36 +27,27 @@ module.exports = {
             ctx.user = auth.credentials.user
             ctx.credentials = auth.credentials
             navigation.push({
-              href: '/account',
-              text: 'Account',
+              ...header.account,
               active: request.path === '/account'
             })
 
             if (ctx.credentials.scope.includes(scopes.message.manage)) {
               navigation.push({
-                href: '/messages',
-                text: 'Messages',
+                ...header.messages,
                 active: request.path === '/messages'
               })
             }
 
             if (ctx.credentials.scope.includes(scopes.data.manage)) {
               navigation.push({
-                href: '/data-manage',
-                text: 'Manage Data',
+                ...header.data,
                 active: request.path === '/data-manage'
               })
             }
 
-            navigation.push({
-              href: '/logout',
-              text: 'Sign out'
-            })
+            navigation.push(header.signOut)
           } else {
-            navigation.push({
-              href: '/login',
-              text: 'Sign in'
-            })
+            navigation.push(header.signIn)
           }
 
           ctx.navigation = navigation
