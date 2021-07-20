@@ -2,8 +2,8 @@ const hapi = require('@hapi/hapi')
 
 const config = require('./config')
 const { getAreaToOfficeMap, getOrganisationList, getStandardisedOfficeLocationMap, getUsers } = require('./lib/db')
-const getNotifyStatusViewData = require('./lib/get-notify-status-view-data')
-const getSentMessages = require('./lib/get-sent-messages')
+const getNotifyStatusViewData = require('./lib/view/get-notify-status-view-data')
+const getSentMessages = require('./lib/data/get-sent-messages')
 
 async function createServer () {
   const server = hapi.server({

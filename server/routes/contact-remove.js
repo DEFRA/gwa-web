@@ -3,8 +3,8 @@ const Joi = require('joi')
 
 const { phoneNumberTypes } = require('../constants')
 const { updateUser } = require('../lib/db')
-const BaseModel = require('../lib/model')
-const { getUser } = require('../lib/route-pre-handlers')
+const BaseModel = require('../lib/misc/model')
+const { getUser } = require('../lib/route/route-pre-handlers')
 
 class Model extends BaseModel {}
 

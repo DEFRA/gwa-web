@@ -1,17 +1,16 @@
 const boom = require('@hapi/boom')
 const Joi = require('joi')
 
-const { textMessages: { maxMessageLength }, messageStates } = require('../constants')
+const { errorMessages, textMessages: { maxMessageLength }, messageStates } = require('../constants')
 const { scopes } = require('../permissions')
-const addAuditEvent = require('../lib/add-audit-event')
 const { getMessage, updateMessage } = require('../lib/db')
-const { message: errorMessages } = require('../lib/error-messages')
-const generateOfficeCheckboxes = require('../lib/office-checkboxes')
-const generateOrganisationCheckboxes = require('../lib/organisation-checkboxes')
-const BaseModel = require('../lib/model')
-const { message: { failAction } } = require('../lib/route-fail-actions')
-const { message: { payload } } = require('../lib/route-validations')
-const generateSendToAllOrgsRadios = require('../lib/send-to-all-radios')
+const addAuditEvent = require('../lib/messages/add-audit-event')
+const BaseModel = require('../lib/misc/model')
+const { message: { failAction } } = require('../lib/route/route-fail-actions')
+const { message: { payload } } = require('../lib/route/route-validations')
+const generateOfficeCheckboxes = require('../lib/view/office-checkboxes')
+const generateOrganisationCheckboxes = require('../lib/view/organisation-checkboxes')
+const generateSendToAllOrgsRadios = require('../lib/view/send-to-all-radios')
 
 class Model extends BaseModel {
   constructor (data, err) {

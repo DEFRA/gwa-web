@@ -6,14 +6,12 @@ describe('Auth route', () => {
   let server
   const method = 'GET'
 
-  jest.mock('../../../server/lib/db', () => {
-    return {
-      getUser: jest.fn()
-        .mockResolvedValue({ active: true })
-        .mockResolvedValueOnce(undefined)
-        .mockResolvedValueOnce({ active: false })
-    }
-  })
+  jest.mock('../../../server/lib/db')
+  const { getUser } = require('../../../server/lib/db')
+  getUser
+    .mockResolvedValue({ active: true })
+    .mockResolvedValueOnce(undefined)
+    .mockResolvedValueOnce({ active: false })
 
   beforeEach(async () => {
     server = await createServer()

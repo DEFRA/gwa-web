@@ -4,8 +4,8 @@ const Joi = require('joi')
 const { messageStates } = require('../constants')
 const { scopes } = require('../permissions')
 const { getMessage } = require('../lib/db')
-const getMessageRows = require('../lib/get-message-rows')
-const BaseModel = require('../lib/model')
+const getMessageRows = require('../lib/view/get-message-rows')
+const BaseModel = require('../lib/misc/model')
 
 class Model extends BaseModel {}
 

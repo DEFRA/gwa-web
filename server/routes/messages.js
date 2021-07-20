@@ -1,8 +1,8 @@
 const { messageStates } = require('../constants')
 const { scopes } = require('../permissions')
 const { getMessages } = require('../lib/db')
-const { getMessageRows } = require('../lib/helpers')
-const BaseModel = require('../lib/model')
+const { getMessageRows } = require('../lib/misc/helpers')
+const BaseModel = require('../lib/misc/model')
 
 class Model extends BaseModel {}
 

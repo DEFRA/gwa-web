@@ -2,7 +2,7 @@ const cheerio = require('cheerio')
 const csvtojson = require('csvtojson')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
-const { types } = require('../../../server/lib/reference-data')
+const { types } = require('../../../server/lib/view/reference-data')
 
 describe('Data reference download route', () => {
   const email = 'test@gwa.defra.co.uk'
@@ -15,11 +15,10 @@ describe('Data reference download route', () => {
   const originalOfficeLocation = 'originalOfficeLocation'
   const officeCode = 'ABC:alphabet-office'
   const officeLocation = 'Alphabet office'
-  jest.mock('../../../server/lib/db', () => {
-    return {
-      getOrganisationMap: jest.fn().mockResolvedValue([{ originalOfficeLocation: 'originalOfficeLocation', officeLocation: 'officeLocation', areaCode: 'areaCode', areaName: 'areaName', officeCode: 'officeCode' }])
-    }
-  })
+  jest.mock('../../../server/lib/db')
+  const { getOrganisationMap } = require('../../../server/lib/db')
+  getOrganisationMap
+    .mockResolvedValue([{ originalOfficeLocation: 'originalOfficeLocation', officeLocation: 'officeLocation', areaCode: 'areaCode', areaName: 'areaName', officeCode: 'officeCode' }])
 
   const officeLocationMapDropMock = jest.fn()
   const organisationListDropMock = jest.fn()

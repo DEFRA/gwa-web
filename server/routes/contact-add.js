@@ -4,11 +4,11 @@ const { v4: uuid } = require('uuid')
 
 const { contacts: { maxPersonalPhoneNumbers }, phoneNumberTypes } = require('../constants')
 const { updateUser } = require('../lib/db')
-const { getMappedErrors } = require('../lib/errors')
-const { getAreaOfficeCode } = require('../lib/helpers')
-const BaseModel = require('../lib/model')
-const { parsePhoneNumber, types } = require('../lib/phone-number')
-const { getUser } = require('../lib/route-pre-handlers')
+const { getMappedErrors } = require('../lib/misc/errors')
+const { getAreaOfficeCode } = require('../lib/misc/helpers')
+const BaseModel = require('../lib/misc/model')
+const { parsePhoneNumber, types } = require('../lib/contact/phone-number')
+const { getUser } = require('../lib/route/route-pre-handlers')
 
 const errorMessages = {
   mobile: {

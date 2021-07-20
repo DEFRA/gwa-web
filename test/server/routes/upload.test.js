@@ -21,30 +21,27 @@ describe('Upload route', () => {
   const officeLocation = 'Alphabet office'
   let server
 
-  jest.mock('../../../server/lib/upload-user-data')
-  const uploadUserData = require('../../../server/lib/upload-user-data')
-  jest.mock('../../../server/lib/db', () => {
-    return {
-      getAreaToOfficeMap: jest.fn().mockResolvedValue([
-        { areaCode: 'COR', areaName: 'Corporate', officeLocations: [{ officeCode: 'COR:office-one', officeLocation: 'office one' }] },
-        { areaCode: 'PER', areaName: 'Personal', officeLocations: [{ officeCode: 'PER:office-one', officeLocation: 'office one' }, { officeCode: 'PER:office-two', officeLocation: 'office two' }] }
-      ]),
-      getOrganisationList: jest.fn().mockResolvedValue([{ orgCode, orgName }]),
-      getStandardisedOfficeLocationMap: jest.fn().mockResolvedValue([{ originalOfficeLocation, officeCode, officeLocation }]),
-      getUsers: jest.fn(),
-      getUser: jest.fn()
-        .mockResolvedValue({
-          active: true,
-          phoneNumbers: [
-            { id: mockCorporatePhoneNumberId, type: 'corporate', number: mockCorporatePhoneNumber, subscribedTo: ['COR:office-one'] },
-            { id: mockPersonalPhoneNumberId, type: 'personal', number: mockPersonalPhoneNumber, subscribedTo: ['PER:office-one', 'PER:office-two'] }
-          ]
-        })
-        .mockResolvedValueOnce(undefined)
-        .mockResolvedValueOnce({ active: false })
-        .mockResolvedValueOnce({ active: true, phoneNumbers: [] })
-    }
-  })
+  jest.mock('../../../server/lib/data/upload-user-data')
+  const uploadUserData = require('../../../server/lib/data/upload-user-data')
+  jest.mock('../../../server/lib/db')
+  const { getAreaToOfficeMap, getOrganisationList, getStandardisedOfficeLocationMap, getUser } = require('../../../server/lib/db')
+  getAreaToOfficeMap.mockResolvedValue([
+    { areaCode: 'COR', areaName: 'Corporate', officeLocations: [{ officeCode: 'COR:office-one', officeLocation: 'office one' }] },
+    { areaCode: 'PER', areaName: 'Personal', officeLocations: [{ officeCode: 'PER:office-one', officeLocation: 'office one' }, { officeCode: 'PER:office-two', officeLocation: 'office two' }] }
+  ])
+  getOrganisationList.mockResolvedValue([{ orgCode, orgName }])
+  getStandardisedOfficeLocationMap.mockResolvedValue([{ originalOfficeLocation, officeCode, officeLocation }])
+  getUser
+    .mockResolvedValue({
+      active: true,
+      phoneNumbers: [
+        { id: mockCorporatePhoneNumberId, type: 'corporate', number: mockCorporatePhoneNumber, subscribedTo: ['COR:office-one'] },
+        { id: mockPersonalPhoneNumberId, type: 'personal', number: mockPersonalPhoneNumber, subscribedTo: ['PER:office-one', 'PER:office-two'] }
+      ]
+    })
+    .mockResolvedValueOnce(undefined)
+    .mockResolvedValueOnce({ active: false })
+    .mockResolvedValueOnce({ active: true, phoneNumbers: [] })
 
   const createServer = require('../../../server/index')
 

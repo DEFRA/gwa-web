@@ -1,9 +1,9 @@
 const Joi = require('joi')
 
-const { getOrganisationMap } = require('../lib/db')
 const { scopes } = require('../permissions')
-const { types } = require('../lib/reference-data')
-const { getOrganisationListCSV, getOrganisationMapCSV, getStandardisedOfficeLocationMap } = require('../lib/get-reference-data')
+const { getOrganisationMap } = require('../lib/db')
+const { types } = require('../lib/view/reference-data')
+const { getOrganisationListCSV, getOrganisationMapCSV, getStandardisedOfficeLocationMap } = require('../lib/data/get-reference-data')
 
 module.exports = [
   {

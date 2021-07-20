@@ -1,7 +1,7 @@
 const cheerio = require('cheerio')
 const { contacts: { maxPersonalPhoneNumbers } } = require('../../../server/constants')
 const createServer = require('../../../server/index')
-const { getAreaOfficeCode } = require('../../../server/lib/helpers')
+const { getAreaOfficeCode } = require('../../../server/lib/misc/helpers')
 
 describe('Contact add route', () => {
   const officeCode = 'ABC:office'
