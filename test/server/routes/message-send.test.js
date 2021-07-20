@@ -305,6 +305,7 @@ describe('Message send route', () => {
 
       const cost = 0.016
       const contactCount = 1
+      const contacts = [number]
       const updatedState = 'sent'
       const updatedMessage = {
         cost,
@@ -314,7 +315,7 @@ describe('Message send route', () => {
         state: updatedState
       }
       expect(dropGetUsersMock).toHaveBeenCalled()
-      expect(uploadContactList).toHaveBeenCalledWith(updatedMessage, [number])
+      expect(uploadContactList).toHaveBeenCalledWith(updatedMessage, contacts)
       expect(dropGetUsersMock).toHaveBeenCalled()
       expect(updateMessage).toHaveBeenCalledWith({
         ...updatedMessage
