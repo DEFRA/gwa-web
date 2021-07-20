@@ -82,5 +82,6 @@ describe('Data reference route', () => {
     expect(button.eq(1).text()).toMatch('Organisation mapping')
     expect(button.eq(2).text()).toMatch('Office locations')
     expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.data.text)
+    expect($('.govuk-phase-banner')).toHaveLength(0)
   })
 })

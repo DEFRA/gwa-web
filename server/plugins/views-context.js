@@ -38,6 +38,7 @@ module.exports = {
           const navigation = []
 
           const view = getView(request)
+          ctx.displayBanner = view === header.messages.text
 
           if (auth.isAuthenticated) {
             ctx.user = auth.credentials.user

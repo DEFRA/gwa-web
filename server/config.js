@@ -55,7 +55,6 @@ const config = {
   forceHttps: process.env.FORCE_HTTPS,
   logoutRedirectUri: process.env.LOGOUT_REDIRECT_URI,
   isLocal: process.env.NODE_ENV === 'local',
-  // TODO: change this based on environment
   phaseBannerTag: process.env.PHASE_BANNER_TAG,
   phaseBannerHtml: process.env.PHASE_BANNER_HTML
 }

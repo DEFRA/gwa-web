@@ -216,6 +216,7 @@ describe('Contact remove route', () => {
       expect(buttons.eq(0).text()).toMatch('Cancel')
       expect(buttons.eq(1).text()).toMatch('Continue')
       expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.account.text)
+      expect($('.govuk-phase-banner')).toHaveLength(0)
     })
   })
 

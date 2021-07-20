@@ -67,6 +67,7 @@ describe('Contact add route', () => {
 
       expect($('.govuk-label--l').text()).toMatch('What is your telephone number?')
       expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.account.text)
+      expect($('.govuk-phase-banner')).toHaveLength(0)
     })
   })
 

@@ -103,6 +103,7 @@ describe('Message creation route', () => {
 
       const $ = cheerio.load(res.payload)
       expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.messages.text)
+      expect($('.govuk-phase-banner')).toHaveLength(1)
       const title = $('.govuk-heading-l').text()
       expect(title).toMatch('Create message')
       const formGroups = $('.govuk-form-group')

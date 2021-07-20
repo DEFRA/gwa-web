@@ -99,6 +99,7 @@ describe('Messages route', () => {
 
       const $ = cheerio.load(res.payload)
       expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.messages.text)
+      expect($('.govuk-phase-banner')).toHaveLength(1)
       expect($('.govuk-heading-l').text()).toEqual('Messages')
       const msgHeadings = $('.govuk-heading-m')
       expect(msgHeadings).toHaveLength(3)

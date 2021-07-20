@@ -500,6 +500,7 @@ describe('Upload route', () => {
       expect(button).toHaveLength(1)
       expect(button.text()).toMatch('Upload')
       expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.data.text)
+      expect($('.govuk-phase-banner')).toHaveLength(0)
     })
 
     test('responds with 200 when CSV file is uploaded', async () => {

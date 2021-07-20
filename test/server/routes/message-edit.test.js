@@ -158,6 +158,7 @@ describe('Message edit route', () => {
 
       const $ = cheerio.load(res.payload)
       expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.messages.text)
+      expect($('.govuk-phase-banner')).toHaveLength(1)
       expect($('.govuk-heading-l').text()).toMatch('Edit message')
       const formGroups = $('.govuk-form-group')
       expect(formGroups).toHaveLength(7)

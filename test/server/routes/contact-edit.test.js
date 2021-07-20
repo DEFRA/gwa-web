@@ -196,6 +196,7 @@ describe('Contact edit route', () => {
       const removeContactButton = $('.govuk-button--danger')
       expect(removeContactButton).toHaveLength(0)
       expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.account.text)
+      expect($('.govuk-phase-banner')).toHaveLength(0)
     })
 
     test('responds with 200 and correct view for personal phone number when active user logged in', async () => {

@@ -101,6 +101,7 @@ describe('Data reference manage route', () => {
       expect(buttons.eq(0).attr('download')).toEqual(download)
       expect(buttons.eq(1).text()).toMatch('Upload')
       expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.data.text)
+      expect($('.govuk-phase-banner')).toHaveLength(0)
     })
   })
 

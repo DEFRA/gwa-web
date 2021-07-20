@@ -149,6 +149,7 @@ describe('Message view route', () => {
 
       const $ = cheerio.load(res.payload)
       expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.messages.text)
+      expect($('.govuk-phase-banner')).toHaveLength(1)
       expect($('.govuk-heading-l').text()).toMatch('View message')
       const mainContent = $('.govuk-grid-column-two-thirds')
       const rows = $('.govuk-table .govuk-table__row', mainContent)

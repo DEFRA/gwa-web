@@ -123,6 +123,7 @@ describe('Account route', () => {
     const $ = cheerio.load(res.payload)
 
     expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.account.text)
+    expect($('.govuk-phase-banner')).toHaveLength(0)
 
     expect($('.govuk-heading-l').text()).toEqual('Account')
     const accountOverview = $('.govuk-grid-column-two-thirds p')

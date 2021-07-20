@@ -83,5 +83,6 @@ describe('Data manage route', () => {
     expect(button.eq(1).text()).toMatch('Reference data')
     expect(button.eq(1).attr('href')).toEqual('/data-reference')
     expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.data.text)
+    expect($('.govuk-phase-banner')).toHaveLength(0)
   })
 })

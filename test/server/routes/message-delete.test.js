@@ -146,6 +146,7 @@ describe('Message deletion route', () => {
 
       const $ = cheerio.load(res.payload)
       expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.messages.text)
+      expect($('.govuk-phase-banner')).toHaveLength(1)
       expect($('.govuk-heading-l').text()).toMatch('Delete message')
       expect($('.govuk-warning-text').text()).toMatch('Are you sure you would like to delete this message?')
       const mainContent = $('.govuk-grid-column-two-thirds')
