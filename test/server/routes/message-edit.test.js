@@ -106,7 +106,7 @@ describe('Message edit route', () => {
 
     test.each([
       { message: undefined, status: 404, error: 'Not Found' },
-      { message: { state: 'sent' }, status: 401, error: 'Sent messages can not be edited.' }
+      { message: { state: 'sent' }, status: 400, error: 'Sent messages can not be edited.' }
     ])('responds with errors when problem with message', async ({ message, status, error }) => {
       getMessage.mockResolvedValueOnce(message)
       const res = await server.inject({
@@ -311,7 +311,7 @@ describe('Message edit route', () => {
 
     test.each([
       { messageId: undefined, message: undefined, status: 404, error: 'Not Found' },
-      { messageId: 'unique', message: { state: 'sent' }, status: 401, error: 'Sent messages can not be edited.' }
+      { messageId: 'unique', message: { state: 'sent' }, status: 400, error: 'Sent messages can not be edited.' }
     ])('responds with errors when problem with message', async ({ messageId, message, status, error }) => {
       const payload = { messageId, allOffices: true, orgCodes: ['orgCode', 'another'], text: 'message to send' }
       getMessage.mockResolvedValueOnce(message)

@@ -30,7 +30,7 @@ async function verifyRequest (messageId) {
   }
 
   if (message.state === messageStates.sent) {
-    return { error: boom.unauthorized('Sent messages can not be edited.') }
+    return { error: boom.badRequest('Sent messages can not be edited.') }
   }
   return { message }
 }
