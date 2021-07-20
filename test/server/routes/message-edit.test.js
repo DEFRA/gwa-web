@@ -1,5 +1,6 @@
 const cheerio = require('cheerio')
 const { v4: uuid } = require('uuid')
+const { expectNotifyStatus, notifyStatusViewData } = require('../../helpers/notify-status')
 const { errorMessages, messageStates, navigation, textMessages: { maxInfoLength, maxMessageLength } } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
@@ -28,17 +29,6 @@ describe('Message edit route', () => {
   const officeLocationTwo = 'officeLocationTwo'
   const officeCode = 'ABC:office-code'
   const areaOfficeCode = getAreaOfficeCode({ officeCode })
-  const notifyStatusViewData = {
-    service: {
-      description: 'All Systems Go!',
-      tag: 'govuk-tag--green'
-    },
-    componentRows: [[
-      { text: 'component name' },
-      { html: '<strong class="govuk-tag govuk-tag--green">operational</strong>' }
-    ]],
-    lastChecked: Date.now()
-  }
 
   const now = Date.now()
   Date.now = jest.fn(() => now)
@@ -202,13 +192,7 @@ describe('Message edit route', () => {
       expect(officeListItems.eq(0).text()).toMatch(officeLocation)
       expect(officeListItems.eq(1).text()).toMatch(officeLocationTwo)
 
-      const notifyStatus = $('.govuk-grid-column-one-third')
-      expect(notifyStatus).toHaveLength(1)
-      expect($('h2', notifyStatus).text()).toEqual('GOV.UK Notify Status')
-      const statusTags = $('.govuk-tag', notifyStatus)
-      expect(statusTags).toHaveLength(notifyStatusViewData.componentRows.length + 1)
-      expect($(statusTags).eq(0).text()).toEqual(notifyStatusViewData.service.description)
-      expect($(statusTags).eq(1).text()).toEqual($(notifyStatusViewData.componentRows[0][1].html).text())
+      expectNotifyStatus($)
     })
   })
 
@@ -284,6 +268,8 @@ describe('Message edit route', () => {
       const $ = cheerio.load(res.payload)
       expect($('.govuk-error-summary__title').text()).toMatch('There is a problem')
       expect($('.govuk-error-summary__body').text()).toMatch(error)
+
+      expectNotifyStatus($)
     })
 
     test('responds with 500 when problem creating message', async () => {

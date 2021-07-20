@@ -24,10 +24,9 @@ module.exports = [
       }
 
       const messageRows = getMessageRows(message)
-      const notifyStatus = await request.server.methods.getNotifyStatusViewData()
       const isEditable = message.state !== messageStates.sent
 
-      return h.view(routeId, new Model({ isEditable, messageId, messageRows, notifyStatus }))
+      return h.view(routeId, new Model({ isEditable, messageId, messageRows }))
     },
     options: {
       auth: { access: { scope: [`+${scopes.message.manage}`] } },

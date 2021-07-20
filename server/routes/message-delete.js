@@ -20,9 +20,8 @@ module.exports = [
       if (error) { return error }
 
       const messageRows = getMessageRows(message)
-      const notifyStatus = await request.server.methods.getNotifyStatusViewData()
 
-      return h.view(routeId, new Model({ message, messageRows, notifyStatus }))
+      return h.view(routeId, new Model({ message, messageRows }))
     },
     options: messageOptions
   },

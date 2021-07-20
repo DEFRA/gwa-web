@@ -29,9 +29,7 @@ module.exports = [
       const { error, message } = await verifyMessageRequest(request, 'Sent messages can not be sent again.')
       if (error) { return error }
 
-      const [users, notifyStatus] = await Promise.all([
-        request.server.methods.db.getUsers(),
-        request.server.methods.getNotifyStatusViewData()])
+      const users = await request.server.methods.db.getUsers()
 
       const phoneNumbersToSendTo = getPhoneNumbersToSendTo(users, message)
 
@@ -47,7 +45,7 @@ module.exports = [
 
       const messageRows = getMessageRows(message)
 
-      return h.view(routeId, new Model({ message, messageRows, notifyStatus }))
+      return h.view(routeId, new Model({ message, messageRows }))
     },
     options: messageOptions
   },

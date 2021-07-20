@@ -23,7 +23,7 @@ module.exports = {
   plugin: {
     name: 'views-context',
     register: (server, options) => {
-      server.ext('onPreResponse', (request, h) => {
+      server.ext('onPreResponse', async (request, h) => {
         const response = request.response
 
         if (response.variety === 'view') {
@@ -31,14 +31,16 @@ module.exports = {
 
           // Set the auth object onto the top level context
           const { auth } = request
-
           ctx.auth = auth
           ctx.scopes = scopes
 
           const navigation = []
 
           const view = getView(request)
-          ctx.displayBanner = view === header.messages.text
+          if (view === header.messages.text) {
+            ctx.displayBanner = true
+            ctx.notifyStatus = await request.server.methods.getNotifyStatusViewData()
+          }
 
           if (auth.isAuthenticated) {
             ctx.user = auth.credentials.user
