@@ -13,3 +13,5 @@ process.env.COOKIE_IS_SECURE = envVars.cookieIsSecure
 process.env.COOKIE_PASSWORD = envVars.cookiePassword
 process.env.FORCE_HTTPS = envVars.forceHttps
 process.env.LOGOUT_REDIRECT_URI = envVars.logoutRedirectUri
+process.env.PHASE_BANNER_HTML = envVars.phaseBannerHtml
+process.env.PHASE_BANNER_TAG = envVars.phaseBannerTag

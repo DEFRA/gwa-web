@@ -12,5 +12,7 @@ module.exports = {
   cookiePassword: 'a-string-that-is-long-enough-for-requirements',
   forceHttps: false,
   logoutRedirectUri: 'http://localhost.test.domain:3000',
-  maxPersonalPhoneNumbers: 2
+  maxPersonalPhoneNumbers: 2,
+  phaseBannerHtml: 'a message to show',
+  phaseBannerTag: 'local'
 }
