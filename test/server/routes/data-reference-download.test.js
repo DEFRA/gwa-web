@@ -2,7 +2,7 @@ const cheerio = require('cheerio')
 const csvtojson = require('csvtojson')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
-const { types } = require('../../../server/lib/reference-data')
+const { types } = require('../../../server/lib/view/reference-data')
 
 describe('Data reference download route', () => {
   const email = 'test@gwa.defra.co.uk'

@@ -21,8 +21,8 @@ describe('Upload route', () => {
   const officeLocation = 'Alphabet office'
   let server
 
-  jest.mock('../../../server/lib/upload-user-data')
-  const uploadUserData = require('../../../server/lib/upload-user-data')
+  jest.mock('../../../server/lib/data/upload-user-data')
+  const uploadUserData = require('../../../server/lib/data/upload-user-data')
   jest.mock('../../../server/lib/db', () => {
     return {
       getAreaToOfficeMap: jest.fn().mockResolvedValue([

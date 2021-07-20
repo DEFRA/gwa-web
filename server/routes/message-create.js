@@ -5,12 +5,12 @@ const { errorMessages, textMessages: { maxMessageLength }, messageStates } = req
 const { scopes } = require('../permissions')
 const addAuditEvent = require('../lib/messages/add-audit-event')
 const { saveMessage } = require('../lib/db')
-const generateOfficeCheckboxes = require('../lib/office-checkboxes')
-const generateOrganisationCheckboxes = require('../lib/organisation-checkboxes')
-const BaseModel = require('../lib/model')
-const { message: { failAction } } = require('../lib/route-fail-actions')
-const { message: { payload } } = require('../lib/route-validations')
-const generateSendToAllOrgsRadios = require('../lib/send-to-all-radios')
+const generateOfficeCheckboxes = require('../lib/view/office-checkboxes')
+const generateOrganisationCheckboxes = require('../lib/view/organisation-checkboxes')
+const BaseModel = require('../lib/misc/model')
+const { message: { failAction } } = require('../lib/route/route-fail-actions')
+const { message: { payload } } = require('../lib/route/route-validations')
+const generateSendToAllOrgsRadios = require('../lib/view/send-to-all-radios')
 
 class Model extends BaseModel {
   constructor (data, err) {

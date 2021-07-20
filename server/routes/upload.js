@@ -3,12 +3,12 @@ const Joi = require('joi')
 
 const { orgDataFileHeaders } = require('../constants')
 const { scopes } = require('../permissions')
-const convertCSVToJSON = require('../lib/convert-users-csv-to-json')
-const { getMappedErrors } = require('../lib/errors')
-const BaseModel = require('../lib/model')
-const generateNonCoreOrgSelectItems = require('../lib/non-core-org-select')
-const uploadUserData = require('../lib/upload-user-data')
-const validateUsers = require('../lib/validate-users')
+const convertCSVToJSON = require('../lib/data/convert-users-csv-to-json')
+const { getMappedErrors } = require('../lib/misc/errors')
+const BaseModel = require('../lib/misc/model')
+const generateNonCoreOrgSelectItems = require('../lib/view/non-core-org-select')
+const uploadUserData = require('../lib/data/upload-user-data')
+const validateUsers = require('../lib/data/validate-users')
 
 const errorMessages = {
   file: { '*': 'Select a valid CSV file' },

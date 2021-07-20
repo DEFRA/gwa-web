@@ -1,10 +1,10 @@
 const boom = require('@hapi/boom')
 
-const BaseModel = require('../lib/model')
+const BaseModel = require('../lib/misc/model')
 const { deleteMessage } = require('../lib/db')
-const getMessageRows = require('../lib/get-message-rows')
-const { messageOptions } = require('../lib/route-options')
-const verifyMessageRequest = require('../lib/verify-message-request')
+const getMessageRows = require('../lib/view/get-message-rows')
+const { messageOptions } = require('../lib/route/route-options')
+const verifyMessageRequest = require('../lib/route/verify-message-request')
 
 class Model extends BaseModel {}
 

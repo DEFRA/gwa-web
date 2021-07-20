@@ -3,7 +3,7 @@ const { v4: uuid } = require('uuid')
 const { errorMessages, textMessages: { maxInfoLength, maxMessageLength } } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
-const { getAreaOfficeCode } = require('../../../server/lib/helpers')
+const { getAreaOfficeCode } = require('../../../server/lib/misc/helpers')
 
 describe('Message edit route', () => {
   const email = 'test@gwa.defra.co.uk'

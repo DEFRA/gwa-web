@@ -4,7 +4,7 @@ const getStream = require('get-stream')
 const { Readable } = require('stream')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
-const { typeInfo, types } = require('../../../server/lib/reference-data')
+const { typeInfo, types } = require('../../../server/lib/view/reference-data')
 
 describe('Data reference manage route', () => {
   const email = 'test@gwa.defra.co.uk'
@@ -12,8 +12,8 @@ describe('Data reference manage route', () => {
   const baseUrl = '/data-reference-manage'
   let server
 
-  jest.mock('../../../server/lib/update-reference-data')
-  const updateReferenceData = require('../../../server/lib/update-reference-data')
+  jest.mock('../../../server/lib/data/update-reference-data')
+  const updateReferenceData = require('../../../server/lib/data/update-reference-data')
 
   beforeEach(async () => {
     server = await createServer()

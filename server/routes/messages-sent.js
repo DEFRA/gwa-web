@@ -1,9 +1,9 @@
 const boom = require('@hapi/boom')
 const Joi = require('joi')
 const { scopes } = require('../permissions')
-const generatePagination = require('../lib/generate-pagination')
-const { getMessageRows } = require('../lib/helpers')
-const BaseModel = require('../lib/model')
+const generatePagination = require('../lib/view/generate-pagination')
+const { getMessageRows } = require('../lib/misc/helpers')
+const BaseModel = require('../lib/misc/model')
 
 class Model extends BaseModel {}
 

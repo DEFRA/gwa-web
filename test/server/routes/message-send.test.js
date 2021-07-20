@@ -44,8 +44,8 @@ describe('Message send route', () => {
     lastChecked: Date.now()
   }
 
-  jest.mock('../../../server/lib/upload-contact-list')
-  const uploadContactList = require('../../../server/lib/upload-contact-list')
+  jest.mock('../../../server/lib/data/upload-contact-list')
+  const uploadContactList = require('../../../server/lib/data/upload-contact-list')
   jest.mock('../../../server/lib/db')
   const { getMessage, updateMessage } = require('../../../server/lib/db')
   const editTime = Date.now()
