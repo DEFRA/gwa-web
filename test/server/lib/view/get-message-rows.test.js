@@ -27,7 +27,7 @@ describe('Get message rows', () => {
 
   function expectStandardRows (rows, message) {
     expect(rows[0][0].text).toEqual('Message state')
-    expect(rows[0][1].text).toEqual(message.state)
+    expect(rows[0][1].text).toEqual(message.state.toUpperCase())
     expect(rows[1][0].text).toEqual('Office location recipients')
     expect(rows[1][1].text).toEqual(message.officeCodes.join(', '))
     expect(rows[2][0].text).toEqual('Organisation recipients')

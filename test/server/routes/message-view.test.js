@@ -145,7 +145,7 @@ describe('Message view route', () => {
       const rows = $('.govuk-table .govuk-table__row', mainContent)
       expect(rows).toHaveLength(9)
       expect($('th', rows.eq(0)).text()).toMatch('Message state')
-      expect($('td', rows.eq(0)).text()).toMatch(state)
+      expect($('td', rows.eq(0)).text()).toMatch(state.toUpperCase())
       expect($('th', rows.eq(1)).text()).toMatch('Office location recipients')
       expect($('td', rows.eq(1)).text()).toMatch('All offices')
       expect($('th', rows.eq(2)).text()).toMatch('Organisation recipients')

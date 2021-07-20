@@ -12,7 +12,7 @@ module.exports = (message) => {
   const lastEvent = message.auditEvents.sort((e1, e2) => e2.time - e1.time)[0]
 
   const rows = [
-    [{ text: 'Message state' }, { text: message.state }],
+    [{ text: 'Message state' }, { text: message.state.toUpperCase() }],
     [{ text: 'Office location recipients' }, { text: message.allOffices ? 'All offices' : message.officeCodes.join(', ') }],
     [{ text: 'Organisation recipients' }, { text: message.orgCodes.join(', ') }],
     [{ text: 'Message text' }, { text: message.text }],
