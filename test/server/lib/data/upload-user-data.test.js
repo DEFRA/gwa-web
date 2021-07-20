@@ -1,12 +1,10 @@
-const { dataSourcesContainer: mockDataSourcesContainer, dataSourcesStorageConnectionString: mockDataSourcesStorageConnectionString } = require('../../../test-env-vars')
+const { dataSourcesContainer, dataSourcesStorageConnectionString } = require('../../../test-env-vars')
 
 describe('Uploading user data', () => {
-  jest.mock('../../../../server/config', () => {
-    return {
-      dataSourcesContainer: mockDataSourcesContainer,
-      dataSourcesStorageConnectionString: mockDataSourcesStorageConnectionString
-    }
-  })
+  jest.mock('../../../../server/config')
+  const config = require('../../../../server/config')
+  config.dataSourcesContainer = dataSourcesContainer
+  config.dataSourcesStorageConnectionString = dataSourcesStorageConnectionString
 
   let mockUpload
   const mockBlockBlobClient = jest.fn(() => {
@@ -35,7 +33,7 @@ describe('Uploading user data', () => {
     const res = await uploadUserData(users, orgCode)
 
     expect(mockBlockBlobClient).toHaveBeenCalledTimes(1)
-    expect(mockBlockBlobClient).toHaveBeenCalledWith(mockDataSourcesStorageConnectionString, mockDataSourcesContainer, `${orgCode}.json`)
+    expect(mockBlockBlobClient).toHaveBeenCalledWith(dataSourcesStorageConnectionString, dataSourcesContainer, `${orgCode}.json`)
     expect(mockUpload).toHaveBeenCalledTimes(1)
     const data = JSON.stringify(users)
     expect(mockUpload).toHaveBeenCalledWith(data, data.length, { blobHTTPHeaders: { blobContentType: 'application/json' } })

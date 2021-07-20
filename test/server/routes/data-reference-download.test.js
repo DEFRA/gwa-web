@@ -15,11 +15,10 @@ describe('Data reference download route', () => {
   const originalOfficeLocation = 'originalOfficeLocation'
   const officeCode = 'ABC:alphabet-office'
   const officeLocation = 'Alphabet office'
-  jest.mock('../../../server/lib/db', () => {
-    return {
-      getOrganisationMap: jest.fn().mockResolvedValue([{ originalOfficeLocation: 'originalOfficeLocation', officeLocation: 'officeLocation', areaCode: 'areaCode', areaName: 'areaName', officeCode: 'officeCode' }])
-    }
-  })
+  jest.mock('../../../server/lib/db')
+  const { getOrganisationMap } = require('../../../server/lib/db')
+  getOrganisationMap
+    .mockResolvedValue([{ originalOfficeLocation: 'originalOfficeLocation', officeLocation: 'officeLocation', areaCode: 'areaCode', areaName: 'areaName', officeCode: 'officeCode' }])
 
   const officeLocationMapDropMock = jest.fn()
   const organisationListDropMock = jest.fn()
