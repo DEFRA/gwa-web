@@ -7,7 +7,7 @@ const { updateMessage } = require('../lib/db')
 const getMessageRows = require('../lib/view/get-message-rows')
 const BaseModel = require('../lib/misc/model')
 const getPhoneNumbersToSendTo = require('../lib/messages/phone-numbers-to-send-to')
-const { messageOptions } = require('../lib/route/route-options')
+const { messageOptions } = require('../lib/route/options')
 const uploadContactList = require('../lib/data/upload-contact-list')
 const verifyMessageRequest = require('../lib/route/verify-message-request')
 

@@ -8,7 +8,7 @@ const { getMappedErrors } = require('../lib/misc/errors')
 const { getAreaOfficeCode } = require('../lib/misc/helpers')
 const BaseModel = require('../lib/misc/model')
 const { parsePhoneNumber, types } = require('../lib/contact/phone-number')
-const { getUser } = require('../lib/route/route-pre-handlers')
+const { getUser } = require('../lib/route/pre-handlers')
 
 const errorMessages = {
   mobile: {
