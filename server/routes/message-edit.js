@@ -76,11 +76,11 @@ module.exports = [
       const { allOffices, info, officeCodes, orgCodes, text } = request.payload
 
       message.allOffices = allOffices
-      message.info = info
+      message.info = info?.trim()
       message.officeCodes = [officeCodes ?? []].flat()
       message.orgCodes = [orgCodes].flat()
       message.state = messageStates.edited
-      message.text = text
+      message.text = text?.trim()
       addAuditEvent(message, user)
 
       const res = await updateMessage(message)

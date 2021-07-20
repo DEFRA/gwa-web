@@ -1,8 +1,9 @@
 const cheerio = require('cheerio')
 const { v4: uuid } = require('uuid')
-const { errorMessages, textMessages: { maxInfoLength, maxMessageLength }, navigation } = require('../../../server/constants')
+const { errorMessages, messageStates, navigation, textMessages: { maxInfoLength, maxMessageLength } } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
+const addAuditEvent = require('../../../server/lib/messages/add-audit-event')
 const { getAreaOfficeCode } = require('../../../server/lib/misc/helpers')
 
 describe('Message edit route', () => {
@@ -39,26 +40,31 @@ describe('Message edit route', () => {
     lastChecked: Date.now()
   }
 
+  const now = Date.now()
+  Date.now = jest.fn(() => now)
+
   jest.mock('../../../server/lib/db')
   const { getMessage, updateMessage } = require('../../../server/lib/db')
 
+  const initialMessage = {
+    auditEvents: [
+      { user: { id: createUser }, type: 'create', time: createTime },
+      { user: { id: edituser }, type: 'create', time: updateTime }
+    ],
+    id: messageId,
+    orgCodes,
+    officeCodes: [areaOfficeCode],
+    state,
+    allOffices: true,
+    text,
+    info
+  }
   beforeEach(async () => {
     jest.clearAllMocks()
     server = await createServer()
     server.methods.db.getOrganisationList = jest.fn().mockResolvedValue(orgList)
     server.methods.db.getAreaToOfficeMap = jest.fn().mockResolvedValue([{ areaCode: 'ABC', areaName, officeLocations: [{ officeCode, officeLocation }, { officeCode: 'officeCodeTwo', officeLocation: officeLocationTwo }] }])
-    getMessage.mockResolvedValue({
-      auditEvents: [
-        { user: { id: createUser }, type: 'create', time: createTime },
-        { user: { id: edituser }, type: 'create', time: updateTime }
-      ],
-      orgCodes,
-      officeCodes: [areaOfficeCode],
-      state,
-      allOffices: true,
-      text,
-      info
-    })
+    getMessage.mockResolvedValue(initialMessage)
     server.methods.getNotifyStatusViewData = jest.fn().mockResolvedValue(notifyStatusViewData)
   })
 
@@ -345,17 +351,18 @@ describe('Message edit route', () => {
       [{ allOffices: false, officeCodes: ['ABC:one', 'XYZ:two'], orgCodes: ['orgCode'], text: 'message to send', info: 'valid' }],
       [{ allOffices: false, officeCodes: 'ABC:one', orgCodes: 'orgCode', text: 'message to send', info: 'valid' }],
       [{ allOffices: true, orgCodes: ['orgCode', 'another'], text: 'message to send' }],
-      [{ allOffices: true, orgCodes: ['orgCode'], text: 'a'.repeat(maxMessageLength), info: 'a'.repeat(maxInfoLength) }]
+      [{ allOffices: true, orgCodes: ['orgCode'], text: 'a'.repeat(maxMessageLength), info: 'a'.repeat(maxInfoLength) }],
+      [{ allOffices: true, orgCodes: ['orgCode'], text: '     padded with spaces     ', info: '     padded with spaces     ' }]
     ])('responds with 302 to /messages when request is valid - test %#', async (payload) => {
       updateMessage.mockResolvedValue({ statusCode: 200 })
+      const user = { id, email, companyName: 'companyName', surname: 'surname', givenName: 'givenName' }
       const res = await server.inject({
         method,
         url,
         auth: {
           credentials: {
             user: {
-              id,
-              email,
+              ...user,
               displayName: 'test gwa',
               raw: {
                 roles: JSON.stringify([])
@@ -370,6 +377,19 @@ describe('Message edit route', () => {
 
       expect(res.statusCode).toEqual(302)
       expect(res.headers.location).toEqual(`/message-view/${messageId}`)
+
+      const expectedMessage = {
+        ...initialMessage,
+        allOffices: payload.allOffices,
+        id: messageId,
+        info: payload.info?.trim(),
+        officeCodes: [payload.officeCodes ?? []].flat(),
+        orgCodes: [payload.orgCodes].flat(),
+        text: payload.text?.trim(),
+        state: messageStates.edited
+      }
+      addAuditEvent(expectedMessage, user)
+      expect(updateMessage).toHaveBeenCalledWith(expectedMessage)
     })
   })
 })
