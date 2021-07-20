@@ -1,7 +1,9 @@
 const cheerio = require('cheerio')
-const { errorMessages, textMessages: { maxInfoLength, maxMessageLength }, navigation } = require('../../../server/constants')
+const { uuidRegex } = require('../../helpers/constants')
+const { errorMessages, messageStates, navigation, textMessages: { maxInfoLength, maxMessageLength } } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
+const addAuditEvent = require('../../../server/lib/messages/add-audit-event')
 
 describe('Message creation route', () => {
   const email = 'test@gwa.defra.co.uk'
@@ -25,6 +27,9 @@ describe('Message creation route', () => {
     ]],
     lastChecked: Date.now()
   }
+
+  const now = Date.now()
+  Date.now = jest.fn(() => now)
 
   jest.mock('../../../server/lib/db')
   const { saveMessage } = require('../../../server/lib/db')
@@ -250,17 +255,18 @@ describe('Message creation route', () => {
       [{ allOffices: false, officeCodes: ['ABC:one', 'XYZ:two'], orgCodes: ['orgCode'], text: 'message to send', info: 'valid' }],
       [{ allOffices: false, officeCodes: 'ABC:one', orgCodes: 'orgCode', text: 'message to send', info: 'valid' }],
       [{ allOffices: true, orgCodes: ['orgCode', 'another'], text: 'message to send' }],
-      [{ allOffices: true, orgCodes: ['orgCode'], text: 'a'.repeat(maxMessageLength), info: 'a'.repeat(maxInfoLength) }]
+      [{ allOffices: true, orgCodes: ['orgCode'], text: 'a'.repeat(maxMessageLength), info: 'a'.repeat(maxInfoLength) }],
+      [{ allOffices: true, orgCodes: ['orgCode'], text: '     padded with spaces     ', info: '     padded with spaces     ' }]
     ])('responds with 302 to /messages when request is valid - test %#', async (payload) => {
       saveMessage.mockResolvedValue({ statusCode: 201 })
+      const user = { id, email, companyName: 'companyName', surname: 'surname', givenName: 'givenName' }
       const res = await server.inject({
         method,
         url,
         auth: {
           credentials: {
             user: {
-              id,
-              email,
+              ...user,
               displayName: 'test gwa',
               raw: {
                 roles: JSON.stringify([])
@@ -275,6 +281,18 @@ describe('Message creation route', () => {
 
       expect(res.statusCode).toEqual(302)
       expect(res.headers.location).toEqual('/messages')
+
+      const expectedMessage = {
+        allOffices: payload.allOffices,
+        id: expect.stringMatching(uuidRegex),
+        info: payload.info?.trim(),
+        officeCodes: [payload.officeCodes ?? []].flat(),
+        orgCodes: [payload.orgCodes].flat(),
+        text: payload.text?.trim(),
+        state: messageStates.created
+      }
+      addAuditEvent(expectedMessage, user)
+      expect(saveMessage).toHaveBeenCalledWith(expectedMessage)
     })
   })
 })

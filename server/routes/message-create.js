@@ -52,10 +52,10 @@ module.exports = [
       const message = {
         allOffices,
         id: uuid(),
-        info,
+        info: info?.trim(),
         officeCodes: [officeCodes ?? []].flat(),
         orgCodes: [orgCodes].flat(),
-        text,
+        text: text?.trim(),
         state: messageStates.created
       }
       addAuditEvent(message, user)
