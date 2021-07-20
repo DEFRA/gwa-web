@@ -103,7 +103,7 @@ describe('Message send route', () => {
 
     test.each([
       { message: undefined, status: 404, error: 'Not Found' },
-      { message: { state: 'sent' }, status: 401, error: 'Sent messages can not be sent again.' }
+      { message: { state: 'sent' }, status: 400, error: 'Sent messages can not be sent again.' }
     ])('responds with errors when problem with message', async ({ message, status, error }) => {
       getMessage.mockResolvedValueOnce(message)
       const res = await server.inject({
@@ -321,7 +321,7 @@ describe('Message send route', () => {
 
     test.each([
       { message: undefined, status: 404, error: 'Not Found' },
-      { message: { state: 'sent' }, status: 401, error: 'Sent messages can not be sent again.' }
+      { message: { state: 'sent' }, status: 400, error: 'Sent messages can not be sent again.' }
     ])('responds with errors when problem with message', async ({ message, status, error }) => {
       getMessage.mockResolvedValueOnce(message)
       const res = await server.inject({

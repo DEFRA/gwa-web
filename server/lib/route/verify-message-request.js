@@ -2,7 +2,7 @@ const boom = require('@hapi/boom')
 const { messageStates } = require('../../constants')
 const { getMessage } = require('../db')
 
-module.exports = async (request, unauthorizedMessage) => {
+module.exports = async (request, errorMessage) => {
   const { messageId } = request.params
   const message = await getMessage(messageId)
 
@@ -11,7 +11,7 @@ module.exports = async (request, unauthorizedMessage) => {
   }
 
   if (message.state === messageStates.sent) {
-    return { error: boom.unauthorized(unauthorizedMessage) }
+    return { error: boom.badRequest(errorMessage) }
   }
   return { message }
 }
