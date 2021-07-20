@@ -1,7 +1,7 @@
 const cheerio = require('cheerio')
 const { v4: uuid } = require('uuid')
 const generateMessages = require('../../helpers/generate-messages')
-const { auditEventTypes, messageStates } = require('../../../server/constants')
+const { auditEventTypes, messageStates, navigation } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
 
@@ -98,6 +98,7 @@ describe('Messages route', () => {
       expect(getMessages).toHaveBeenCalledWith(`SELECT TOP 10 * FROM c WHERE c.state = "${messageStates.edited}" ORDER BY c.lastUpdatedAt DESC`)
 
       const $ = cheerio.load(res.payload)
+      expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.messages.text)
       expect($('.govuk-heading-l').text()).toEqual('Messages')
       const msgHeadings = $('.govuk-heading-m')
       expect(msgHeadings).toHaveLength(3)

@@ -1,5 +1,6 @@
 const cheerio = require('cheerio')
 const { v4: uuid } = require('uuid')
+const { navigation } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
 
@@ -195,6 +196,7 @@ describe('Message send route', () => {
 
       const $ = cheerio.load(res.payload)
       expect($('.govuk-heading-l').text()).toMatch('Send message')
+      expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.messages.text)
       expect($('.govuk-warning-text').text()).toMatch(`Are you sure you would like to send this message? It will be sent to approximately ${contactCount} contact(s) at an approximate cost of £${cost.toFixed(2)} (excluding VAT).`)
       const mainContent = $('.govuk-grid-column-two-thirds')
       const rows = $('.govuk-table .govuk-table__row', mainContent)

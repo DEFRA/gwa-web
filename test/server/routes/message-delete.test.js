@@ -1,5 +1,6 @@
 const cheerio = require('cheerio')
 const { v4: uuid } = require('uuid')
+const { navigation } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
 
@@ -144,6 +145,7 @@ describe('Message deletion route', () => {
       expect(res.statusCode).toEqual(200)
 
       const $ = cheerio.load(res.payload)
+      expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.messages.text)
       expect($('.govuk-heading-l').text()).toMatch('Delete message')
       expect($('.govuk-warning-text').text()).toMatch('Are you sure you would like to delete this message?')
       const mainContent = $('.govuk-grid-column-two-thirds')

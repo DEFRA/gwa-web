@@ -1,5 +1,5 @@
 const cheerio = require('cheerio')
-const { errorMessages, textMessages: { maxInfoLength, maxMessageLength } } = require('../../../server/constants')
+const { errorMessages, textMessages: { maxInfoLength, maxMessageLength }, navigation } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
 
@@ -102,6 +102,7 @@ describe('Message creation route', () => {
       expect(res.statusCode).toEqual(200)
 
       const $ = cheerio.load(res.payload)
+      expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.messages.text)
       const title = $('.govuk-heading-l').text()
       expect(title).toMatch('Create message')
       const formGroups = $('.govuk-form-group')

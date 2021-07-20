@@ -5,6 +5,7 @@ const { Readable } = require('stream')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
 const { typeInfo, types } = require('../../../server/lib/view/reference-data')
+const { navigation } = require('../../../server/constants')
 
 describe('Data reference manage route', () => {
   const email = 'test@gwa.defra.co.uk'
@@ -99,6 +100,7 @@ describe('Data reference manage route', () => {
       expect(buttons.eq(0).attr('href')).toEqual(`/data-reference-download/${filename}`)
       expect(buttons.eq(0).attr('download')).toEqual(download)
       expect(buttons.eq(1).text()).toMatch('Upload')
+      expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.data.text)
     })
   })
 

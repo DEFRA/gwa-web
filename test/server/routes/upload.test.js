@@ -5,6 +5,7 @@ const { Readable } = require('stream')
 const { v4: uuid } = require('uuid')
 const { scopes } = require('../../../server/permissions')
 const { orgDataFileHeaders } = require('../../../server/constants')
+const { navigation } = require('../../../server/constants')
 
 describe('Upload route', () => {
   const mockCorporatePhoneNumber = '07777111111'
@@ -498,6 +499,7 @@ describe('Upload route', () => {
       const button = $('.govuk-button')
       expect(button).toHaveLength(1)
       expect(button.text()).toMatch('Upload')
+      expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.data.text)
     })
 
     test('responds with 200 when CSV file is uploaded', async () => {

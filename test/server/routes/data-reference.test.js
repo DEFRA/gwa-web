@@ -1,6 +1,7 @@
 const cheerio = require('cheerio')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
+const { navigation } = require('../../../server/constants')
 
 describe('Data reference route', () => {
   const email = 'test@gwa.defra.co.uk'
@@ -80,5 +81,6 @@ describe('Data reference route', () => {
     expect(button.eq(0).text()).toMatch('Organisation list')
     expect(button.eq(1).text()).toMatch('Organisation mapping')
     expect(button.eq(2).text()).toMatch('Office locations')
+    expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.data.text)
   })
 })

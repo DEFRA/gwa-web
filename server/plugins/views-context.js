@@ -23,25 +23,27 @@ module.exports = {
 
           const navigation = []
 
+          const pathToMatch = `/${request.path.split('/')[1]}`
+
           if (auth.isAuthenticated) {
             ctx.user = auth.credentials.user
             ctx.credentials = auth.credentials
             navigation.push({
               ...header.account,
-              active: request.path === '/account'
+              active: [header.account.href, '/contact-add', '/contact-edit', '/contact-remove'].includes(pathToMatch)
             })
 
             if (ctx.credentials.scope.includes(scopes.message.manage)) {
               navigation.push({
                 ...header.messages,
-                active: request.path === '/messages'
+                active: [header.messages.href, '/message-create', '/message-edit', '/message-delete', '/message-send', '/message-view', '/messages-sent'].includes(pathToMatch)
               })
             }
 
             if (ctx.credentials.scope.includes(scopes.data.manage)) {
               navigation.push({
                 ...header.data,
-                active: request.path === '/data-manage'
+                active: [header.data.href, '/data-reference', '/data-reference-manage', '/upload'].includes(pathToMatch)
               })
             }
 

@@ -1,6 +1,6 @@
 const cheerio = require('cheerio')
 const { v4: uuid } = require('uuid')
-const { errorMessages, textMessages: { maxInfoLength, maxMessageLength } } = require('../../../server/constants')
+const { errorMessages, textMessages: { maxInfoLength, maxMessageLength }, navigation } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
 const { getAreaOfficeCode } = require('../../../server/lib/misc/helpers')
@@ -157,6 +157,7 @@ describe('Message edit route', () => {
       expect(res.statusCode).toEqual(200)
 
       const $ = cheerio.load(res.payload)
+      expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.messages.text)
       expect($('.govuk-heading-l').text()).toMatch('Edit message')
       const formGroups = $('.govuk-form-group')
       expect(formGroups).toHaveLength(7)

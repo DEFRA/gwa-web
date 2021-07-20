@@ -1,5 +1,5 @@
 const cheerio = require('cheerio')
-const { contacts: { maxPersonalPhoneNumbers } } = require('../../../server/constants')
+const { contacts: { maxPersonalPhoneNumbers }, navigation } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { getAreaOfficeCode } = require('../../../server/lib/misc/helpers')
 
@@ -66,6 +66,7 @@ describe('Contact add route', () => {
       const $ = cheerio.load(res.payload)
 
       expect($('.govuk-label--l').text()).toMatch('What is your telephone number?')
+      expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.account.text)
     })
   })
 
