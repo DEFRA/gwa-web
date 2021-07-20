@@ -26,8 +26,8 @@ const schema = Joi.object().keys({
   isLocal: Joi.boolean().default(false),
   forceHttps: Joi.boolean().required(),
   logoutRedirectUri: Joi.string().uri(),
-  phaseBannerTag: Joi.string().required(),
   phaseBannerHtml: Joi.string().required(),
+  phaseBannerTag: Joi.string().required(),
   serviceName: Joi.string().default('Group Wide Alert')
 })
 
@@ -55,8 +55,8 @@ const config = {
   forceHttps: process.env.FORCE_HTTPS,
   logoutRedirectUri: process.env.LOGOUT_REDIRECT_URI,
   isLocal: process.env.NODE_ENV === 'local',
-  phaseBannerTag: process.env.PHASE_BANNER_TAG,
-  phaseBannerHtml: process.env.PHASE_BANNER_HTML
+  phaseBannerHtml: process.env.PHASE_BANNER_HTML,
+  phaseBannerTag: process.env.PHASE_BANNER_TAG
 }
 
 const { error, value } = schema.validate(config)
