@@ -65,12 +65,11 @@ module.exports = [
         return boom.badRequest('Sending to 0 contacts is not allowed.')
       }
 
-      message.contacts = phoneNumbersToSendTo
       message.contactCount = phoneNumbersToSendTo.length
       message.cost = costOfMessageSend(message)
       message.state = messageStates.sent
 
-      const uploadRes = await uploadContactList(message)
+      const uploadRes = await uploadContactList(message, phoneNumbersToSendTo)
       if (!uploadRes) {
         return boom.internal(`Problem uploading contact list for message ${message.id}.`)
       }
