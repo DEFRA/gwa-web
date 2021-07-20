@@ -13,6 +13,12 @@ function mapErrors (errors, errorMessages) {
   return map
 }
 
+function getMappedErrors (err, errorMessages) {
+  if (err && Array.isArray(err.details)) {
+    return mapErrors(err, errorMessages)
+  }
+}
+
 // Error helper functions
 // (Allows error summary text to differ from field error text)
 function getErrorText (error) {
@@ -23,13 +29,7 @@ function getErrorSummaryText (error) {
   return typeof error === 'object' ? error.summary : error
 }
 
-function getMappedErrors (err, errorMessages) {
-  if (err && Array.isArray(err.details)) {
-    return mapErrors(err, errorMessages)
-  }
-}
-
-const getErrors = (mappedErrors) => {
+function getErrors (mappedErrors) {
   const errors = {}
   const errorList = []
 
