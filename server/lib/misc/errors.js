@@ -1,3 +1,13 @@
+function getErrorMessageForObject (messages, error) {
+  return typeof messages === 'object' ? messages : error.message
+}
+
+function getErrorMessage (messages, error) {
+  return messages[error.type] ||
+    messages['*'] ||
+    getErrorMessageForObject(messages, error)
+}
+
 function mapErrors (errors, errorMessages) {
   const map = {}
 
@@ -6,8 +16,7 @@ function mapErrors (errors, errorMessages) {
     const messages = errorMessages[contextKey] || {}
     map[contextKey] = typeof messages === 'string'
       ? messages
-      : messages[error.type] || messages['*'] ||
-      (typeof messages === 'object' ? messages : error.message)
+      : getErrorMessage(messages, error)
   })
 
   return map
@@ -19,8 +28,6 @@ function getMappedErrors (err, errorMessages) {
   }
 }
 
-// Error helper functions
-// (Allows error summary text to differ from field error text)
 function getErrorText (error) {
   return typeof error === 'object' ? error.text : error
 }
