@@ -3,13 +3,13 @@ const Joi = require('joi')
 
 const { errorMessages, textMessages: { maxMessageLength }, messageStates } = require('../constants')
 const { scopes } = require('../permissions')
-const addAuditEvent = require('../lib/messages/add-audit-event')
 const { getMessage, updateMessage } = require('../lib/db')
-const generateOfficeCheckboxes = require('../lib/view/office-checkboxes')
-const generateOrganisationCheckboxes = require('../lib/view/organisation-checkboxes')
+const addAuditEvent = require('../lib/messages/add-audit-event')
 const BaseModel = require('../lib/misc/model')
 const { message: { failAction } } = require('../lib/route/route-fail-actions')
 const { message: { payload } } = require('../lib/route/route-validations')
+const generateOfficeCheckboxes = require('../lib/view/office-checkboxes')
+const generateOrganisationCheckboxes = require('../lib/view/organisation-checkboxes')
 const generateSendToAllOrgsRadios = require('../lib/view/send-to-all-radios')
 
 class Model extends BaseModel {
