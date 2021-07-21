@@ -25,8 +25,8 @@ module.exports = async messageId => {
     notifyFailed: notifyFailed[0].count,
     pendingSending: pendingSending[0].count,
     rateLimited: rateLimited[0].count,
-    timeOfFirstSend: timeOfFirstSend[0].sent_at,
-    timeOfLastSend: timeOfLastSend[0].sent_at,
+    timeOfFirstSend: timeOfFirstSend[0]?.sent_at,
+    timeOfLastSend: timeOfLastSend[0]?.sent_at,
     toBeRetried: toBeRetried[0].count
   }
 }
