@@ -5,8 +5,7 @@ describe('Get message rows', () => {
   const user = { id: 'create-user-id', companyName: 'companyName', givenName: 'givenName', surname: 'surname' }
 
   const now = Date.now()
-  Date.now = jest.fn()
-  Date.now.mockReturnValueOnce(now + 1000).mockReturnValueOnce(now + 2000).mockReturnValueOnce(now + 3000)
+  Date.now = jest.fn().mockReturnValue(now + 1000).mockReturnValueOnce(now + 2000).mockReturnValueOnce(now + 3000)
 
   const messageTemplate = {
     allOffices: false,
@@ -27,7 +26,7 @@ describe('Get message rows', () => {
 
   function expectStandardRows (rows, message) {
     expect(rows[0][0].text).toEqual('Message state')
-    expect(rows[0][1].text).toEqual(message.state)
+    expect(rows[0][1].text).toEqual(message.state.toUpperCase())
     expect(rows[1][0].text).toEqual('Office location recipients')
     expect(rows[1][1].text).toEqual(message.officeCodes.join(', '))
     expect(rows[2][0].text).toEqual('Organisation recipients')
@@ -84,10 +83,20 @@ describe('Get message rows', () => {
     message.contactCount = 343
     message.state = messageStates.sent
     addAuditEvent(message, user) // use actual function to add audit events for simplicity
+    const sentStats = {
+      failedToSend: 1,
+      notifyDelivered: 2,
+      notifyFailed: 3,
+      pendingSending: 4,
+      rateLimited: 5,
+      timeOfFirstSend: now,
+      timeOfLastSend: now,
+      toBeRetried: 0
+    }
 
-    const messageRows = getMessageRows(message)
+    const messageRows = getMessageRows(message, sentStats)
 
-    expect(messageRows).toHaveLength(13)
+    expect(messageRows).toHaveLength(21)
     expectRowProperties(messageRows)
     expectStandardRows(messageRows, message)
     const sentEvent = message.auditEvents.filter(e => e.type === auditEventTypes.send)[0]
@@ -97,7 +106,23 @@ describe('Get message rows', () => {
     expect(messageRows[10][1].text).toEqual(sentEvent.user.id)
     expect(messageRows[11][0].text).toEqual('Approx cost')
     expect(messageRows[11][1].text).toEqual(`£${rounded}`)
-    expect(messageRows[12][0].text).toEqual('Approx message sent count')
+    expect(messageRows[12][0].text).toEqual('Messages to send')
     expect(messageRows[12][1].text).toEqual(message.contactCount)
+    expect(messageRows[13][0].text).toEqual('Messages waiting to be sent by Notify')
+    expect(messageRows[13][1].text).toEqual(sentStats.pendingSending)
+    expect(messageRows[14][0].text).toEqual('Messages failed to send to Notify')
+    expect(messageRows[14][1].text).toEqual(sentStats.failedToSend)
+    expect(messageRows[15][0].text).toEqual('Messages rate limited')
+    expect(messageRows[15][1].text).toEqual(sentStats.rateLimited)
+    expect(messageRows[16][0].text).toEqual('Messages retried')
+    expect(messageRows[16][1].text).toEqual(sentStats.toBeRetried)
+    expect(messageRows[17][0].text).toEqual('Messages delivered by Notify')
+    expect(messageRows[17][1].text).toEqual(sentStats.notifyDelivered)
+    expect(messageRows[18][0].text).toEqual('Messages failed by Notify')
+    expect(messageRows[18][1].text).toEqual(sentStats.notifyFailed)
+    expect(messageRows[19][0].text).toEqual('First message sent at')
+    expect(messageRows[19][1].text).toEqual(new Date(sentStats.timeOfFirstSend).toLocaleString())
+    expect(messageRows[20][0].text).toEqual('Last message sent at')
+    expect(messageRows[20][1].text).toEqual(new Date(sentStats.timeOfLastSend).toLocaleString())
   })
 })

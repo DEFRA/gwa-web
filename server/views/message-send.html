@@ -13,7 +13,7 @@
   <h1 class="govuk-heading-l">Send message</h1>
   {{
     govukWarningText({
-      html: "Are you sure you would like to send this message? It will be sent to approximately " + data.message.contactCount + " contact(s) at an approximate cost of £" + data.message.cost | round(2) + " (excluding VAT).",
+      html: "Are you sure you would like to send this message? It will be sent to approximately " + data.message.contactCount + " contacts at a cost of approximately £" + data.message.cost | round(2) + " (excluding VAT).",
       iconFallbackText: "Warning"
     })
   }}
