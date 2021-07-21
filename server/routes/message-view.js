@@ -6,6 +6,7 @@ const { scopes } = require('../permissions')
 const { getMessage } = require('../lib/db')
 const getMessageRows = require('../lib/view/get-message-rows')
 const BaseModel = require('../lib/misc/model')
+const getReceiptData = require('../lib/data/get-receipt-data')
 
 class Model extends BaseModel {}
 
@@ -23,10 +24,16 @@ module.exports = [
         return boom.notFound()
       }
 
-      const messageRows = getMessageRows(message)
-      const isEditable = message.state !== messageStates.sent
+      const isMessageSent = message.state === messageStates.sent
 
-      return h.view(routeId, new Model({ isEditable, messageId, messageRows }))
+      let sentStats = {}
+      if (isMessageSent) {
+        sentStats = await getReceiptData(messageId)
+      }
+
+      const messageRows = getMessageRows(message, sentStats)
+
+      return h.view(routeId, new Model({ isEditable: !isMessageSent, messageId, messageRows }))
     },
     options: {
       auth: { access: { scope: [`+${scopes.message.manage}`] } },

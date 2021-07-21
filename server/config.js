@@ -12,8 +12,9 @@ const schema = Joi.object().keys({
   dataSourcesStorageConnectionString: Joi.string().required(),
   db: Joi.object().keys({
     connectionString: Joi.string().required(),
-    name: Joi.string().required(),
     messagesContainerName: Joi.string().default('messages'),
+    name: Joi.string().required(),
+    receiptsContainerName: Joi.string().default('receipts'),
     refDataContainerName: Joi.string().default('reference-data'),
     usersContainerName: Joi.string().default('users')
   }).required(),
@@ -41,8 +42,9 @@ const config = {
   dataSourcesStorageConnectionString: process.env.DATA_SOURCES_STORAGE_CONNECTION_STRING,
   db: {
     connectionString: process.env.COSMOS_DB_CONNECTION_STRING,
-    name: process.env.COSMOS_DB_NAME,
     messagesContainerName: process.env.COSMOS_DB_MESSAGES_CONTAINER,
+    name: process.env.COSMOS_DB_NAME,
+    receiptsContainerName: process.env.COSMOS_DB_RECEIPTS_CONTAINER,
     refDataContainerName: process.env.COSMOS_DB_REFDATA_CONTAINER,
     usersContainerName: process.env.COSMOS_DB_USERS_CONTAINER
   },

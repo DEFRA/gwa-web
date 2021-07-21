@@ -1,4 +1,4 @@
-const { messagesContainer, refDataContainer, usersContainer } = require('../db/client')
+const { messagesContainer, receiptsContainer, refDataContainer, usersContainer } = require('../db/client')
 const { referenceData } = require('../constants')
 
 async function getReferenceData (id) {
@@ -43,7 +43,7 @@ async function getMessage (id) {
  * Gets messages based on the query via the `fetchAll` function.
  *
  * @param {string} query to run.
- * @returns {Array} all resources.
+ * @returns {Array} resources.
  */
 async function getMessages (query) {
   return (await messagesContainer.items.query(query).fetchAll()).resources
@@ -71,6 +71,16 @@ async function getOrganisationList () {
  */
 async function getOrganisationMap () {
   return getReferenceData(referenceData.organisationMap)
+}
+
+/**
+ * Get receipts based on the query via the `fetchAll` function.
+ *
+ * @param {string} query to run.
+ * @returns {Array} resources.
+ */
+async function getReceipts (query) {
+  return (await receiptsContainer.items.query(query).fetchAll()).resources
 }
 
 /**
@@ -159,6 +169,7 @@ module.exports = {
   getMessages,
   getOrganisationList,
   getOrganisationMap,
+  getReceipts,
   getStandardisedOfficeLocationMap,
   getUser,
   getUsers,

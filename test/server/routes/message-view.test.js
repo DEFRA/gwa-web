@@ -19,6 +19,8 @@ describe('Message view route', () => {
   const createUser = 'creating-things'
   const edituser = 'editing-things'
 
+  jest.mock('../../../server/lib/data/get-receipt-data')
+  const getReceiptData = require('../../../server/lib/data/get-receipt-data')
   jest.mock('../../../server/lib/db')
   const { getMessage } = require('../../../server/lib/db')
   const message = {
@@ -115,7 +117,7 @@ describe('Message view route', () => {
       expect($('.govuk-body').text()).toEqual(error)
     })
 
-    test('responds with 200 with all buttons when user has sufficient scope', async () => {
+    test('responds with 200 with all buttons when user has sufficient scope and message is not sent', async () => {
       const res = await server.inject({
         method,
         url,
@@ -172,6 +174,17 @@ describe('Message view route', () => {
     })
 
     test('responds with 200 with extra rows and no buttons when message is sent and user has sufficient scope', async () => {
+      const stats = {
+        failedToSend: 1,
+        notifyDelivered: 2,
+        notifyFailed: 3,
+        pendingSending: 4,
+        rateLimited: 5,
+        timeOfFirstSend: Date.now(),
+        timeOfLastSend: Date.now(),
+        toBeRetried: 0
+      }
+      getReceiptData.mockResolvedValue(stats)
       const cost = 0.016
       const contactCount = 1
       const sentMessage = { ...message, state: 'sent', cost, contactCount }
@@ -202,15 +215,31 @@ describe('Message view route', () => {
       expect($('.govuk-button')).toHaveLength(0)
       const mainContent = $('.govuk-grid-column-two-thirds')
       const rows = $('.govuk-table .govuk-table__row', mainContent)
-      expect(rows).toHaveLength(13)
+      expect(rows).toHaveLength(21)
       expect($('th', rows.eq(9)).text()).toMatch('Sent at')
       expect($('td', rows.eq(9)).text()).toMatch(new Date(sentTime).toLocaleString())
       expect($('th', rows.eq(10)).text()).toMatch('Sent by')
       expect($('td', rows.eq(10)).text()).toMatch(id)
       expect($('th', rows.eq(11)).text()).toMatch('Approx cost')
       expect($('td', rows.eq(11)).text()).toMatch(`£${cost.toFixed(2)}`)
-      expect($('th', rows.eq(12)).text()).toMatch('Approx message sent count')
+      expect($('th', rows.eq(12)).text()).toMatch('Messages to send')
       expect($('td', rows.eq(12)).text()).toMatch(`${contactCount}`)
+      expect($('th', rows.eq(13)).text()).toMatch('Messages waiting to be sent by Notify')
+      expect($('td', rows.eq(13)).text()).toMatch(`${stats.pendingSending}`)
+      expect($('th', rows.eq(14)).text()).toMatch('Messages failed to send to Notify')
+      expect($('td', rows.eq(14)).text()).toMatch(`${stats.failedToSend}`)
+      expect($('th', rows.eq(15)).text()).toMatch('Messages rate limited')
+      expect($('td', rows.eq(15)).text()).toMatch(`${stats.rateLimited}`)
+      expect($('th', rows.eq(16)).text()).toMatch('Messages retried')
+      expect($('td', rows.eq(16)).text()).toMatch(`${stats.toBeRetried}`)
+      expect($('th', rows.eq(17)).text()).toMatch('Messages delivered by Notify')
+      expect($('td', rows.eq(17)).text()).toMatch(`${stats.notifyDelivered}`)
+      expect($('th', rows.eq(18)).text()).toMatch('Messages failed by Notify')
+      expect($('td', rows.eq(18)).text()).toMatch(`${stats.notifyFailed}`)
+      expect($('th', rows.eq(19)).text()).toMatch('First message sent at')
+      expect($('td', rows.eq(19)).text()).toMatch(`${new Date(stats.timeOfFirstSend).toLocaleString()}`)
+      expect($('th', rows.eq(20)).text()).toMatch('Last message sent at')
+      expect($('td', rows.eq(20)).text()).toMatch(`${new Date(stats.timeOfLastSend).toLocaleString()}`)
     })
   })
 })
