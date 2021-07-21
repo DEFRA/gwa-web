@@ -8,25 +8,25 @@ const { getReceipts } = require('../../lib/db')
  * @returns {object} stats of the sent message.
  */
 module.exports = async messageId => {
-  const [pendingSending, rateLimited, toBeRetried, failedToSend, notifyDelivered, notifyFailed, timeOfFirstSend, timeOfLastSend] = await Promise.all([
-    getReceipts(`SELECT COUNT(c.id) AS count FROM c WHERE c.messageId = "${messageId}" AND c.status = "${internalStatuses.sent}"`),
-    getReceipts(`SELECT COUNT(c.id) AS count FROM c WHERE c.messageId = "${messageId}" AND c.status = "${internalStatuses.rateLimited}"`),
-    getReceipts(`SELECT COUNT(c.id) AS count FROM c WHERE c.messageId = "${messageId}" AND c.status = "${internalStatuses.retry}"`),
+  const [failedToSend, notifyDelivered, notifyFailed, pendingSending, rateLimited, timeOfFirstSend, timeOfLastSend, toBeRetried] = await Promise.all([
     getReceipts(`SELECT COUNT(c.id) AS count FROM c WHERE c.messageId = "${messageId}" AND c.status = "${internalStatuses.failedToSend}"`),
     getReceipts(`SELECT COUNT(c.id) AS count FROM c WHERE c.messageId = "${messageId}" AND c.status = "${notifyStatuses.delivered}"`),
     getReceipts(`SELECT COUNT(c.id) AS count FROM c WHERE c.messageId = "${messageId}" AND c.status IN ("${notifyStatuses.permanentFailure}", "${notifyStatuses.temporaryFailure}", "${notifyStatuses.technicalFailure}")`),
+    getReceipts(`SELECT COUNT(c.id) AS count FROM c WHERE c.messageId = "${messageId}" AND c.status = "${internalStatuses.sent}"`),
+    getReceipts(`SELECT COUNT(c.id) AS count FROM c WHERE c.messageId = "${messageId}" AND c.status = "${internalStatuses.rateLimited}"`),
     getReceipts(`SELECT TOP 1 c.sent_at FROM c WHERE c.messageId = "${messageId}" AND c.status = "${notifyStatuses.delivered}" ORDER BY c.sent_at ASC`),
-    getReceipts(`SELECT TOP 1 c.sent_at FROM c WHERE c.messageId = "${messageId}" AND c.status = "${notifyStatuses.delivered}" ORDER BY c.sent_at DESC`)
+    getReceipts(`SELECT TOP 1 c.sent_at FROM c WHERE c.messageId = "${messageId}" AND c.status = "${notifyStatuses.delivered}" ORDER BY c.sent_at DESC`),
+    getReceipts(`SELECT COUNT(c.id) AS count FROM c WHERE c.messageId = "${messageId}" AND c.status = "${internalStatuses.retry}"`)
   ])
 
   return {
-    failedToSend: failedToSend[0].count,
-    notifyDelivered: notifyDelivered[0].count,
-    notifyFailed: notifyFailed[0].count,
-    pendingSending: pendingSending[0].count,
-    rateLimited: rateLimited[0].count,
+    failedToSend: failedToSend[0]?.count,
+    notifyDelivered: notifyDelivered[0]?.count,
+    notifyFailed: notifyFailed[0]?.count,
+    pendingSending: pendingSending[0]?.count,
+    rateLimited: rateLimited[0]?.count,
     timeOfFirstSend: timeOfFirstSend[0]?.sent_at,
     timeOfLastSend: timeOfLastSend[0]?.sent_at,
-    toBeRetried: toBeRetried[0].count
+    toBeRetried: toBeRetried[0]?.count
   }
 }
