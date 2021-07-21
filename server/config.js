@@ -62,7 +62,7 @@ const config = {
   phaseBannerHtml: process.env.PHASE_BANNER_HTML,
   phaseBannerTag: process.env.PHASE_BANNER_TAG,
   phoneNumbersContainer: process.env.PHONE_NUMBERS_CONTAINER,
-  phoneNumbersStorageConnectionString: process.env.PHONE_NUMBERS_CONNECTION_STRING
+  phoneNumbersStorageConnectionString: process.env.PHONE_NUMBERS_STORAGE_CONNECTION_STRING
 }
 
 const { error, value } = schema.validate(config)
