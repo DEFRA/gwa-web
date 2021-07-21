@@ -16,6 +16,8 @@ const routes = [].concat(
   require('../routes/message-view'),
   require('../routes/messages'),
   require('../routes/messages-sent'),
+  require('../routes/phone-numbers'),
+  require('../routes/phone-numbers-download'),
   require('../routes/public'),
   require('../routes/status'),
   require('../routes/upload')

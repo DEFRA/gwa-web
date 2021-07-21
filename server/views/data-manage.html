@@ -7,7 +7,7 @@
   {{
     govukButton({
       href: '/upload',
-      text: 'Upload',
+      text: 'Organisation data',
       isStartButton: true
     })
   }}
@@ -21,4 +21,16 @@
       isStartButton: true
     })
   }}
+
+  {% if displayPhoneNumbers %}
+    <h2 class="govuk-heading-m">Download phone numbers</h2>
+    <p class="govuk-body">Download a list of phone numbers to use as a backup.</p>
+    {{
+      govukButton({
+        href: '/phone-numbers',
+        text: 'Phone numbers',
+        isStartButton: true
+      })
+    }}
+  {% endif %}
 {% endblock %}

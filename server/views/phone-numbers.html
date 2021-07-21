@@ -1,0 +1,11 @@
+{% extends "two-thirds.html" %}
+
+{% block twoThirds %}
+  <h1 class="govuk-heading-xl">Phone numbers</h1>
+  <p>If there is a problem sending messages from this system, it is possible to import a list of phone numbers directly into GOV.UK Notify via the <a href="https://www.notifications.service.gov.uk/features#bulk-sending">bulk sending</a> feature.</p>
+  <p>The latest set of active phone numbers can be downloaded below.</p>
+
+  <a href='/phone-numbers-download'
+     class='govuk-button govuk-button--start'
+     download='phone-numbers.csv'>Download</a>
+{% endblock %}
