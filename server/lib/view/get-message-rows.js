@@ -1,5 +1,10 @@
 const { auditEventTypes, messageStates } = require('../../constants')
 
+function getDate (val) {
+  const date = new Date(val).toLocaleString()
+  return date === 'Invalid Date' ? 'TBC' : date
+}
+
 /**
  * Generates rows to display a message in the form of a [GOV.UK
  * table](https://design-system.service.gov.uk/components/table/).
@@ -18,15 +23,15 @@ module.exports = (message, sentStats = {}) => {
     [{ text: 'Organisation recipients' }, { text: message.orgCodes.join(', ') }],
     [{ text: 'Message text' }, { text: message.text }],
     [{ text: 'Additional information' }, { text: message.info }],
-    [{ text: 'Created at' }, { text: new Date(createEvent.time).toLocaleString() }],
+    [{ text: 'Created at' }, { text: getDate(createEvent.time) }],
     [{ text: 'Created by' }, { text: createEvent.user.id }],
-    [{ text: 'Last updated at' }, { text: new Date(lastEvent.time).toLocaleString() }],
+    [{ text: 'Last updated at' }, { text: getDate(lastEvent.time) }],
     [{ text: 'Last updated by' }, { text: lastEvent.user.id }]
   ]
   if (message.state === messageStates.sent) {
     const sentEvent = message.auditEvents.filter(e => e.type === auditEventTypes.send)[0]
     rows.push(
-      [{ text: 'Sent at' }, { text: new Date(sentEvent.time).toLocaleString() }],
+      [{ text: 'Sent at' }, { text: getDate(sentEvent.time) }],
       [{ text: 'Sent by' }, { text: sentEvent.user.id }],
       [{ text: 'Approx cost' }, { text: `£${message.cost.toFixed(2)}` }],
       [{ text: 'Messages to send' }, { text: message.contactCount }],
@@ -36,8 +41,8 @@ module.exports = (message, sentStats = {}) => {
       [{ text: 'Messages retried' }, { text: sentStats.toBeRetried }],
       [{ text: 'Messages delivered by Notify' }, { text: sentStats.notifyDelivered }],
       [{ text: 'Messages failed by Notify' }, { text: sentStats.notifyFailed }],
-      [{ text: 'First message sent at' }, { text: new Date(sentStats.timeOfFirstSend).toLocaleString() }],
-      [{ text: 'Last message sent at' }, { text: new Date(sentStats.timeOfLastSend).toLocaleString() }]
+      [{ text: 'First message sent at' }, { text: getDate(sentStats.timeOfFirstSend) }],
+      [{ text: 'Last message sent at' }, { text: getDate(sentStats.timeOfLastSend) }]
     )
   }
   return rows

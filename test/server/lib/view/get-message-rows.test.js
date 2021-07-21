@@ -5,8 +5,7 @@ describe('Get message rows', () => {
   const user = { id: 'create-user-id', companyName: 'companyName', givenName: 'givenName', surname: 'surname' }
 
   const now = Date.now()
-  Date.now = jest.fn()
-  Date.now.mockReturnValueOnce(now + 1000).mockReturnValueOnce(now + 2000).mockReturnValueOnce(now + 3000)
+  Date.now = jest.fn().mockReturnValue(now + 1000).mockReturnValueOnce(now + 2000).mockReturnValueOnce(now + 3000)
 
   const messageTemplate = {
     allOffices: false,
