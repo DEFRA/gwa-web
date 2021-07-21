@@ -1,5 +1,7 @@
 const cheerio = require('cheerio')
 const { v4: uuid } = require('uuid')
+const { expectNotifyStatus, notifyStatusViewData } = require('../../helpers/notify-status')
+const { navigation } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
 
@@ -31,17 +33,6 @@ describe('Message send route', () => {
     allOffices: true,
     text,
     info
-  }
-  const notifyStatusViewData = {
-    service: {
-      description: 'All Systems Go!',
-      tag: 'govuk-tag--green'
-    },
-    componentRows: [[
-      { text: 'component name' },
-      { html: '<strong class="govuk-tag govuk-tag--green">operational</strong>' }
-    ]],
-    lastChecked: Date.now()
   }
 
   jest.mock('../../../server/lib/data/upload-contact-list')
@@ -103,7 +94,7 @@ describe('Message send route', () => {
 
     test.each([
       { message: undefined, status: 404, error: 'Not Found' },
-      { message: { state: 'sent' }, status: 401, error: 'Sent messages can not be sent again.' }
+      { message: { state: 'sent' }, status: 400, error: 'Sent messages can not be sent again.' }
     ])('responds with errors when problem with message', async ({ message, status, error }) => {
       getMessage.mockResolvedValueOnce(message)
       const res = await server.inject({
@@ -195,6 +186,8 @@ describe('Message send route', () => {
 
       const $ = cheerio.load(res.payload)
       expect($('.govuk-heading-l').text()).toMatch('Send message')
+      expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.messages.text)
+      expect($('.govuk-phase-banner')).toHaveLength(1)
       expect($('.govuk-warning-text').text()).toMatch(`Are you sure you would like to send this message? It will be sent to approximately ${contactCount} contact(s) at an approximate cost of £${cost.toFixed(2)} (excluding VAT).`)
       const mainContent = $('.govuk-grid-column-two-thirds')
       const rows = $('.govuk-table .govuk-table__row', mainContent)
@@ -222,13 +215,7 @@ describe('Message send route', () => {
       expect(buttons.eq(0).text()).toMatch('Cancel')
       expect(buttons.eq(1).text()).toMatch('Continue')
 
-      const notifyStatus = $('.govuk-grid-column-one-third')
-      expect(notifyStatus).toHaveLength(1)
-      expect($('h2', notifyStatus).text()).toEqual('GOV.UK Notify Status')
-      const statusTags = $('.govuk-tag', notifyStatus)
-      expect(statusTags).toHaveLength(notifyStatusViewData.componentRows.length + 1)
-      expect($(statusTags).eq(0).text()).toEqual(notifyStatusViewData.service.description)
-      expect($(statusTags).eq(1).text()).toEqual($(notifyStatusViewData.componentRows[0][1].html).text())
+      expectNotifyStatus($)
     })
   })
 
@@ -302,17 +289,17 @@ describe('Message send route', () => {
 
       const cost = 0.016
       const contactCount = 1
+      const contacts = [number]
       const updatedState = 'sent'
       const updatedMessage = {
         cost,
         contactCount,
-        contacts: [number],
         lastUpdatedAt: editTime,
         ...message,
         state: updatedState
       }
       expect(dropGetUsersMock).toHaveBeenCalled()
-      expect(uploadContactList).toHaveBeenCalledWith(updatedMessage)
+      expect(uploadContactList).toHaveBeenCalledWith(updatedMessage, contacts)
       expect(dropGetUsersMock).toHaveBeenCalled()
       expect(updateMessage).toHaveBeenCalledWith({
         ...updatedMessage
@@ -321,7 +308,7 @@ describe('Message send route', () => {
 
     test.each([
       { message: undefined, status: 404, error: 'Not Found' },
-      { message: { state: 'sent' }, status: 401, error: 'Sent messages can not be sent again.' }
+      { message: { state: 'sent' }, status: 400, error: 'Sent messages can not be sent again.' }
     ])('responds with errors when problem with message', async ({ message, status, error }) => {
       getMessage.mockResolvedValueOnce(message)
       const res = await server.inject({

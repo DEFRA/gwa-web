@@ -1,5 +1,7 @@
 const cheerio = require('cheerio')
 const { v4: uuid } = require('uuid')
+const { expectNotifyStatus, notifyStatusViewData } = require('../../helpers/notify-status')
+const { navigation } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
 
@@ -16,17 +18,6 @@ describe('Message view route', () => {
   const updateTime = new Date('2021-01-02T08:00:00')
   const createUser = 'creating-things'
   const edituser = 'editing-things'
-  const notifyStatusViewData = {
-    service: {
-      description: 'All Systems Go!',
-      tag: 'govuk-tag--green'
-    },
-    componentRows: [[
-      { text: 'component name' },
-      { html: '<strong class="govuk-tag govuk-tag--green">operational</strong>' }
-    ]],
-    lastChecked: Date.now()
-  }
 
   jest.mock('../../../server/lib/db')
   const { getMessage } = require('../../../server/lib/db')
@@ -147,6 +138,8 @@ describe('Message view route', () => {
       expect(res.statusCode).toEqual(200)
 
       const $ = cheerio.load(res.payload)
+      expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.messages.text)
+      expect($('.govuk-phase-banner')).toHaveLength(1)
       expect($('.govuk-heading-l').text()).toMatch('View message')
       const mainContent = $('.govuk-grid-column-two-thirds')
       const rows = $('.govuk-table .govuk-table__row', mainContent)
@@ -175,13 +168,7 @@ describe('Message view route', () => {
       expect(buttons.eq(1).text()).toMatch('Delete message')
       expect(buttons.eq(2).text()).toMatch('Send message')
 
-      const notifyStatus = $('.govuk-grid-column-one-third')
-      expect(notifyStatus).toHaveLength(1)
-      expect($('h2', notifyStatus).text()).toEqual('GOV.UK Notify Status')
-      const statusTags = $('.govuk-tag', notifyStatus)
-      expect(statusTags).toHaveLength(notifyStatusViewData.componentRows.length + 1)
-      expect($(statusTags).eq(0).text()).toEqual(notifyStatusViewData.service.description)
-      expect($(statusTags).eq(1).text()).toEqual($(notifyStatusViewData.componentRows[0][1].html).text())
+      expectNotifyStatus($)
     })
 
     test('responds with 200 with extra rows and no buttons when message is sent and user has sufficient scope', async () => {

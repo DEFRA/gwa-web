@@ -25,9 +25,9 @@ describe('Uploading contact list', () => {
     const contacts = [{ phoneNumber: '07777111222' }]
     const text = 'nice to meet you'
     const messageId = '8be12e37-880b-4775-a6d0-a02d9d6c038c'
-    const message = { contacts, id: messageId, text }
+    const message = { id: messageId, text }
 
-    const res = await uploadContactList(message)
+    const res = await uploadContactList(message, contacts)
 
     expect(mockBlockBlobClient).toHaveBeenCalledTimes(1)
     expect(mockBlockBlobClient).toHaveBeenCalledWith(contactListStorageConnectionString, contactListContainer, `${messageId}.json`)
@@ -43,9 +43,10 @@ describe('Uploading contact list', () => {
   test('error code returned from upload returns function as false', async () => {
     mockUpload = jest.fn().mockImplementation(() => { return { errorCode: 'not undefined' } })
     mockBlockBlobClient.prototype.upload = mockUpload
-    const message = { contacts: [], id: 'my-id', text: 'text goes here' }
+    const contacts = []
+    const message = { id: 'my-id', text: 'text goes here' }
 
-    const res = await uploadContactList(message)
+    const res = await uploadContactList(message, contacts)
 
     expect(res).toBe(false)
   })

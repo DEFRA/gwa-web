@@ -6,8 +6,8 @@ const { scopes } = require('../permissions')
 const { getMessage, updateMessage } = require('../lib/db')
 const addAuditEvent = require('../lib/messages/add-audit-event')
 const BaseModel = require('../lib/misc/model')
-const { message: { failAction } } = require('../lib/route/route-fail-actions')
-const { message: { payload } } = require('../lib/route/route-validations')
+const { message: { failAction } } = require('../lib/route/fail-actions')
+const { message: { payload } } = require('../lib/route/validations')
 const generateOfficeCheckboxes = require('../lib/view/office-checkboxes')
 const generateOrganisationCheckboxes = require('../lib/view/organisation-checkboxes')
 const generateSendToAllOrgsRadios = require('../lib/view/send-to-all-radios')
@@ -30,7 +30,7 @@ async function verifyRequest (messageId) {
   }
 
   if (message.state === messageStates.sent) {
-    return { error: boom.unauthorized('Sent messages can not be edited.') }
+    return { error: boom.badRequest('Sent messages can not be edited.') }
   }
   return { message }
 }
@@ -44,16 +44,15 @@ module.exports = [
       const { error, message } = await verifyRequest(messageId)
       if (error) { return error }
 
-      const [areaToOfficeMap, organisationList, notifyStatus] = await Promise.all([
+      const [areaToOfficeMap, organisationList] = await Promise.all([
         request.server.methods.db.getAreaToOfficeMap(),
-        request.server.methods.db.getOrganisationList(),
-        request.server.methods.getNotifyStatusViewData()
+        request.server.methods.db.getOrganisationList()
       ])
       const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, message.officeCodes)
       const orgCheckboxes = generateOrganisationCheckboxes(organisationList, message.orgCodes)
       const allOfficeRadios = generateSendToAllOrgsRadios(message.allOffices)
 
-      return h.view(routeId, new Model({ ...message, allOfficeRadios, maxMessageLength, notifyStatus, officeCheckboxes, orgCheckboxes }))
+      return h.view(routeId, new Model({ ...message, allOfficeRadios, maxMessageLength, officeCheckboxes, orgCheckboxes }))
     },
     options: {
       auth,
@@ -76,11 +75,11 @@ module.exports = [
       const { allOffices, info, officeCodes, orgCodes, text } = request.payload
 
       message.allOffices = allOffices
-      message.info = info
+      message.info = info?.trim()
       message.officeCodes = [officeCodes ?? []].flat()
       message.orgCodes = [orgCodes].flat()
       message.state = messageStates.edited
-      message.text = text
+      message.text = text?.trim()
       addAuditEvent(message, user)
 
       const res = await updateMessage(message)

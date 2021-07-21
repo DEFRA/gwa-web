@@ -1,7 +1,10 @@
 const cheerio = require('cheerio')
-const { errorMessages, textMessages: { maxInfoLength, maxMessageLength } } = require('../../../server/constants')
+const { uuidRegex } = require('../../helpers/constants')
+const { expectNotifyStatus, notifyStatusViewData } = require('../../helpers/notify-status')
+const { errorMessages, messageStates, navigation, textMessages: { maxInfoLength, maxMessageLength } } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
+const addAuditEvent = require('../../../server/lib/messages/add-audit-event')
 
 describe('Message creation route', () => {
   const email = 'test@gwa.defra.co.uk'
@@ -14,17 +17,9 @@ describe('Message creation route', () => {
   const areaName = 'areaName'
   const officeLocation = 'officeLocation'
   const officeLocationTwo = 'officeLocationTwo'
-  const notifyStatusViewData = {
-    service: {
-      description: 'All Systems Go!',
-      tag: 'govuk-tag--green'
-    },
-    componentRows: [[
-      { text: 'component name' },
-      { html: '<strong class="govuk-tag govuk-tag--green">operational</strong>' }
-    ]],
-    lastChecked: Date.now()
-  }
+
+  const now = Date.now()
+  Date.now = jest.fn(() => now)
 
   jest.mock('../../../server/lib/db')
   const { saveMessage } = require('../../../server/lib/db')
@@ -102,6 +97,8 @@ describe('Message creation route', () => {
       expect(res.statusCode).toEqual(200)
 
       const $ = cheerio.load(res.payload)
+      expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.messages.text)
+      expect($('.govuk-phase-banner')).toHaveLength(1)
       const title = $('.govuk-heading-l').text()
       expect(title).toMatch('Create message')
       const formGroups = $('.govuk-form-group')
@@ -131,13 +128,7 @@ describe('Message creation route', () => {
       expect(officeListItems.eq(0).text()).toMatch(officeLocation)
       expect(officeListItems.eq(1).text()).toMatch(officeLocationTwo)
 
-      const notifyStatus = $('.govuk-grid-column-one-third')
-      expect(notifyStatus).toHaveLength(1)
-      expect($('h2', notifyStatus).text()).toEqual('GOV.UK Notify Status')
-      const statusTags = $('.govuk-tag', notifyStatus)
-      expect(statusTags).toHaveLength(notifyStatusViewData.componentRows.length + 1)
-      expect($(statusTags).eq(0).text()).toEqual(notifyStatusViewData.service.description)
-      expect($(statusTags).eq(1).text()).toEqual($(notifyStatusViewData.componentRows[0][1].html).text())
+      expectNotifyStatus($)
     })
   })
 
@@ -184,6 +175,7 @@ describe('Message creation route', () => {
       [{ officeCodes: 'ABC:one', orgCodes: ['orgCode'], text: 'message to send', info: 'valid' }, errorMessages.allOffices],
       [{ allOffices: true, orgCodes: ['orgCode'], text: 'message to send', info: 'a'.repeat(maxInfoLength + 1) }, errorMessages.info],
       [{ allOffices: true, orgCodes: ['orgCode'], text: 'a'.repeat(maxMessageLength + 1) }, errorMessages.text],
+      [{ allOffices: true, orgCodes: ['orgCode'], text: '    ', info: 'valid' }, errorMessages.text],
       [{ allOffices: false, officeCodes: [], orgCodes: ['orgCode', 'another'], text: 'message to send', info: 'valid' }, errorMessages.officeCodes],
       [{ allOffices: false, officeCodes: [], orgCodes: 'orgCode', text: 'message to send', info: 'valid' }, errorMessages.officeCodes],
       [{ allOffices: false, officeCodes: ['ABC:one'], orgCodes: [], text: 'message to send', info: 'valid' }, errorMessages.orgCodes]
@@ -213,6 +205,8 @@ describe('Message creation route', () => {
       const $ = cheerio.load(res.payload)
       expect($('.govuk-error-summary__title').text()).toMatch('There is a problem')
       expect($('.govuk-error-summary__body').text()).toMatch(error)
+
+      expectNotifyStatus($)
     })
 
     test('responds with 500 when problem creating message', async () => {
@@ -248,17 +242,19 @@ describe('Message creation route', () => {
       [{ allOffices: false, officeCodes: ['ABC:one', 'XYZ:two'], orgCodes: ['orgCode'], text: 'message to send', info: 'valid' }],
       [{ allOffices: false, officeCodes: 'ABC:one', orgCodes: 'orgCode', text: 'message to send', info: 'valid' }],
       [{ allOffices: true, orgCodes: ['orgCode', 'another'], text: 'message to send' }],
-      [{ allOffices: true, orgCodes: ['orgCode'], text: 'a'.repeat(maxMessageLength), info: 'a'.repeat(maxInfoLength) }]
+      [{ allOffices: true, orgCodes: ['orgCode'], text: 'a'.repeat(maxMessageLength), info: 'a'.repeat(maxInfoLength) }],
+      [{ allOffices: true, orgCodes: ['orgCode'], text: 'message to send', info: ` ${'a'.repeat(maxInfoLength)} ` }],
+      [{ allOffices: true, orgCodes: ['orgCode'], text: '     padded with spaces     ', info: '     padded with spaces     ' }]
     ])('responds with 302 to /messages when request is valid - test %#', async (payload) => {
       saveMessage.mockResolvedValue({ statusCode: 201 })
+      const user = { id, email, companyName: 'companyName', surname: 'surname', givenName: 'givenName' }
       const res = await server.inject({
         method,
         url,
         auth: {
           credentials: {
             user: {
-              id,
-              email,
+              ...user,
               displayName: 'test gwa',
               raw: {
                 roles: JSON.stringify([])
@@ -273,6 +269,18 @@ describe('Message creation route', () => {
 
       expect(res.statusCode).toEqual(302)
       expect(res.headers.location).toEqual('/messages')
+
+      const expectedMessage = {
+        allOffices: payload.allOffices,
+        id: expect.stringMatching(uuidRegex),
+        info: payload.info?.trim(),
+        officeCodes: [payload.officeCodes ?? []].flat(),
+        orgCodes: [payload.orgCodes].flat(),
+        text: payload.text?.trim(),
+        state: messageStates.created
+      }
+      addAuditEvent(expectedMessage, user)
+      expect(saveMessage).toHaveBeenCalledWith(expectedMessage)
     })
   })
 })

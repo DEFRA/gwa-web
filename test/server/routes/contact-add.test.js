@@ -1,11 +1,11 @@
 const cheerio = require('cheerio')
-const { contacts: { maxPersonalPhoneNumbers } } = require('../../../server/constants')
+const { uuidRegex } = require('../../helpers/constants')
+const { contacts: { maxPersonalPhoneNumbers }, navigation } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { getAreaOfficeCode } = require('../../../server/lib/misc/helpers')
 
 describe('Contact add route', () => {
   const officeCode = 'ABC:office'
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i
   const url = '/contact-add'
   let server
 
@@ -66,6 +66,8 @@ describe('Contact add route', () => {
       const $ = cheerio.load(res.payload)
 
       expect($('.govuk-label--l').text()).toMatch('What is your telephone number?')
+      expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.account.text)
+      expect($('.govuk-phase-banner')).toHaveLength(0)
     })
   })
 

@@ -95,14 +95,16 @@
 {% endblock %}
 
 {% block beforeContent %}
-  {{
-    govukPhaseBanner({
-      tag: {
-        text: phaseBannerTag
-      },
-      html: phaseBannerHtml
-    })
-  }}
+  {% if displayBanner %}
+    {{
+      govukPhaseBanner({
+        tag: {
+          text: phaseBannerTag
+        },
+        html: phaseBannerHtml
+      })
+    }}
+  {% endif %}
   <div class="no">
     {{ govukBackLink({ text: "Back", href: "javascript:history.back()" }) }}
   </div>

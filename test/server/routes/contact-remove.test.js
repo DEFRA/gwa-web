@@ -1,5 +1,6 @@
 const cheerio = require('cheerio')
 const { v4: uuid } = require('uuid')
+const { navigation } = require('../../../server/constants')
 
 describe('Contact remove route', () => {
   const mockCorporatePhoneNumber = '07777111111'
@@ -214,6 +215,8 @@ describe('Contact remove route', () => {
       expect(buttons).toHaveLength(2)
       expect(buttons.eq(0).text()).toMatch('Cancel')
       expect(buttons.eq(1).text()).toMatch('Continue')
+      expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.account.text)
+      expect($('.govuk-phase-banner')).toHaveLength(0)
     })
   })
 

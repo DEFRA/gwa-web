@@ -6,8 +6,8 @@ const { scopes } = require('../permissions')
 const { saveMessage } = require('../lib/db')
 const addAuditEvent = require('../lib/messages/add-audit-event')
 const BaseModel = require('../lib/misc/model')
-const { message: { failAction } } = require('../lib/route/route-fail-actions')
-const { message: { payload } } = require('../lib/route/route-validations')
+const { message: { failAction } } = require('../lib/route/fail-actions')
+const { message: { payload } } = require('../lib/route/validations')
 const generateOfficeCheckboxes = require('../lib/view/office-checkboxes')
 const generateOrganisationCheckboxes = require('../lib/view/organisation-checkboxes')
 const generateSendToAllOrgsRadios = require('../lib/view/send-to-all-radios')
@@ -27,16 +27,15 @@ module.exports = [
     method: 'GET',
     path,
     handler: async (request, h) => {
-      const [areaToOfficeMap, organisationList, notifyStatus] = await Promise.all([
+      const [areaToOfficeMap, organisationList] = await Promise.all([
         request.server.methods.db.getAreaToOfficeMap(),
-        request.server.methods.db.getOrganisationList(),
-        request.server.methods.getNotifyStatusViewData()
+        request.server.methods.db.getOrganisationList()
       ])
       const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap)
       const orgCheckboxes = generateOrganisationCheckboxes(organisationList)
       const allOfficeRadios = generateSendToAllOrgsRadios()
 
-      return h.view(routeId, new Model({ allOfficeRadios, maxMessageLength, notifyStatus, officeCheckboxes, orgCheckboxes }))
+      return h.view(routeId, new Model({ allOfficeRadios, maxMessageLength, officeCheckboxes, orgCheckboxes }))
     },
     options: {
       auth
@@ -52,10 +51,10 @@ module.exports = [
       const message = {
         allOffices,
         id: uuid(),
-        info,
+        info: info?.trim(),
         officeCodes: [officeCodes ?? []].flat(),
         orgCodes: [orgCodes].flat(),
-        text,
+        text: text?.trim(),
         state: messageStates.created
       }
       addAuditEvent(message, user)

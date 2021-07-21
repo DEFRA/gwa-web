@@ -1,8 +1,9 @@
 const cheerio = require('cheerio')
 const { v4: uuid } = require('uuid')
+const generateMessages = require('../../helpers/generate-messages')
+const { auditEventTypes, messageStates, navigation } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
-const { messageStates } = require('../../../server/constants')
 
 describe('Messages route', () => {
   const email = 'test@gwa.defra.co.uk'
@@ -68,6 +69,8 @@ describe('Messages route', () => {
     })
 
     test('responds with 200 and no messages when there are no messages', async () => {
+      server.methods.db.getSentMessages = jest.fn().mockResolvedValue([])
+
       const messages = []
       getMessages.mockResolvedValue(messages)
       const res = await server.inject({
@@ -90,12 +93,13 @@ describe('Messages route', () => {
       })
 
       expect(res.statusCode).toEqual(200)
-      expect(getMessages).toHaveBeenCalledTimes(3)
+      expect(getMessages).toHaveBeenCalledTimes(2)
       expect(getMessages).toHaveBeenCalledWith(`SELECT TOP 10 * FROM c WHERE c.state = "${messageStates.created}" ORDER BY c.lastUpdatedAt DESC`)
       expect(getMessages).toHaveBeenCalledWith(`SELECT TOP 10 * FROM c WHERE c.state = "${messageStates.edited}" ORDER BY c.lastUpdatedAt DESC`)
-      expect(getMessages).toHaveBeenCalledWith(`SELECT TOP 10 * FROM c WHERE c.state = "${messageStates.sent}" ORDER BY c.lastUpdatedAt DESC`)
 
       const $ = cheerio.load(res.payload)
+      expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.messages.text)
+      expect($('.govuk-phase-banner')).toHaveLength(1)
       expect($('.govuk-heading-l').text()).toEqual('Messages')
       const msgHeadings = $('.govuk-heading-m')
       expect(msgHeadings).toHaveLength(3)
@@ -117,9 +121,13 @@ describe('Messages route', () => {
     })
 
     test('responds with 200 and messages in correct places', async () => {
+      const sentMessages = generateMessages(1, messageStates.sent)
+      server.methods.db.getSentMessages = jest.fn().mockResolvedValue(sentMessages)
+
       const text = 'some message'
       const createUser = 'creating-things'
       const edituser = 'editing-things'
+      const sentUser = sentMessages[0].auditEvents.find(x => x.type === auditEventTypes.send).user.id
       const createTime = new Date('2020-12-31T12:34:56')
       const updateTime = new Date('2021-01-02T08:00:00')
       const baseMessage = {
@@ -132,14 +140,11 @@ describe('Messages route', () => {
       }
       const createMessageBase = { ...baseMessage, state: 'created', id: uuid() }
       const editedMessageBase = { ...baseMessage, state: 'edited', id: uuid() }
-      const sentMessageBase = { ...baseMessage, state: 'sent', id: uuid() }
       const createdMessages = [createMessageBase]
       const editedMessages = [editedMessageBase]
-      const sentMessages = [sentMessageBase]
       getMessages
         .mockResolvedValueOnce(createdMessages)
         .mockResolvedValueOnce(editedMessages)
-        .mockResolvedValueOnce(sentMessages)
 
       const res = await server.inject({
         method,
@@ -196,9 +201,9 @@ describe('Messages route', () => {
 
       const msgSentRows = $('tbody tr', msgTables.eq(2))
       expect(msgSentRows).toHaveLength(sentMessages.length)
-      expect(cleanUpTableText(msgSentRows.text())).toMatch(`${new Date(sentMessageBase.lastUpdatedAt).toLocaleString()} ${sentMessageBase.text} ${edituser} View`)
-      expect($('a', msgSentRows).eq(0).attr('href')).toEqual(`mailto:${edituser}`)
-      expect($('a', msgSentRows).eq(1).attr('href')).toEqual(`/message-view/${sentMessageBase.id}`)
+      expect(cleanUpTableText(msgSentRows.text())).toMatch(`${new Date(sentMessages[0].lastUpdatedAt).toLocaleString()} ${sentMessages[0].text} ${sentUser} View`)
+      expect($('a', msgSentRows).eq(0).attr('href')).toEqual(`mailto:${sentUser}`)
+      expect($('a', msgSentRows).eq(1).attr('href')).toEqual(`/message-view/${sentMessages[0].id}`)
     })
   })
 })

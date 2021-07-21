@@ -1,8 +1,10 @@
 const cheerio = require('cheerio')
 const { v4: uuid } = require('uuid')
-const { errorMessages, textMessages: { maxInfoLength, maxMessageLength } } = require('../../../server/constants')
+const { expectNotifyStatus, notifyStatusViewData } = require('../../helpers/notify-status')
+const { errorMessages, messageStates, navigation, textMessages: { maxInfoLength, maxMessageLength } } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
+const addAuditEvent = require('../../../server/lib/messages/add-audit-event')
 const { getAreaOfficeCode } = require('../../../server/lib/misc/helpers')
 
 describe('Message edit route', () => {
@@ -27,38 +29,32 @@ describe('Message edit route', () => {
   const officeLocationTwo = 'officeLocationTwo'
   const officeCode = 'ABC:office-code'
   const areaOfficeCode = getAreaOfficeCode({ officeCode })
-  const notifyStatusViewData = {
-    service: {
-      description: 'All Systems Go!',
-      tag: 'govuk-tag--green'
-    },
-    componentRows: [[
-      { text: 'component name' },
-      { html: '<strong class="govuk-tag govuk-tag--green">operational</strong>' }
-    ]],
-    lastChecked: Date.now()
-  }
+
+  const now = Date.now()
+  Date.now = jest.fn(() => now)
 
   jest.mock('../../../server/lib/db')
   const { getMessage, updateMessage } = require('../../../server/lib/db')
 
+  const initialMessage = {
+    auditEvents: [
+      { user: { id: createUser }, type: 'create', time: createTime },
+      { user: { id: edituser }, type: 'create', time: updateTime }
+    ],
+    id: messageId,
+    orgCodes,
+    officeCodes: [areaOfficeCode],
+    state,
+    allOffices: true,
+    text,
+    info
+  }
   beforeEach(async () => {
     jest.clearAllMocks()
     server = await createServer()
     server.methods.db.getOrganisationList = jest.fn().mockResolvedValue(orgList)
     server.methods.db.getAreaToOfficeMap = jest.fn().mockResolvedValue([{ areaCode: 'ABC', areaName, officeLocations: [{ officeCode, officeLocation }, { officeCode: 'officeCodeTwo', officeLocation: officeLocationTwo }] }])
-    getMessage.mockResolvedValue({
-      auditEvents: [
-        { user: { id: createUser }, type: 'create', time: createTime },
-        { user: { id: edituser }, type: 'create', time: updateTime }
-      ],
-      orgCodes,
-      officeCodes: [areaOfficeCode],
-      state,
-      allOffices: true,
-      text,
-      info
-    })
+    getMessage.mockResolvedValue(initialMessage)
     server.methods.getNotifyStatusViewData = jest.fn().mockResolvedValue(notifyStatusViewData)
   })
 
@@ -106,7 +102,7 @@ describe('Message edit route', () => {
 
     test.each([
       { message: undefined, status: 404, error: 'Not Found' },
-      { message: { state: 'sent' }, status: 401, error: 'Sent messages can not be edited.' }
+      { message: { state: 'sent' }, status: 400, error: 'Sent messages can not be edited.' }
     ])('responds with errors when problem with message', async ({ message, status, error }) => {
       getMessage.mockResolvedValueOnce(message)
       const res = await server.inject({
@@ -157,6 +153,8 @@ describe('Message edit route', () => {
       expect(res.statusCode).toEqual(200)
 
       const $ = cheerio.load(res.payload)
+      expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.messages.text)
+      expect($('.govuk-phase-banner')).toHaveLength(1)
       expect($('.govuk-heading-l').text()).toMatch('Edit message')
       const formGroups = $('.govuk-form-group')
       expect(formGroups).toHaveLength(7)
@@ -194,13 +192,7 @@ describe('Message edit route', () => {
       expect(officeListItems.eq(0).text()).toMatch(officeLocation)
       expect(officeListItems.eq(1).text()).toMatch(officeLocationTwo)
 
-      const notifyStatus = $('.govuk-grid-column-one-third')
-      expect(notifyStatus).toHaveLength(1)
-      expect($('h2', notifyStatus).text()).toEqual('GOV.UK Notify Status')
-      const statusTags = $('.govuk-tag', notifyStatus)
-      expect(statusTags).toHaveLength(notifyStatusViewData.componentRows.length + 1)
-      expect($(statusTags).eq(0).text()).toEqual(notifyStatusViewData.service.description)
-      expect($(statusTags).eq(1).text()).toEqual($(notifyStatusViewData.componentRows[0][1].html).text())
+      expectNotifyStatus($)
     })
   })
 
@@ -276,6 +268,8 @@ describe('Message edit route', () => {
       const $ = cheerio.load(res.payload)
       expect($('.govuk-error-summary__title').text()).toMatch('There is a problem')
       expect($('.govuk-error-summary__body').text()).toMatch(error)
+
+      expectNotifyStatus($)
     })
 
     test('responds with 500 when problem creating message', async () => {
@@ -309,7 +303,7 @@ describe('Message edit route', () => {
 
     test.each([
       { messageId: undefined, message: undefined, status: 404, error: 'Not Found' },
-      { messageId: 'unique', message: { state: 'sent' }, status: 401, error: 'Sent messages can not be edited.' }
+      { messageId: 'unique', message: { state: 'sent' }, status: 400, error: 'Sent messages can not be edited.' }
     ])('responds with errors when problem with message', async ({ messageId, message, status, error }) => {
       const payload = { messageId, allOffices: true, orgCodes: ['orgCode', 'another'], text: 'message to send' }
       getMessage.mockResolvedValueOnce(message)
@@ -343,17 +337,18 @@ describe('Message edit route', () => {
       [{ allOffices: false, officeCodes: ['ABC:one', 'XYZ:two'], orgCodes: ['orgCode'], text: 'message to send', info: 'valid' }],
       [{ allOffices: false, officeCodes: 'ABC:one', orgCodes: 'orgCode', text: 'message to send', info: 'valid' }],
       [{ allOffices: true, orgCodes: ['orgCode', 'another'], text: 'message to send' }],
-      [{ allOffices: true, orgCodes: ['orgCode'], text: 'a'.repeat(maxMessageLength), info: 'a'.repeat(maxInfoLength) }]
+      [{ allOffices: true, orgCodes: ['orgCode'], text: 'a'.repeat(maxMessageLength), info: 'a'.repeat(maxInfoLength) }],
+      [{ allOffices: true, orgCodes: ['orgCode'], text: '     padded with spaces     ', info: '     padded with spaces     ' }]
     ])('responds with 302 to /messages when request is valid - test %#', async (payload) => {
       updateMessage.mockResolvedValue({ statusCode: 200 })
+      const user = { id, email, companyName: 'companyName', surname: 'surname', givenName: 'givenName' }
       const res = await server.inject({
         method,
         url,
         auth: {
           credentials: {
             user: {
-              id,
-              email,
+              ...user,
               displayName: 'test gwa',
               raw: {
                 roles: JSON.stringify([])
@@ -368,6 +363,19 @@ describe('Message edit route', () => {
 
       expect(res.statusCode).toEqual(302)
       expect(res.headers.location).toEqual(`/message-view/${messageId}`)
+
+      const expectedMessage = {
+        ...initialMessage,
+        allOffices: payload.allOffices,
+        id: messageId,
+        info: payload.info?.trim(),
+        officeCodes: [payload.officeCodes ?? []].flat(),
+        orgCodes: [payload.orgCodes].flat(),
+        text: payload.text?.trim(),
+        state: messageStates.edited
+      }
+      addAuditEvent(expectedMessage, user)
+      expect(updateMessage).toHaveBeenCalledWith(expectedMessage)
     })
   })
 })

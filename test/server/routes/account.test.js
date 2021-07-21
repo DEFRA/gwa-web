@@ -1,5 +1,6 @@
 const cheerio = require('cheerio')
 const createServer = require('../../../server/index')
+const { navigation } = require('../../../server/constants')
 
 describe('Account route', () => {
   let server
@@ -120,6 +121,9 @@ describe('Account route', () => {
 
     expect(res.statusCode).toEqual(200)
     const $ = cheerio.load(res.payload)
+
+    expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.account.text)
+    expect($('.govuk-phase-banner')).toHaveLength(0)
 
     expect($('.govuk-heading-l').text()).toEqual('Account')
     const accountOverview = $('.govuk-grid-column-two-thirds p')

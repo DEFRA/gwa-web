@@ -1,5 +1,6 @@
 const cheerio = require('cheerio')
 const { v4: uuid } = require('uuid')
+const { navigation } = require('../../../server/constants')
 
 describe('Contact edit route', () => {
   const mockCorporatePhoneNumber = '07777111111'
@@ -194,6 +195,8 @@ describe('Contact edit route', () => {
       expect(heading).toMatch(`Corporate phone number: ${mockCorporatePhoneNumber}`)
       const removeContactButton = $('.govuk-button--danger')
       expect(removeContactButton).toHaveLength(0)
+      expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.account.text)
+      expect($('.govuk-phase-banner')).toHaveLength(0)
     })
 
     test('responds with 200 and correct view for personal phone number when active user logged in', async () => {

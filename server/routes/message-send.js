@@ -7,7 +7,7 @@ const { updateMessage } = require('../lib/db')
 const getMessageRows = require('../lib/view/get-message-rows')
 const BaseModel = require('../lib/misc/model')
 const getPhoneNumbersToSendTo = require('../lib/messages/phone-numbers-to-send-to')
-const { messageOptions } = require('../lib/route/route-options')
+const { messageOptions } = require('../lib/route/options')
 const uploadContactList = require('../lib/data/upload-contact-list')
 const verifyMessageRequest = require('../lib/route/verify-message-request')
 
@@ -29,9 +29,7 @@ module.exports = [
       const { error, message } = await verifyMessageRequest(request, 'Sent messages can not be sent again.')
       if (error) { return error }
 
-      const [users, notifyStatus] = await Promise.all([
-        request.server.methods.db.getUsers(),
-        request.server.methods.getNotifyStatusViewData()])
+      const users = await request.server.methods.db.getUsers()
 
       const phoneNumbersToSendTo = getPhoneNumbersToSendTo(users, message)
 
@@ -47,7 +45,7 @@ module.exports = [
 
       const messageRows = getMessageRows(message)
 
-      return h.view(routeId, new Model({ message, messageRows, notifyStatus }))
+      return h.view(routeId, new Model({ message, messageRows }))
     },
     options: messageOptions
   },
@@ -65,12 +63,11 @@ module.exports = [
         return boom.badRequest('Sending to 0 contacts is not allowed.')
       }
 
-      message.contacts = phoneNumbersToSendTo
       message.contactCount = phoneNumbersToSendTo.length
       message.cost = costOfMessageSend(message)
       message.state = messageStates.sent
 
-      const uploadRes = await uploadContactList(message)
+      const uploadRes = await uploadContactList(message, phoneNumbersToSendTo)
       if (!uploadRes) {
         return boom.internal(`Problem uploading contact list for message ${message.id}.`)
       }

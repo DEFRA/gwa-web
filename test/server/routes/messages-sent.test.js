@@ -1,6 +1,6 @@
 const cheerio = require('cheerio')
 const generateMessages = require('../../helpers/generate-messages')
-const { auditEventTypes, messages: { sentMessagePageSize }, messageStates } = require('../../../server/constants')
+const { auditEventTypes, messages: { sentMessagePageSize }, messageStates, navigation } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
 
@@ -162,6 +162,8 @@ describe('Messages sent route', () => {
       expect(res.statusCode).toEqual(200)
 
       const $ = cheerio.load(res.payload)
+      expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.messages.text)
+      expect($('.govuk-phase-banner')).toHaveLength(1)
       expect($('.govuk-heading-l').text()).toEqual('Sent messages')
       expect($('.govuk-body').text()).toMatch('Messages are ordered to show the most recently sent messages first')
 

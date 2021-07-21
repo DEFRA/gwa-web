@@ -6,7 +6,7 @@ const { updateUser } = require('../lib/db')
 const { getAreaOfficeCode } = require('../lib/misc/helpers')
 const generateOfficeCheckboxes = require('../lib/view/office-checkboxes')
 const BaseModel = require('../lib/misc/model')
-const { getUser } = require('../lib/route/route-pre-handlers')
+const { getUser } = require('../lib/route/pre-handlers')
 
 const errorMessages = {}
 

@@ -53,6 +53,7 @@ describe('Home route', () => {
     expect(nav).toHaveLength(2)
     expect(nav.eq(0).text()).toMatch('Account')
     expect(nav.eq(1).text()).toMatch('Sign out')
+    expect($('.govuk-phase-banner')).toHaveLength(0)
   })
 
   test('responds with 200 when user with DataManager role scope is logged in', async () => {
