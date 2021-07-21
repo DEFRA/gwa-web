@@ -5,7 +5,8 @@ module.exports = [
     method: 'GET',
     path: '/data-manage',
     handler: (request, h) => {
-      return h.view('data-manage')
+      const displayPhoneNumbers = request.auth.credentials.scope.includes(scopes.message.manage)
+      return h.view('data-manage', { displayPhoneNumbers })
     },
     options: {
       auth: {
