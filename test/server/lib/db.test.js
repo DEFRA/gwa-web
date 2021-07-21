@@ -3,7 +3,7 @@ describe('db functions', () => {
   const { referenceData } = require('../../../server/constants')
 
   jest.mock('../../../server/db/client')
-  const { messagesContainer, refDataContainer, usersContainer } = require('../../../server/db/client')
+  const { messagesContainer, receiptsContainer, refDataContainer, usersContainer } = require('../../../server/db/client')
 
   const usersFetchAllMock = jest.fn()
   usersContainer.items = {
@@ -42,6 +42,15 @@ describe('db functions', () => {
       replace: msgReplaceMock
     }
   })
+
+  const receiptsFetchAllMock = jest.fn()
+  receiptsContainer.items = {
+    query: jest.fn(() => {
+      return {
+        fetchAll: receiptsFetchAllMock
+      }
+    })
+  }
 
   const refDataReadMock = jest.fn()
   const refDataReplaceMock = jest.fn()
@@ -109,6 +118,19 @@ describe('db functions', () => {
     expect(messagesContainer.items.query).toBeCalledTimes(1)
     expect(messagesContainer.items.query).toBeCalledWith(query)
     expect(messagesContainer.items.query().fetchAll).toBeCalledTimes(1)
+  })
+
+  test('getReceipts', async () => {
+    const data = [{ a: 1 }]
+    receiptsFetchAllMock.mockResolvedValue({ resources: data })
+    const query = 'query me this, query me that'
+
+    const res = await db.getReceipts(query)
+
+    expect(res).toEqual(data)
+    expect(receiptsContainer.items.query).toBeCalledTimes(1)
+    expect(receiptsContainer.items.query).toBeCalledWith(query)
+    expect(receiptsContainer.items.query().fetchAll).toBeCalledTimes(1)
   })
 
   test('getUser', async () => {
