@@ -21,7 +21,8 @@ class Model extends BaseModel {
   }
 }
 
-const path = '/upload'
+const routeId = 'org-data-upload'
+const path = `/${routeId}`
 
 const auth = { access: { scope: [`+${scopes.data.manage}`] } }
 
@@ -37,7 +38,7 @@ module.exports = [
       const orgList = await request.server.methods.db.getOrganisationList()
       const organisations = generateNonCoreOrgSelectItems(orgList)
 
-      return h.view('upload', new Model({ headers: orgDataFileHeaders, organisations }))
+      return h.view(routeId, new Model({ headers: orgDataFileHeaders, organisations }))
     },
     options: {
       auth
@@ -54,7 +55,7 @@ module.exports = [
 
       if (!filename || !filename.endsWith('.csv')) {
         const errors = { file: errorMessages.file['*'] }
-        return h.view('upload', new Model({ headers: orgDataFileHeaders, organisations }, errors))
+        return h.view(routeId, new Model({ headers: orgDataFileHeaders, organisations }, errors))
       }
 
       const organisation = orgList.filter(o => o.orgCode === orgCode)[0]
@@ -69,17 +70,17 @@ module.exports = [
 
         if (nonValid.length > 0) {
           const errors = { file: `${nonValid.length} record(s) are not valid.` }
-          return h.view('upload', new Model({ headers: orgDataFileHeaders, organisations }, errors))
+          return h.view(routeId, new Model({ headers: orgDataFileHeaders, organisations }, errors))
         }
 
         if (valid.length === 0) {
           const errors = { file: 'No valid records found. No upload will take place.' }
-          return h.view('upload', new Model({ headers: orgDataFileHeaders, organisations }, errors))
+          return h.view(routeId, new Model({ headers: orgDataFileHeaders, organisations }, errors))
         }
 
         if (anyDuplicates(valid)) {
           const errors = { file: 'Duplicates found. No upload will take place.' }
-          return h.view('upload', new Model({ headers: orgDataFileHeaders, organisations }, errors))
+          return h.view(routeId, new Model({ headers: orgDataFileHeaders, organisations }, errors))
         }
 
         const uploadRes = await uploadUserData(valid, orgCode)
@@ -87,7 +88,7 @@ module.exports = [
           return boom.internal(`Problem uploading user data for file ${filename}.`)
         }
 
-        return h.view('upload-results', new Model({ filename, organisation, recordCount: valid.length }))
+        return h.view('org-data-upload-results', new Model({ filename, organisation, recordCount: valid.length }))
       } catch (err) {
         return boom.internal(`Problem uploading user data for file ${filename}.`, err)
       }
@@ -110,7 +111,7 @@ module.exports = [
           const organisations = generateNonCoreOrgSelectItems(orgList, orgCode)
           const errors = getMappedErrors(err, errorMessages)
 
-          return h.view('upload', new Model({ headers: orgDataFileHeaders, organisations }, errors)).takeover()
+          return h.view(routeId, new Model({ headers: orgDataFileHeaders, organisations }, errors)).takeover()
         }
       }
     }

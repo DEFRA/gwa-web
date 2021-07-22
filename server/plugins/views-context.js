@@ -11,7 +11,7 @@ function getView (request) {
     return header.account.text
   }
 
-  if ([header.data.href, '/data-reference', '/data-reference-manage', '/phone-numbers', '/upload'].includes(pathToMatch)) {
+  if ([header.data.href, '/data-reference', '/data-reference-manage', '/phone-numbers', '/org-data-upload'].includes(pathToMatch)) {
     return header.data.text
   }
 }

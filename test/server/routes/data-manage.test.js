@@ -82,7 +82,7 @@ describe('Data manage route', () => {
     const button = $('.govuk-button')
     expect(button).toHaveLength(buttonCount)
     expect(button.eq(0).text()).toMatch('Organisation data')
-    expect(button.eq(0).attr('href')).toEqual('/upload')
+    expect(button.eq(0).attr('href')).toEqual('/org-data-upload')
     expect(button.eq(1).text()).toMatch('Reference data')
     expect(button.eq(1).attr('href')).toEqual('/data-reference')
     if (scope === scopes.message.manage) {

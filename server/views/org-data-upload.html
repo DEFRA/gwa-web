@@ -4,11 +4,11 @@
 {% set formEncType = 'multipart/form-data' %}
 
 {% block beforeForm %}
-  <h1 class="govuk-heading-l">Upload</h1>
+  <h1 class="govuk-heading-l">Upload users for an organisation</h1>
   <p class="govuk-body">Users can be added to the system for additional organisations by uploading a CSV file (.csv).</p>
   <p class="govuk-body">The file must contain a header row. The following columns are required (in this order): {% for header in data.headers %}<strong>{{ header }}</strong>{{ '.' if loop.last else ', ' }}{% endfor %}</p>
-  <p class="govuk-body"><strong>officeLocation</strong> should be one of the existing office locations (see reference data page). If no match is found the office location will be mapped to <strong>Unassigned</strong>.</p>
-  <p class="govuk-body"><strong>phoneNumber</strong> should be a UK mobile phone number e.g. <strong>07700111222</strong> you want to subscribe. Phone numbers can also be formatted with the <a href="https://countrycode.org/uk">UK country code</a> e.g. <strong>+447700111222</strong>. If the phone number is not deemed to be a UK mobile, the import will be rejected.</p>
+  <p class="govuk-body"><strong>officeLocation</strong> should be one of the existing office locations (see reference data page). If no match is found, the office location will be mapped to <strong>Unassigned</strong>.</p>
+  <p class="govuk-body"><strong>phoneNumber</strong> should be a UK mobile phone number e.g. <strong>07700 111 222</strong> you want to subscribe. Phone numbers can also be formatted with the <a href="https://countrycode.org/uk">UK country code</a> e.g. <strong>+447700 111 222</strong>. If the phone number is not deemed to be a UK mobile, the import will be rejected.</p>
 
 {% endblock %}
 
@@ -21,12 +21,21 @@
         text: 'This is the organisation the user data will be associated to'
       },
       label: {
-        text: 'Select organisation'
+        text: 'Select organisation',
+        classes: "govuk-label--s"
       },
       items: data.organisations,
       errorMessage: errors.orgCode
     })
   }}
+
+  {{
+    govukDetails({
+      summaryText: "Help with organisation",
+      html: "Only active organisations will appear in the select list.<br>If an organisation doesn't appear, check it has been set to active via the <a href='http://localhost:3000/data-reference-manage/org-list'>organisation list</a> reference data."
+    })
+  }}
+
   {{
     govukFileUpload({
       id: 'file',

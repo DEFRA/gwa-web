@@ -21,7 +21,7 @@ const typeInfo = {
   [types.orgList]: {
     id: referenceData.organisationList,
     blurb: 'The downloaded file will include columns: <strong>orgName</strong>, <strong>orgCode</strong>, <strong>active</strong> and <strong>core</strong>.' +
-    '<br><strong>active</strong>, in combination with <strong>core</strong> determines if the organisation is available as an option for <a href="/upload" class="govuk-link">uploading data to</a>. Organisations set as <strong>core=true</strong> will not appear in the list and therefore can not have files uploaded to act as their data source.' +
+    '<br><strong>active</strong>, in combination with <strong>core</strong> determines if the organisation is available as an option for <a href="/org-data-upload" class="govuk-link">uploading data to</a>. Organisations set as <strong>core=true</strong> will not appear in the list and therefore can not have files uploaded to act as their data source.' +
     '<br><strong>active</strong>, on its own determines whether the organisation appears in the list of organisations to send messages to.' +
     '<br>This data is unlikely to need to change frequently. Scenarios that would require changes to the data include:' +
     '<ul class="govuk-list govuk-list--bullet">' +
