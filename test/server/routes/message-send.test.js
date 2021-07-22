@@ -27,6 +27,7 @@ describe('Message send route', () => {
       { user: { id: createUser }, type: 'create', time: createTime },
       { user: { id: edituser }, type: 'create', time: updateTime }
     ],
+    id: uuid(),
     orgCodes,
     officeCodes: [],
     state: initialState,
@@ -257,7 +258,7 @@ describe('Message send route', () => {
       expect($('.govuk-body').text()).toEqual('Insufficient scope')
     })
 
-    test('uploads contact list, updates message and responds with 302 to /messages when message has been sent', async () => {
+    test('uploads contact list, updates message and responds with 302 to the sent message when message has been sent', async () => {
       const dropGetUsersMock = jest.fn()
       server.methods.db.getUsers.cache = { drop: dropGetUsersMock }
       const dropGetSentMessagesMock = jest.fn()
@@ -285,7 +286,7 @@ describe('Message send route', () => {
       })
 
       expect(res.statusCode).toEqual(302)
-      expect(res.headers.location).toEqual('/messages')
+      expect(res.headers.location).toEqual(`/message-view/${message.id}`)
 
       const cost = 0.016
       const contactCount = 1

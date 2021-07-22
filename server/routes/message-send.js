@@ -80,7 +80,7 @@ module.exports = [
       }
       await request.server.methods.db.getSentMessages.cache.drop()
 
-      return h.redirect('/messages')
+      return h.redirect(`/message-view/${message.id}`)
     },
     options: messageOptions
   }
