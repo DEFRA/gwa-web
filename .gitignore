@@ -1,4 +1,5 @@
 .env
+env
 .DS_Store
 .vscode
 lcov.info
@@ -8,3 +9,8 @@ server/config*.json
 server/public/build
 super-linter.log
 coverage
+
+# ctags
+tags
+tags.lock
+tags.temp
