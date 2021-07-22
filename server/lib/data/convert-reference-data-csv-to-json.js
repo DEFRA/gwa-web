@@ -57,7 +57,7 @@ module.exports = async (readableStream, type, db) => {
         if (valid) {
           data = temp
             .filter(x => x.orgCode !== 'UFD')
-            .concat({ orgName: 'Undefined', orgCode: 'UFD', active: true, core: false })
+            .concat({ orgName: 'Undefined', orgCode: 'UFD', active: true, core: true })
         }
         break
       }
