@@ -222,7 +222,7 @@ describe('Upload route', () => {
         expect(res.statusCode).toEqual(200)
 
         const $ = cheerio.load(res.payload)
-        expect($('.govuk-heading-l').text()).toEqual('Upload users for an organisation')
+        expect($('.govuk-heading-l').text()).toEqual('Upload users for an ALB')
         expect($('.govuk-error-summary__list').text()).toMatch(`${userCount} record(s) are not valid.`)
       })
 
@@ -256,7 +256,7 @@ describe('Upload route', () => {
         expect(res.statusCode).toEqual(200)
 
         const $ = cheerio.load(res.payload)
-        expect($('.govuk-heading-l').text()).toEqual('Upload users for an organisation')
+        expect($('.govuk-heading-l').text()).toEqual('Upload users for an ALB')
         expect($('.govuk-error-summary__list').text()).toMatch('No valid records found. No upload will take place.')
       })
 
@@ -291,7 +291,7 @@ describe('Upload route', () => {
         expect(res.statusCode).toEqual(200)
 
         const $ = cheerio.load(res.payload)
-        expect($('.govuk-heading-l').text()).toEqual('Upload users for an organisation')
+        expect($('.govuk-heading-l').text()).toEqual('Upload users for an ALB')
         expect($('.govuk-error-summary__list').text()).toMatch(`${userCount} record(s) are not valid.`)
       })
 
@@ -326,7 +326,7 @@ describe('Upload route', () => {
         expect(res.statusCode).toEqual(200)
 
         const $ = cheerio.load(res.payload)
-        expect($('.govuk-heading-l').text()).toEqual('Upload users for an organisation')
+        expect($('.govuk-heading-l').text()).toEqual('Upload users for an ALB')
         expect($('.govuk-error-summary__list').text()).toMatch(`${userCount} record(s) are not valid.`)
       })
 
@@ -360,7 +360,7 @@ describe('Upload route', () => {
         expect(res.statusCode).toEqual(200)
 
         const $ = cheerio.load(res.payload)
-        expect($('.govuk-heading-l').text()).toEqual('Upload users for an organisation')
+        expect($('.govuk-heading-l').text()).toEqual('Upload users for an ALB')
         expect($('.govuk-error-summary__list').text()).toMatch('Duplicates found. No upload will take place.')
       })
 
@@ -493,7 +493,7 @@ describe('Upload route', () => {
       expect(res.statusCode).toEqual(200)
 
       const $ = cheerio.load(res.payload)
-      expect($('.govuk-heading-l').text()).toMatch('Upload users for an organisation')
+      expect($('.govuk-heading-l').text()).toMatch('Upload users for an ALB')
       expect($('#file')).toHaveLength(1)
       expect($('.govuk-body').text()).toMatch('The file must contain a header row. The following columns are required (in this order): emailAddress, givenName, surname, officeLocation, phoneNumber.')
       const button = $('.govuk-button')

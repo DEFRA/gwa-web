@@ -2,18 +2,19 @@
 
 {% block twoThirds %}
   <h1 class="govuk-heading-xl">Manage data</h1>
-  <h2 class="govuk-heading-m">Upload new organisation data</h2>
-  <p class="govuk-body">Additional organisations can be added to the system by uploading data.</p>
+
+  <h2 class="govuk-heading-m">ALB user data</h2>
+  <p class="govuk-body">ALBs can be enrolled into the system by uploading user data.</p>
   {{
     govukButton({
-      href: '/org-data-upload',
-      text: 'Organisation data',
+      href: '/org-data',
+      text: 'ALB data',
       isStartButton: true
     })
   }}
 
-  <h2 class="govuk-heading-m">Manage reference data</h2>
-  <p class="govuk-body">There are several reference data items used within the system that can be managed.</p>
+  <h2 class="govuk-heading-m">Reference data</h2>
+  <p class="govuk-body">There are several sets of reference data used within the system that can be managed.</p>
   {{
     govukButton({
       href: '/data-reference',
@@ -23,12 +24,12 @@
   }}
 
   {% if displayPhoneNumbers %}
-    <h2 class="govuk-heading-m">Download phone numbers</h2>
-    <p class="govuk-body">Download a list of phone numbers to use as a backup.</p>
+    <h2 class="govuk-heading-m">Phone numbers</h2>
+    <p class="govuk-body">All active user's phone numbers can be downloaded.</p>
     {{
       govukButton({
         href: '/phone-numbers',
-        text: 'Phone numbers',
+        text: 'Phone number data',
         isStartButton: true
       })
     }}

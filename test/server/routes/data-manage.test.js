@@ -81,12 +81,12 @@ describe('Data manage route', () => {
     expect($('.govuk-heading-xl').text()).toMatch('Manage data')
     const button = $('.govuk-button')
     expect(button).toHaveLength(buttonCount)
-    expect(button.eq(0).text()).toMatch('Organisation data')
-    expect(button.eq(0).attr('href')).toEqual('/org-data-upload')
+    expect(button.eq(0).text()).toMatch('ALB data')
+    expect(button.eq(0).attr('href')).toEqual('/org-data')
     expect(button.eq(1).text()).toMatch('Reference data')
     expect(button.eq(1).attr('href')).toEqual('/data-reference')
-    if (scope === scopes.message.manage) {
-      expect(button.eq(2).text()).toMatch('Phone numbers')
+    if (scope.includes(scopes.message.manage)) {
+      expect(button.eq(2).text()).toMatch('Phone number data')
       expect(button.eq(2).attr('href')).toEqual('/phone-numbers')
     }
     expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.data.text)
