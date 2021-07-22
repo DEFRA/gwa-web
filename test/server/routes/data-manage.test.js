@@ -52,7 +52,10 @@ describe('Data manage route', () => {
     expect($('.govuk-body').text()).toEqual('Insufficient scope')
   })
 
-  test('responds with 200 when user has sufficient scope', async () => {
+  test.each([
+    { scope: [scopes.data.manage], buttonCount: 2 },
+    { scope: [scopes.data.manage, scopes.message.manage], buttonCount: 3 }
+  ])('responds with 200 when user has sufficient scope - admin', async ({ scope, buttonCount }) => {
     const res = await server.inject({
       method: 'GET',
       url,
@@ -66,7 +69,7 @@ describe('Data manage route', () => {
               roles: JSON.stringify([])
             }
           },
-          scope: [scopes.data.manage]
+          scope
         },
         strategy: 'azuread'
       }
@@ -77,11 +80,15 @@ describe('Data manage route', () => {
     const $ = cheerio.load(res.payload)
     expect($('.govuk-heading-xl').text()).toMatch('Manage data')
     const button = $('.govuk-button')
-    expect(button).toHaveLength(2)
+    expect(button).toHaveLength(buttonCount)
     expect(button.eq(0).text()).toMatch('Organisation data')
     expect(button.eq(0).attr('href')).toEqual('/upload')
     expect(button.eq(1).text()).toMatch('Reference data')
     expect(button.eq(1).attr('href')).toEqual('/data-reference')
+    if (scope === scopes.message.manage) {
+      expect(button.eq(2).text()).toMatch('Phone numbers')
+      expect(button.eq(2).attr('href')).toEqual('/phone-numbers')
+    }
     expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.data.text)
     expect($('.govuk-phase-banner')).toHaveLength(0)
   })
