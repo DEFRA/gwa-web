@@ -1,13 +1,15 @@
 const cheerio = require('cheerio')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
-const { navigation } = require('../../../server/constants')
 
-describe('Data manage route', () => {
+describe('Phone numbers download route', () => {
   const email = 'test@gwa.defra.co.uk'
   const id = 'guid'
-  const url = '/data-manage'
+  const url = '/phone-numbers-download'
   let server
+
+  jest.mock('../../../server/lib/data/download-phone-numbers')
+  const downloadPhoneNumbers = require('../../../server/lib/data/download-phone-numbers')
 
   beforeEach(async () => {
     server = await createServer()
@@ -26,36 +28,10 @@ describe('Data manage route', () => {
     expect(res.statusCode).toEqual(302)
   })
 
-  test('responds with 403 when user does not have sufficient scope', async () => {
-    const res = await server.inject({
-      method: 'GET',
-      url,
-      auth: {
-        credentials: {
-          user: {
-            id,
-            email,
-            displayName: 'test gwa',
-            raw: {
-              roles: JSON.stringify([])
-            }
-          },
-          scope: []
-        },
-        strategy: 'azuread'
-      }
-    })
-
-    expect(res.statusCode).toEqual(403)
-
-    const $ = cheerio.load(res.payload)
-    expect($('.govuk-body').text()).toEqual('Insufficient scope')
-  })
-
   test.each([
-    { scope: [scopes.data.manage], buttonCount: 2 },
-    { scope: [scopes.data.manage, scopes.message.manage], buttonCount: 3 }
-  ])('responds with 200 when user has sufficient scope - admin', async ({ scope, buttonCount }) => {
+    { scope: [] },
+    { scope: [scopes.data.manage] }
+  ])('responds with 403 when user does not have sufficient scope', async ({ scope }) => {
     const res = await server.inject({
       method: 'GET',
       url,
@@ -75,21 +51,40 @@ describe('Data manage route', () => {
       }
     })
 
-    expect(res.statusCode).toEqual(200)
+    expect(res.statusCode).toEqual(403)
 
     const $ = cheerio.load(res.payload)
-    expect($('.govuk-heading-xl').text()).toMatch('Manage data')
-    const button = $('.govuk-button')
-    expect(button).toHaveLength(buttonCount)
-    expect(button.eq(0).text()).toMatch('Organisation data')
-    expect(button.eq(0).attr('href')).toEqual('/upload')
-    expect(button.eq(1).text()).toMatch('Reference data')
-    expect(button.eq(1).attr('href')).toEqual('/data-reference')
-    if (scope === scopes.message.manage) {
-      expect(button.eq(2).text()).toMatch('Phone numbers')
-      expect(button.eq(2).attr('href')).toEqual('/phone-numbers')
-    }
-    expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.data.text)
-    expect($('.govuk-phase-banner')).toHaveLength(0)
+    expect($('.govuk-body').text()).toEqual('Insufficient scope')
+  })
+
+  test.each([
+    { data: 'phone number\n07700 111111', statusCode: 200 },
+    { data: '', statusCode: 204 }
+  ])('responds with 2XX when user has sufficient scope and request is successful', async ({ data, statusCode }) => {
+    downloadPhoneNumbers.mockResolvedValue(data)
+    const res = await server.inject({
+      method: 'GET',
+      url,
+      auth: {
+        credentials: {
+          user: {
+            id,
+            email,
+            displayName: 'test gwa',
+            raw: {
+              roles: JSON.stringify([])
+            }
+          },
+          scope: [scopes.message.manage]
+        },
+        strategy: 'azuread'
+      }
+    })
+
+    expect(res.statusCode).toEqual(statusCode)
+    expect(res.headers).toHaveProperty('content-type')
+    expect(res.headers['content-type']).toEqual('text/csv; charset=utf-8')
+
+    expect(downloadPhoneNumbers).toHaveBeenCalled()
   })
 })
