@@ -8,7 +8,6 @@ module.exports = [
     path: '/phone-numbers-download',
     handler: async (request, h) => {
       const phoneNumbers = await downloadPhoneNumbers()
-      console.log(phoneNumbers)
       return h.response(phoneNumbers).header('Content-Type', 'text/csv')
     },
     options: {
