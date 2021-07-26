@@ -131,7 +131,7 @@ describe('Account route', () => {
     expect(accountOverview.eq(1).text()).toMatch(`Email: ${email}`)
     expect(accountOverview.eq(2).text()).toMatch(`Office Location: ${officeLocation}`)
     expect(accountOverview.eq(3).text()).toMatch(`Organisation: ${orgName}`)
-    expect(accountOverview.eq(4).text()).toMatch(`Role(s): ${roles.sort().join(', ')}`)
+    expect(accountOverview.eq(4).text()).toMatch(`Roles: ${roles.sort().join(', ')}`)
 
     const phoneNumberTables = $('table.govuk-table')
     expect(phoneNumberTables).toHaveLength(2)
@@ -150,6 +150,7 @@ describe('Account route', () => {
   })
 
   test('add new contact button is available when user has fewer than max personal phone numbers possible', async () => {
+    const roles = ['One']
     const res = await server.inject({
       method: 'GET',
       url,
@@ -160,7 +161,7 @@ describe('Account route', () => {
             email: 'test@gwa.defra.co.uk',
             displayName: 'test gwa'
           },
-          roles: [],
+          roles,
           scope: []
         },
         strategy: 'azuread'
@@ -178,5 +179,7 @@ describe('Account route', () => {
     expect(buttons.eq(1).text()).toEqual('Edit')
     expect(buttons.eq(2).text()).toMatch('Add new contact')
     expect(buttons.eq(3).text()).toMatch('Sign out')
+    const accountOverview = $('.govuk-grid-column-two-thirds p')
+    expect(accountOverview.eq(4).text()).toMatch(`Role: ${roles.sort().join(', ')}`)
   })
 })
