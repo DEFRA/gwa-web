@@ -57,7 +57,7 @@ describe('Converting CSV of reference data into JSON for upload', () => {
       expect(officeLocation.orgCode).toEqual('UFD')
       expect(officeLocation.orgName).toEqual('Undefined')
       expect(officeLocation.active).toEqual(true)
-      expect(officeLocation.core).toEqual(false)
+      expect(officeLocation.core).toEqual(true)
     }
 
     test('input of organisation list returns json along with undefined org', async () => {

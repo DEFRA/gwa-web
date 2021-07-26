@@ -3,10 +3,10 @@ const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
 const { navigation } = require('../../../server/constants')
 
-describe('Data manage route', () => {
+describe('Org data route', () => {
   const email = 'test@gwa.defra.co.uk'
   const id = 'guid'
-  const url = '/data-manage'
+  const url = '/org-data'
   let server
 
   beforeEach(async () => {
@@ -52,10 +52,7 @@ describe('Data manage route', () => {
     expect($('.govuk-body').text()).toEqual('Insufficient scope')
   })
 
-  test.each([
-    { scope: [scopes.data.manage], buttonCount: 2 },
-    { scope: [scopes.data.manage, scopes.message.manage], buttonCount: 3 }
-  ])('responds with 200 when user has sufficient scope - admin', async ({ scope, buttonCount }) => {
+  test('responds with 200 when user has sufficient scope', async () => {
     const res = await server.inject({
       method: 'GET',
       url,
@@ -69,7 +66,7 @@ describe('Data manage route', () => {
               roles: JSON.stringify([])
             }
           },
-          scope
+          scope: [scopes.data.manage]
         },
         strategy: 'azuread'
       }
@@ -78,17 +75,11 @@ describe('Data manage route', () => {
     expect(res.statusCode).toEqual(200)
 
     const $ = cheerio.load(res.payload)
-    expect($('.govuk-heading-xl').text()).toMatch('Manage data')
+    expect($('.govuk-heading-xl').text()).toMatch('Manage ALB data')
     const button = $('.govuk-button')
-    expect(button).toHaveLength(buttonCount)
-    expect(button.eq(0).text()).toMatch('ALB data')
-    expect(button.eq(0).attr('href')).toEqual('/org-data')
-    expect(button.eq(1).text()).toMatch('Reference data')
-    expect(button.eq(1).attr('href')).toEqual('/data-reference')
-    if (scope.includes(scopes.message.manage)) {
-      expect(button.eq(2).text()).toMatch('Phone number data')
-      expect(button.eq(2).attr('href')).toEqual('/phone-numbers')
-    }
+    expect(button).toHaveLength(2)
+    expect(button.eq(0).text()).toMatch('Download ALB data')
+    expect(button.eq(1).text()).toMatch('Upload ALB data')
     expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.data.text)
     expect($('.govuk-phase-banner')).toHaveLength(0)
   })

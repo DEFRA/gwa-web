@@ -3,9 +3,8 @@ const FormData = require('form-data')
 const getStream = require('get-stream')
 const { Readable } = require('stream')
 const { v4: uuid } = require('uuid')
+const { navigation, orgDataFileHeaders } = require('../../../server/constants')
 const { scopes } = require('../../../server/permissions')
-const { orgDataFileHeaders } = require('../../../server/constants')
-const { navigation } = require('../../../server/constants')
 
 describe('Upload route', () => {
   const mockCorporatePhoneNumber = '07777111111'
@@ -14,7 +13,7 @@ describe('Upload route', () => {
   const mockPersonalPhoneNumberId = uuid()
   const email = 'test@gwa.defra.co.uk'
   const id = uuid()
-  const url = '/upload'
+  const url = '/org-data-upload'
   const orgCode = 'orgCode'
   const orgName = 'orgName'
   const originalOfficeLocation = 'originalOfficeLocation'
@@ -22,8 +21,8 @@ describe('Upload route', () => {
   const officeLocation = 'Alphabet office'
   let server
 
-  jest.mock('../../../server/lib/data/upload-user-data')
-  const uploadUserData = require('../../../server/lib/data/upload-user-data')
+  jest.mock('../../../server/lib/data/upload-org-data')
+  const uploadOrgData = require('../../../server/lib/data/upload-org-data')
   jest.mock('../../../server/lib/db')
   const { getAreaToOfficeMap, getOrganisationList, getStandardisedOfficeLocationMap, getUser } = require('../../../server/lib/db')
   getAreaToOfficeMap.mockResolvedValue([
@@ -96,7 +95,7 @@ describe('Upload route', () => {
     describe('POST requests', () => {
       const method = 'POST'
 
-      test('responds with 302 when no user is logged in - GET', async () => {
+      test('responds with 302 when no user is logged in', async () => {
         const res = await server.inject({
           method,
           url
@@ -158,7 +157,7 @@ describe('Upload route', () => {
         expect(errorMessage).toMatch('Select an organisation')
       })
 
-      test('responds with 200 and errors when file does not CSV extension', async () => {
+      test('responds with 200 and errors when file does not have a CSV extension', async () => {
         const form = new FormData()
         form.append('file', Readable.from('data,cols'), { filename: 'csv.not' })
         form.append('orgCode', 'ABC')
@@ -222,7 +221,7 @@ describe('Upload route', () => {
         expect(res.statusCode).toEqual(200)
 
         const $ = cheerio.load(res.payload)
-        expect($('.govuk-heading-l').text()).toEqual('Upload')
+        expect($('.govuk-heading-l').text()).toEqual('Upload users for an ALB')
         expect($('.govuk-error-summary__list').text()).toMatch(`${userCount} record(s) are not valid.`)
       })
 
@@ -256,7 +255,7 @@ describe('Upload route', () => {
         expect(res.statusCode).toEqual(200)
 
         const $ = cheerio.load(res.payload)
-        expect($('.govuk-heading-l').text()).toEqual('Upload')
+        expect($('.govuk-heading-l').text()).toEqual('Upload users for an ALB')
         expect($('.govuk-error-summary__list').text()).toMatch('No valid records found. No upload will take place.')
       })
 
@@ -291,7 +290,7 @@ describe('Upload route', () => {
         expect(res.statusCode).toEqual(200)
 
         const $ = cheerio.load(res.payload)
-        expect($('.govuk-heading-l').text()).toEqual('Upload')
+        expect($('.govuk-heading-l').text()).toEqual('Upload users for an ALB')
         expect($('.govuk-error-summary__list').text()).toMatch(`${userCount} record(s) are not valid.`)
       })
 
@@ -326,7 +325,7 @@ describe('Upload route', () => {
         expect(res.statusCode).toEqual(200)
 
         const $ = cheerio.load(res.payload)
-        expect($('.govuk-heading-l').text()).toEqual('Upload')
+        expect($('.govuk-heading-l').text()).toEqual('Upload users for an ALB')
         expect($('.govuk-error-summary__list').text()).toMatch(`${userCount} record(s) are not valid.`)
       })
 
@@ -360,12 +359,12 @@ describe('Upload route', () => {
         expect(res.statusCode).toEqual(200)
 
         const $ = cheerio.load(res.payload)
-        expect($('.govuk-heading-l').text()).toEqual('Upload')
+        expect($('.govuk-heading-l').text()).toEqual('Upload users for an ALB')
         expect($('.govuk-error-summary__list').text()).toMatch('Duplicates found. No upload will take place.')
       })
 
       test('responds with 500 when upload response was not successful', async () => {
-        uploadUserData.mockResolvedValue(false)
+        uploadOrgData.mockResolvedValue(false)
         const filename = 'test.csv'
         const form = new FormData()
         form.append('file', Readable.from(`${orgDataFileHeaders.join(',')}\nabc@test.com,givenName,surname,home office,07700111111`), { filename })
@@ -399,7 +398,7 @@ describe('Upload route', () => {
       })
 
       test('responds with 500 when problem during file upload', async () => {
-        uploadUserData.mockRejectedValue(new Error('Upload error'))
+        uploadOrgData.mockRejectedValue(new Error('Upload error'))
         const filename = 'test.csv'
         const form = new FormData()
         form.append('file', Readable.from(`${orgDataFileHeaders.join(',')}\nabc@test.com,givenName,surname,home office,07700111111`), { filename })
@@ -493,7 +492,7 @@ describe('Upload route', () => {
       expect(res.statusCode).toEqual(200)
 
       const $ = cheerio.load(res.payload)
-      expect($('.govuk-heading-l').text()).toMatch('Upload')
+      expect($('.govuk-heading-l').text()).toMatch('Upload users for an ALB')
       expect($('#file')).toHaveLength(1)
       expect($('.govuk-body').text()).toMatch('The file must contain a header row. The following columns are required (in this order): emailAddress, givenName, surname, officeLocation, phoneNumber.')
       const button = $('.govuk-button')
@@ -504,7 +503,7 @@ describe('Upload route', () => {
     })
 
     test('responds with 200 when CSV file is uploaded', async () => {
-      uploadUserData.mockResolvedValue(true)
+      uploadOrgData.mockResolvedValue(true)
       const filename = 'test.csv'
       const userCount = 1
       const form = new FormData()

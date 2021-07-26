@@ -1,5 +1,5 @@
 const cheerio = require('cheerio')
-const { uuidRegex } = require('../../helpers/constants')
+const { uuidRegex, uuidRegexEnd } = require('../../helpers/constants')
 const { expectNotifyStatus, notifyStatusViewData } = require('../../helpers/notify-status')
 const { errorMessages, messageStates, navigation, textMessages: { maxInfoLength, maxMessageLength } } = require('../../../server/constants')
 const createServer = require('../../../server/index')
@@ -245,7 +245,7 @@ describe('Message creation route', () => {
       [{ allOffices: true, orgCodes: ['orgCode'], text: 'a'.repeat(maxMessageLength), info: 'a'.repeat(maxInfoLength) }],
       [{ allOffices: true, orgCodes: ['orgCode'], text: 'message to send', info: ` ${'a'.repeat(maxInfoLength)} ` }],
       [{ allOffices: true, orgCodes: ['orgCode'], text: '     padded with spaces     ', info: '     padded with spaces     ' }]
-    ])('responds with 302 to /messages when request is valid - test %#', async (payload) => {
+    ])('responds with 302 to /message-view of created message when request is valid - test %#', async (payload) => {
       saveMessage.mockResolvedValue({ statusCode: 201 })
       const user = { id, email, companyName: 'companyName', surname: 'surname', givenName: 'givenName' }
       const res = await server.inject({
@@ -268,7 +268,8 @@ describe('Message creation route', () => {
       })
 
       expect(res.statusCode).toEqual(302)
-      expect(res.headers.location).toEqual('/messages')
+      expect(res.headers.location).toMatch('/message-view/')
+      expect(res.headers.location).toMatch(uuidRegexEnd)
 
       const expectedMessage = {
         allOffices: payload.allOffices,

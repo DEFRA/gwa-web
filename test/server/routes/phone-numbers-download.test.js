@@ -59,7 +59,7 @@ describe('Phone numbers download route', () => {
 
   test.each([
     { data: 'phone number\n07700 111111', statusCode: 200 },
-    { data: '', statusCode: 204 }
+    { data: null, statusCode: 204 }
   ])('responds with 2XX when user has sufficient scope and request is successful', async ({ data, statusCode }) => {
     downloadPhoneNumbers.mockResolvedValue(data)
     const res = await server.inject({
@@ -86,5 +86,6 @@ describe('Phone numbers download route', () => {
     expect(res.headers['content-type']).toEqual('text/csv; charset=utf-8')
 
     expect(downloadPhoneNumbers).toHaveBeenCalled()
+    expect(res.result).toEqual(data)
   })
 })

@@ -63,7 +63,7 @@ module.exports = [
         return boom.internal('Problem creating message.', res)
       }
 
-      return h.redirect('/messages')
+      return h.redirect(`/message-view/${message.id}`)
     },
     options: {
       auth,

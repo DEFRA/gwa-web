@@ -1,6 +1,6 @@
 const { dataSourcesContainer, dataSourcesStorageConnectionString } = require('../../../test-env-vars')
 
-describe('Uploading user data', () => {
+describe('Uploading org data', () => {
   jest.mock('../../../../server/config')
   const config = require('../../../../server/config')
   config.dataSourcesContainer = dataSourcesContainer
@@ -20,7 +20,7 @@ describe('Uploading user data', () => {
     jest.clearAllMocks()
     jest.resetModules()
 
-    uploadUserData = require('../../../../server/lib/data/upload-user-data')
+    uploadUserData = require('../../../../server/lib/data/upload-org-data')
   })
 
   const users = [{ id: '1' }]

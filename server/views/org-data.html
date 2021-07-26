@@ -1,0 +1,29 @@
+{% extends "two-thirds.html" %}
+
+{% block twoThirds %}
+  <h1 class="govuk-heading-xl">Manage ALB data</h1>
+
+  <p>ALBs can be enrolled into the system by uploading a dataset of their users for them.</p>
+  <p>If the data provided by the ALB is a replacement of the existing data, uploading the new data is all that is needed.</p>
+  <p>However, there might be occasions where reviewing the existing dataset for an ALB is required. This is possible by downloading the dataset.</p>
+
+  <h2 class="govuk-heading-m">Download ALB data</h2>
+  <p class="govuk-body">Existing ALB data can be downloaded for auditing and inspection purposes.</p>
+  {{
+    govukButton({
+      href: '/org-data-download',
+      text: 'Download ALB data',
+      isStartButton: true
+    })
+  }}
+
+  <h2 class="govuk-heading-m">Upload ALB data</h2>
+  <p class="govuk-body">ALBs can be enrolled into the system by uploading their data.</p>
+  {{
+    govukButton({
+      href: '/org-data-upload',
+      text: 'Upload ALB data',
+      isStartButton: true
+    })
+  }}
+{% endblock %}

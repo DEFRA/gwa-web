@@ -16,11 +16,13 @@ const routes = [].concat(
   require('../routes/message-view'),
   require('../routes/messages'),
   require('../routes/messages-sent'),
+  require('../routes/org-data'),
+  require('../routes/org-data-download'),
+  require('../routes/org-data-upload'),
   require('../routes/phone-numbers'),
   require('../routes/phone-numbers-download'),
   require('../routes/public'),
-  require('../routes/status'),
-  require('../routes/upload')
+  require('../routes/status')
 )
 
 module.exports = {
