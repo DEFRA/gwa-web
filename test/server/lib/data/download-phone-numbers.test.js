@@ -1,4 +1,4 @@
-const { Readable } = require('stream').Stream
+const mockDownloadFn = require('../../../helpers/mock-download')
 const { phoneNumbersContainer, phoneNumbersStorageConnectionString } = require('../../../test-env-vars')
 
 describe('Downloading phone numbers', () => {
@@ -19,16 +19,6 @@ describe('Downloading phone numbers', () => {
 
     downloadPhoneNumbers = require('../../../../server/lib/data/download-phone-numbers')
   })
-
-  function mockDownloadFn (contents, encoding) {
-    const mockReadable = new Readable({ read () {} })
-    if (encoding) {
-      mockReadable.setEncoding(encoding) // default is null
-    }
-    mockReadable.push(contents)
-    mockReadable.push(null)
-    return { readableStreamBody: mockReadable }
-  }
 
   test.each([
     { encoding: 'utf8' },
