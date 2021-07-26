@@ -22,9 +22,9 @@ const path = `/${routeId}`
 
 const auth = { access: { scope: [`+${scopes.data.manage}`] } }
 
-async function getOrgSelectList (request) {
+async function getOrgSelectList (request, orgCode) {
   const orgList = await request.server.methods.db.getOrganisationList()
-  return generateNonCoreOrgSelectItems(orgList)
+  return generateNonCoreOrgSelectItems(orgList, orgCode)
 }
 
 module.exports = [
@@ -46,7 +46,13 @@ module.exports = [
     handler: async (request, h) => {
       const { orgCode } = request.payload
       const data = await downloadOrgData(orgCode)
-      console.log(data)
+
+      if (!data) {
+        const organisations = await getOrgSelectList(request, orgCode)
+        const errors = { orgCode: 'No file exists for selected organisation' }
+        return h.view(routeId, new Model({ organisations }, errors))
+      }
+
       // TODO: convert json to csv, extract phone number - currently an array
       const csvdata = await parseAsync(JSON.parse(data))
       console.log(csvdata)
@@ -59,7 +65,8 @@ module.exports = [
           orgCode: Joi.string().required()
         }),
         failAction: async (request, h, err) => {
-          const organisations = await getOrgSelectList(request)
+          const { orgCode } = request.payload
+          const organisations = await getOrgSelectList(request, orgCode)
           const errors = getMappedErrors(err, errorMessages)
 
           return h.view(routeId, new Model({ organisations }, errors)).takeover()
