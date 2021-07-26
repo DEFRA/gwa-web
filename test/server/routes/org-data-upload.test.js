@@ -95,7 +95,7 @@ describe('Upload route', () => {
     describe('POST requests', () => {
       const method = 'POST'
 
-      test('responds with 302 when no user is logged in - GET', async () => {
+      test('responds with 302 when no user is logged in', async () => {
         const res = await server.inject({
           method,
           url
@@ -157,7 +157,7 @@ describe('Upload route', () => {
         expect(errorMessage).toMatch('Select an organisation')
       })
 
-      test('responds with 200 and errors when file does not CSV extension', async () => {
+      test('responds with 200 and errors when file does not have a CSV extension', async () => {
         const form = new FormData()
         form.append('file', Readable.from('data,cols'), { filename: 'csv.not' })
         form.append('orgCode', 'ABC')
