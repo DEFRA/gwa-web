@@ -88,7 +88,6 @@ describe('Org data download route', () => {
       const select = $('#orgCode')
       expect(select).toHaveLength(1)
       const options = $('option', select)
-      console.log(options.text())
       expect(options).toHaveLength(2)
       expect(options.eq(0).attr('selected')).toBeDefined()
       expect(options.eq(0).attr('value')).toEqual('')
