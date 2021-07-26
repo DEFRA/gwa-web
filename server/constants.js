@@ -1,4 +1,4 @@
-const notifyServiceName = 'Group Wide Alerts - Defra'
+const notifyServiceName = 'DefraGrpAlert'
 const notifyServiceNameLength = notifyServiceName.length
 
 module.exports = {
