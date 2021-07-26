@@ -3,9 +3,8 @@ const FormData = require('form-data')
 const getStream = require('get-stream')
 const { Readable } = require('stream')
 const { v4: uuid } = require('uuid')
+const { navigation, orgDataFileHeaders } = require('../../../server/constants')
 const { scopes } = require('../../../server/permissions')
-const { orgDataFileHeaders } = require('../../../server/constants')
-const { navigation } = require('../../../server/constants')
 
 describe('Upload route', () => {
   const mockCorporatePhoneNumber = '07777111111'
