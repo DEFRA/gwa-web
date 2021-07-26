@@ -7,7 +7,7 @@ const convertCSVToJSON = require('../lib/data/convert-users-csv-to-json')
 const { getMappedErrors } = require('../lib/misc/errors')
 const BaseModel = require('../lib/misc/model')
 const generateNonCoreOrgSelectItems = require('../lib/view/non-core-org-select')
-const uploadUserData = require('../lib/data/upload-user-data')
+const uploadOrgData = require('../lib/data/upload-org-data')
 const validateUsers = require('../lib/data/validate-users')
 
 const errorMessages = {
@@ -83,7 +83,7 @@ module.exports = [
           return h.view(routeId, new Model({ headers: orgDataFileHeaders, organisations }, errors))
         }
 
-        const uploadRes = await uploadUserData(valid, orgCode)
+        const uploadRes = await uploadOrgData(valid, orgCode)
         if (!uploadRes) {
           return boom.internal(`Problem uploading user data for file ${filename}.`)
         }

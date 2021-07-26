@@ -22,8 +22,8 @@ describe('Upload route', () => {
   const officeLocation = 'Alphabet office'
   let server
 
-  jest.mock('../../../server/lib/data/upload-user-data')
-  const uploadUserData = require('../../../server/lib/data/upload-user-data')
+  jest.mock('../../../server/lib/data/upload-org-data')
+  const uploadOrgData = require('../../../server/lib/data/upload-org-data')
   jest.mock('../../../server/lib/db')
   const { getAreaToOfficeMap, getOrganisationList, getStandardisedOfficeLocationMap, getUser } = require('../../../server/lib/db')
   getAreaToOfficeMap.mockResolvedValue([
@@ -365,7 +365,7 @@ describe('Upload route', () => {
       })
 
       test('responds with 500 when upload response was not successful', async () => {
-        uploadUserData.mockResolvedValue(false)
+        uploadOrgData.mockResolvedValue(false)
         const filename = 'test.csv'
         const form = new FormData()
         form.append('file', Readable.from(`${orgDataFileHeaders.join(',')}\nabc@test.com,givenName,surname,home office,07700111111`), { filename })
@@ -399,7 +399,7 @@ describe('Upload route', () => {
       })
 
       test('responds with 500 when problem during file upload', async () => {
-        uploadUserData.mockRejectedValue(new Error('Upload error'))
+        uploadOrgData.mockRejectedValue(new Error('Upload error'))
         const filename = 'test.csv'
         const form = new FormData()
         form.append('file', Readable.from(`${orgDataFileHeaders.join(',')}\nabc@test.com,givenName,surname,home office,07700111111`), { filename })
@@ -504,7 +504,7 @@ describe('Upload route', () => {
     })
 
     test('responds with 200 when CSV file is uploaded', async () => {
-      uploadUserData.mockResolvedValue(true)
+      uploadOrgData.mockResolvedValue(true)
       const filename = 'test.csv'
       const userCount = 1
       const form = new FormData()
