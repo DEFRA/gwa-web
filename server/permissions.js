@@ -54,5 +54,6 @@ function getPermissions (userRoles) {
 
 module.exports = {
   getPermissions,
+  roles,
   scopes
 }
