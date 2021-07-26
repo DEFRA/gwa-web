@@ -1,4 +1,5 @@
 const cheerio = require('cheerio')
+const { navigation } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
 
@@ -23,7 +24,10 @@ describe('Home route', () => {
     expect(res.statusCode).toEqual(200)
 
     const $ = cheerio.load(res.payload)
-    expect($('#navigation').text()).toMatch('Sign in')
+    const nav = $('#navigation li')
+    expect(nav).toHaveLength(2)
+    expect(nav.eq(0).text()).toMatch('Home')
+    expect(nav.eq(1).text()).toMatch('Sign in')
   })
 
   test('responds with 200 when user with no scope is logged in', async () => {
@@ -50,10 +54,12 @@ describe('Home route', () => {
 
     const $ = cheerio.load(res.payload)
     const nav = $('#navigation li')
-    expect(nav).toHaveLength(2)
-    expect(nav.eq(0).text()).toMatch('Account')
-    expect(nav.eq(1).text()).toMatch('Sign out')
+    expect(nav).toHaveLength(3)
+    expect(nav.eq(0).text()).toMatch('Home')
+    expect(nav.eq(1).text()).toMatch('Account')
+    expect(nav.eq(2).text()).toMatch('Sign out')
     expect($('.govuk-phase-banner')).toHaveLength(0)
+    expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.home.text)
   })
 
   test('responds with 200 when user with DataManager role scope is logged in', async () => {
@@ -80,10 +86,11 @@ describe('Home route', () => {
 
     const $ = cheerio.load(res.payload)
     const nav = $('#navigation li')
-    expect(nav).toHaveLength(3)
-    expect(nav.eq(0).text()).toMatch('Account')
-    expect(nav.eq(1).text()).toMatch('Manage Data')
-    expect(nav.eq(2).text()).toMatch('Sign out')
+    expect(nav).toHaveLength(4)
+    expect(nav.eq(0).text()).toMatch('Home')
+    expect(nav.eq(1).text()).toMatch('Account')
+    expect(nav.eq(2).text()).toMatch('Manage Data')
+    expect(nav.eq(3).text()).toMatch('Sign out')
   })
 
   test('responds with 200 when user with Administrator role scope is logged in', async () => {
@@ -110,10 +117,11 @@ describe('Home route', () => {
 
     const $ = cheerio.load(res.payload)
     const nav = $('#navigation li')
-    expect(nav).toHaveLength(4)
-    expect(nav.eq(0).text()).toMatch('Account')
-    expect(nav.eq(1).text()).toMatch('Messages')
-    expect(nav.eq(2).text()).toMatch('Manage Data')
-    expect(nav.eq(3).text()).toMatch('Sign out')
+    expect(nav).toHaveLength(5)
+    expect(nav.eq(0).text()).toMatch('Home')
+    expect(nav.eq(1).text()).toMatch('Account')
+    expect(nav.eq(2).text()).toMatch('Messages')
+    expect(nav.eq(3).text()).toMatch('Manage Data')
+    expect(nav.eq(4).text()).toMatch('Sign out')
   })
 })
