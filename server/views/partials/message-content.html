@@ -49,17 +49,17 @@
 
 {{
   govukCheckboxes({
-    id: 'orgCodes',
-    name: 'orgCodes',
+    id: "orgCodes",
+    name: "orgCodes",
     fieldset: {
       legend: {
-        idPrefix: 'orgCodes',
-        text: 'Which organisations should the message be sent to?',
+        idPrefix: "orgCodes",
+        text: "Which organisations should the message be sent to?",
         classes: "govuk-fieldset__legend--m"
       }
     },
-    classes: 'govuk-!-margin-bottom-9',
-    hint: 'Select all that apply.',
+    classes: "govuk-!-margin-bottom-9",
+    hint: "Select all that apply.",
     items: data.orgCheckboxes,
     errorMessage: errors.orgCodes
   })
