@@ -22,6 +22,7 @@ describe('Get phone numbers to send to', () => {
     }]
     const message = {
       allOffices: false,
+      allOrgs: false,
       officeCodes: ['OFC:*', 'ANY:not-the-same'],
       orgCodes: ['ABC', 'XYZ']
     }
@@ -53,6 +54,7 @@ describe('Get phone numbers to send to', () => {
     }]
     const message = {
       allOffices: false,
+      allOrgs: false,
       officeCodes: ['OFC:specific-office'],
       orgCodes: ['ABC', 'XYZ']
     }
@@ -84,6 +86,7 @@ describe('Get phone numbers to send to', () => {
     }]
     const message = {
       allOffices: false,
+      allOrgs: false,
       officeCodes: ['OFC:*'],
       orgCodes: ['ABC']
     }
@@ -115,6 +118,7 @@ describe('Get phone numbers to send to', () => {
     }]
     const message = {
       allOffices: true,
+      allOrgs: false,
       officeCodes: ['IGN:this-is-not-used'],
       orgCodes: ['XYZ']
     }
@@ -123,6 +127,40 @@ describe('Get phone numbers to send to', () => {
 
     expect(phoneNumbers).toHaveLength(1)
     expect(phoneNumbers[0]).toEqual(users[1].phoneNumbers[0].number)
+  })
+
+  test('users phone numbers matching the message critera are returned when the all orgs option is set', () => {
+    const users = [{
+      active: true,
+      orgCode: 'ABC',
+      phoneNumbers: [{
+        number: '07777111111',
+        subscribedTo: ['ANY:anything']
+      }, {
+        number: '07777222222',
+        subscribedTo: ['OFC:specific-office']
+      }]
+    }, {
+      active: true,
+      orgCode: 'XYZ',
+      phoneNumbers: [{
+        number: '07888111111',
+        subscribedTo: ['ANY:anything']
+      }]
+    }]
+    const message = {
+      allOffices: true,
+      allOrgs: true,
+      officeCodes: [],
+      orgCodes: []
+    }
+
+    const phoneNumbers = getPhoneNumbersToSendTo(users, message)
+
+    expect(phoneNumbers).toHaveLength(3)
+    expect(phoneNumbers[0]).toEqual(users[0].phoneNumbers[0].number)
+    expect(phoneNumbers[1]).toEqual(users[0].phoneNumbers[1].number)
+    expect(phoneNumbers[2]).toEqual(users[1].phoneNumbers[0].number)
   })
 
   test('only users matching the organisation selected and with phone numbers subscribedTo an office have their phone numbers returned', () => {
@@ -146,6 +184,7 @@ describe('Get phone numbers to send to', () => {
     }]
     const message = {
       allOffices: true,
+      allOrgs: false,
       officeCodes: [],
       orgCodes: ['ABC']
     }
@@ -174,6 +213,7 @@ describe('Get phone numbers to send to', () => {
     }]
     const message = {
       allOffices: true,
+      allOrgs: false,
       officeCodes: [],
       orgCodes: ['ABC']
     }
