@@ -1,4 +1,16 @@
 /**
+ * Format date to `en-GB` locale string. If not a valid date `TBC` is returned.
+ *
+ * @param {string} val date string to format.
+ * @return {string} representing the formatted date in `en-GB` locale or `TBC`
+ * if not valid.
+ */
+function formatDate (val) {
+  const date = new Date(val).toLocaleString('en-GB')
+  return date === 'Invalid Date' ? 'TBC' : date
+}
+
+/**
  * Gets the 'all' or area office code based on the `officeCode` of the user.
  * This is typically used to default the `subscribedTo` property for a phone
  * number.
@@ -73,14 +85,16 @@ function getMessageRows (messages) {
     .map(message => {
       const lastEvent = message.auditEvents.sort((e1, e2) => e2.time - e1.time)[0]
       return [
-        { text: new Date(message.lastUpdatedAt).toLocaleString() },
+        { text: formatDate(message.lastUpdatedAt) },
         { text: message.text.slice(0, 47) + (message.text.length > 47 ? ' ...' : '') },
         { html: `<a href="mailto:${lastEvent.user.id}">${lastEvent.user.id}</a>` },
         { html: `<a href='/message-view/${message.id}'>View</a>` }
       ]
     })
 }
+
 module.exports = {
+  formatDate,
   getAreaOfficeCode,
   getComponentTag,
   getMessageRows,
