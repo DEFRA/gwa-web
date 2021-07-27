@@ -3,10 +3,6 @@ const { navigation: { header } } = require('../constants')
 
 function getView (request) {
   const pathToMatch = `/${request.path.split('/')[1]}`
-  if ([header.messages.href, '/message-create', '/message-edit', '/message-delete', '/message-send', '/message-view', '/messages-sent'].includes(pathToMatch)) {
-    return header.messages.text
-  }
-
   if ([header.home.href].includes(pathToMatch)) {
     return header.home.text
   }
@@ -17,6 +13,14 @@ function getView (request) {
 
   if ([header.data.href, '/data-reference', '/data-reference-manage', '/phone-numbers', '/org-data', '/org-data-download', '/org-data-upload'].includes(pathToMatch)) {
     return header.data.text
+  }
+
+  if ([header.messages.href, '/message-create', '/message-edit', '/message-delete', '/message-send', '/message-view', '/messages-sent'].includes(pathToMatch)) {
+    return header.messages.text
+  }
+
+  if ([header.systemStatus.href].includes(pathToMatch)) {
+    return header.systemStatus.text
   }
 }
 /**
@@ -57,17 +61,21 @@ module.exports = {
               active: view === header.account.text
             })
 
+            if (ctx.credentials.scope.includes(scopes.data.manage)) {
+              navigation.push({
+                ...header.data,
+                active: view === header.data.text
+              })
+            }
+
             if (ctx.credentials.scope.includes(scopes.message.manage)) {
               navigation.push({
                 ...header.messages,
                 active: view === header.messages.text
               })
-            }
-
-            if (ctx.credentials.scope.includes(scopes.data.manage)) {
               navigation.push({
-                ...header.data,
-                active: view === header.data.text
+                ...header.systemStatus,
+                active: view === header.systemStatus.text
               })
             }
 

@@ -98,7 +98,7 @@ describe('Home route', () => {
     expect(nav).toHaveLength(4)
     expect(nav.eq(0).text()).toMatch('Home')
     expect(nav.eq(1).text()).toMatch('Account')
-    expect(nav.eq(2).text()).toMatch('Manage Data')
+    expect(nav.eq(2).text()).toMatch('Manage data')
     expect(nav.eq(3).text()).toMatch('Sign out')
 
     const headings = $('.govuk-grid-column-two-thirds .govuk-heading-m')
@@ -138,11 +138,12 @@ describe('Home route', () => {
 
     const $ = cheerio.load(res.payload)
     const nav = $('#navigation li')
-    expect(nav).toHaveLength(5)
+    expect(nav).toHaveLength(6)
     expect(nav.eq(0).text()).toMatch('Home')
     expect(nav.eq(1).text()).toMatch('Account')
+    expect(nav.eq(3).text()).toMatch('Manage data')
     expect(nav.eq(2).text()).toMatch('Messages')
-    expect(nav.eq(3).text()).toMatch('Manage Data')
+    expect(nav.eq(2).text()).toMatch('System status')
     expect(nav.eq(4).text()).toMatch('Sign out')
 
     const headings = $('.govuk-grid-column-two-thirds .govuk-heading-m')

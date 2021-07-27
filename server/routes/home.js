@@ -3,26 +3,13 @@ const { roles, scopes } = require('../permissions')
 module.exports = [
   {
     method: 'GET',
-    path: '/',
+    path: '/system-status',
     handler: (request, h) => {
-      const authenticated = request.auth.isAuthenticated
-      let role
-      if (authenticated) {
-        const scope = request.auth.credentials.scope
-        if (scope.includes(scopes.message.manage)) {
-          role = roles.Administrator
-        } else if (scope.includes(scopes.data.manage)) {
-          role = roles.DataManager
-        } else {
-          role = roles.User
-        }
-      }
-      return h.view('home', { authenticated, role, roles })
+      // TODO: get some status information
+      return h.view('system-status')
     },
     options: {
-      auth: {
-        mode: 'try'
-      }
+      auth: { access: { scope: [`+${scopes.message.manage}`] } }
     }
   }
 ]
