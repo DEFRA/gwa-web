@@ -2,7 +2,7 @@ const BaseModel = require('../misc/model')
 const { getMappedErrors } = require('../misc/errors')
 const generateOfficeCheckboxes = require('../view/office-checkboxes')
 const generateOrganisationCheckboxes = require('../view/organisation-checkboxes')
-const generateSendToAllOrgsRadios = require('../view/send-to-all-radios')
+const sendToAllRadios = require('../view/send-to-all-radios')
 const { errorMessages, textMessages: { maxMessageLength } } = require('../../constants')
 
 class Model extends BaseModel {
@@ -29,7 +29,7 @@ module.exports = {
       ])
       const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, officeCodes)
       const orgCheckboxes = generateOrganisationCheckboxes(organisationList, orgCodes)
-      const allOfficeRadios = generateSendToAllOrgsRadios(allOffices)
+      const allOfficeRadios = sendToAllRadios(allOffices)
 
       return h.view(routeId, new Model({ ...request.payload, allOfficeRadios, maxMessageLength, officeCheckboxes, orgCheckboxes }, errors)).takeover()
     }

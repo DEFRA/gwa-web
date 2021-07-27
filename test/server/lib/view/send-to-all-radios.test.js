@@ -1,8 +1,8 @@
 describe('send to all orgs radio creation', () => {
-  const generateSendToAllOrgsRadios = require('../../../../server/lib/view/send-to-all-radios')
+  const sendToAllRadios = require('../../../../server/lib/view/send-to-all-radios')
 
   test('radios are generated correctly when no selected value is supplied', () => {
-    const radioItems = generateSendToAllOrgsRadios()
+    const radioItems = sendToAllRadios()
 
     expect(radioItems).toHaveLength(2)
     expect(radioItems[0].checked).toBe(undefined)
@@ -17,7 +17,7 @@ describe('send to all orgs radio creation', () => {
     [true],
     [false]
   ])('radios are generated correctly when boolean selected value is supplied - %s', (val) => {
-    const radioItems = generateSendToAllOrgsRadios(val)
+    const radioItems = sendToAllRadios(val)
 
     expect(radioItems).toHaveLength(2)
     expect(radioItems[0].checked).toBe(val ? true : undefined)
@@ -32,7 +32,7 @@ describe('send to all orgs radio creation', () => {
     ['true'],
     ['false']
   ])('radios are generated correctly when string selected value is supplied - "%s"', (val) => {
-    const radioItems = generateSendToAllOrgsRadios(val)
+    const radioItems = sendToAllRadios(val)
 
     expect(radioItems).toHaveLength(2)
     expect(radioItems[0].checked).toBe(val === 'true' ? true : undefined)
