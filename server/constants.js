@@ -31,13 +31,17 @@ module.exports = {
         text: 'Account',
         href: '/account'
       },
-      messages: {
-        text: 'Messages',
-        href: '/messages'
-      },
       data: {
         text: 'Manage Data',
         href: '/data-manage'
+      },
+      home: {
+        text: 'Home',
+        href: '/'
+      },
+      messages: {
+        text: 'Messages',
+        href: '/messages'
       },
       signIn: {
         text: 'Sign in',

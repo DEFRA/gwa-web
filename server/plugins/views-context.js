@@ -7,6 +7,10 @@ function getView (request) {
     return header.messages.text
   }
 
+  if ([header.home.href].includes(pathToMatch)) {
+    return header.home.text
+  }
+
   if ([header.account.href, '/contact-add', '/contact-edit', '/contact-remove'].includes(pathToMatch)) {
     return header.account.text
   }
@@ -34,9 +38,12 @@ module.exports = {
           ctx.auth = auth
           ctx.scopes = scopes
 
-          const navigation = []
-
           const view = getView(request)
+          const navigation = [{
+            ...header.home,
+            active: view === header.home.text
+          }]
+
           if (view === header.messages.text) {
             ctx.displayBanner = true
             ctx.notifyStatus = await request.server.methods.getNotifyStatusViewData()

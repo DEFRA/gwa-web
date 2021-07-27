@@ -29,7 +29,7 @@ module.exports = [
 
       request.cookieAuth.set({ user, roles, scope })
 
-      return h.redirect(credentials.query?.redirectTo || '/account')
+      return h.redirect(credentials.query?.redirectTo || '/')
     },
     options: {
       auth: 'azuread'

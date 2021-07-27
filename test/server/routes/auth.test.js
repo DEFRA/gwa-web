@@ -76,7 +76,7 @@ describe('Auth route', () => {
     expect(res.statusCode).toEqual(404)
   })
 
-  test('responds with 302 to /account when user is active and has no roles', async () => {
+  test('responds with 302 to / when user is active and has no roles', async () => {
     const res = await server.inject({
       method,
       url,
@@ -95,10 +95,10 @@ describe('Auth route', () => {
     })
 
     expect(res.statusCode).toEqual(302)
-    expect(res.headers.location).toEqual('/account')
+    expect(res.headers.location).toEqual('/')
   })
 
-  test('responds with 302 to /account when user is active and has no recognised roles', async () => {
+  test('responds with 302 to / when user is active and has no recognised roles', async () => {
     const res = await server.inject({
       method,
       url,
@@ -119,10 +119,10 @@ describe('Auth route', () => {
     })
 
     expect(res.statusCode).toEqual(302)
-    expect(res.headers.location).toEqual('/account')
+    expect(res.headers.location).toEqual('/')
   })
 
-  test('responds with 302 to /account when active user is found', async () => {
+  test('responds with 302 to / when active user is found', async () => {
     const res = await server.inject({
       method,
       url,
@@ -143,7 +143,7 @@ describe('Auth route', () => {
     })
 
     expect(res.statusCode).toEqual(302)
-    expect(res.headers.location).toEqual('/account')
+    expect(res.headers.location).toEqual('/')
   })
 
   test('responds with 302 to the redirectTo query (when available), when active user is found', async () => {
