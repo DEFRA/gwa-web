@@ -1,5 +1,6 @@
 const notifyServiceName = 'DefraGrpAlert'
-const notifyServiceNameLength = notifyServiceName.length
+// The service name has a colon and space (': ') appended before the message.
+const notifyServiceNameLength = `${notifyServiceName}: `.length
 
 module.exports = {
   auditEventTypes: {
