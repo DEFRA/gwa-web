@@ -2,10 +2,12 @@
 
 {% block twoThirds %}
   <h1 class="govuk-heading-l">View message</h1>
-  {{ govukTable({
-    firstCellIsHeader: true,
-    rows: data.messageRows
-  }) }}
+  {{
+    govukTable({
+      firstCellIsHeader: true,
+      rows: data.messageRows
+    })
+  }}
 
   {% if data.isEditable %}
     {{
