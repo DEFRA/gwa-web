@@ -34,8 +34,12 @@
     }}
   {% else %}
     <h2 class="govuk-heading-m" id="officeCodes">Which office locations should this number be subscribed to?</h2>
-    <p>In order to select all of the individual office locations within an area select the first item in the list (the 'all' option). This will subscribe you to all of the notifications for offices in the area.</p>
-    <p class="govuk-!-margin-bottom-5">When the all option for an area is selected, any individual office location selections are overridden. If you wish to remove the subscription to all office locations within an area, ensure the all option is not selected and select the individual office locations required.</p>
+    {{
+      govukDetails({
+        summaryText: "Help with subscribing to office locations",
+        html: "Any number of areas can be subscribed to, however, it is advisable to only subscribe to areas you travel to regularly."
+      })
+    }}
   {% endif %}
 
   {% if errors.officeCodes.text %}
