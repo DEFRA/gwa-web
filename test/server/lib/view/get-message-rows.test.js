@@ -1,5 +1,6 @@
 describe('Get message rows', () => {
   const { auditEventTypes, messageStates } = require('../../../../server/constants')
+  // use the actual function to add audit events to message
   const addAuditEvent = require('../../../../server/lib/messages/add-audit-event')
   const getMessageRows = require('../../../../server/lib/view/get-message-rows')
   const user = { id: 'create-user-id', companyName: 'companyName', givenName: 'givenName', surname: 'surname' }
@@ -9,6 +10,7 @@ describe('Get message rows', () => {
 
   const messageTemplate = {
     allOffices: false,
+    allOrgs: false,
     info: 'info here',
     officeCodes: ['NOT:real-code', 'UNK:Unknown'],
     orgCodes: ['ORG1', 'ORG2'],
@@ -49,7 +51,7 @@ describe('Get message rows', () => {
 
   test('when message has not been sent, correct rows are returned', () => {
     const message = { ...messageTemplate }
-    addAuditEvent(message, user) // use the actual function to add audit events for simplicity
+    addAuditEvent(message, user)
 
     const messageRows = getMessageRows(message)
 
@@ -61,7 +63,7 @@ describe('Get message rows', () => {
   test('when message is sent to all offices, display is correct', () => {
     const message = { ...messageTemplate }
     message.allOffices = true
-    addAuditEvent(message, user) // use the actual function to add audit events for simplicity
+    addAuditEvent(message, user)
 
     const messageRows = getMessageRows(message)
 
@@ -71,6 +73,19 @@ describe('Get message rows', () => {
     expect(messageRows[1][1].text).toEqual('All offices')
   })
 
+  test('when message is sent to all organisations, display is correct', () => {
+    const message = { ...messageTemplate }
+    message.allOrgs = true
+    addAuditEvent(message, user)
+
+    const messageRows = getMessageRows(message)
+
+    expect(messageRows).toHaveLength(9)
+    expectRowProperties(messageRows)
+    expect(messageRows[2][0].text).toEqual('Organisation recipients')
+    expect(messageRows[2][1].text).toEqual('All organisations')
+  })
+
   test.each([
     { cost: 4.2, rounded: '4.20' },
     { cost: 4.204, rounded: '4.20' },
@@ -78,11 +93,11 @@ describe('Get message rows', () => {
   ])('when message has sent state, correct rows are returned', ({ cost, rounded }) => {
     const message = { ...messageTemplate }
     message.state = messageStates.created
-    addAuditEvent(message, user) // use actual function to add audit events for simplicity
+    addAuditEvent(message, user)
     message.cost = cost
     message.contactCount = 343
     message.state = messageStates.sent
-    addAuditEvent(message, user) // use actual function to add audit events for simplicity
+    addAuditEvent(message, user)
     const sentStats = {
       failedToSend: 1,
       notifyDelivered: 2,
