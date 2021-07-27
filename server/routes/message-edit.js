@@ -51,8 +51,9 @@ module.exports = [
       const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, message.officeCodes)
       const orgCheckboxes = generateOrganisationCheckboxes(organisationList, message.orgCodes)
       const allOfficeRadios = sendToAllRadios(message.allOffices)
+      const allOrgRadios = sendToAllRadios(message.allOrgs)
 
-      return h.view(routeId, new Model({ ...message, allOfficeRadios, maxMessageLength, officeCheckboxes, orgCheckboxes }))
+      return h.view(routeId, new Model({ ...message, allOfficeRadios, allOrgRadios, maxMessageLength, officeCheckboxes, orgCheckboxes }))
     },
     options: {
       auth,
@@ -72,9 +73,10 @@ module.exports = [
       if (error) { return error }
 
       const { user } = request.auth.credentials
-      const { allOffices, info, officeCodes, orgCodes, text } = request.payload
+      const { allOffices, allOrgs, info, officeCodes, orgCodes, text } = request.payload
 
       message.allOffices = allOffices
+      message.allOrgs = allOrgs
       message.info = info?.trim()
       message.officeCodes = [officeCodes ?? []].flat()
       message.orgCodes = [orgCodes].flat()

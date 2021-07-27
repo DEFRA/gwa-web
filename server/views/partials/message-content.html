@@ -47,6 +47,26 @@
   })
 }}
 
+<h2 class="govuk-heading-m" id="officeCodes">Which organisations should the message be sent to?</h2>
+{{
+  govukRadios({
+    classes: "govuk-radios--inline",
+    idPrefix: "allOrgs",
+    name: "allOrgs",
+    fieldset: {
+      legend: {
+        text: "Do you want to send the message to all organisations?",
+        classes: "govuk-fieldset__legend--s"
+      }
+    },
+    hint: {
+      text: "This will override the selection of individual organisations."
+    },
+    items: data.allOrgRadios,
+    errorMessage: errors.allOrgs
+  })
+}}
+
 {{
   govukCheckboxes({
     id: "orgCodes",
@@ -54,12 +74,14 @@
     fieldset: {
       legend: {
         idPrefix: "orgCodes",
-        text: "Which organisations should the message be sent to?",
-        classes: "govuk-fieldset__legend--m"
+        text: "Select the individual organisations to send the message to",
+        classes: "govuk-fieldset__legend--s"
       }
     },
     classes: "govuk-!-margin-bottom-9",
-    hint: "Select all that apply.",
+    hint: {
+      text: "These only apply if not sending to all organisations."
+    },
     items: data.orgCheckboxes,
     errorMessage: errors.orgCodes
   })

@@ -12,6 +12,7 @@ module.exports = {
   },
   errorMessages: {
     allOffices: 'Select whether to send the message to all office locations',
+    allOrgs: 'Select whether to send the message to all organisations',
     officeCodes: 'Select at least one office location',
     orgCodes: 'Select at least one organisation',
     text: 'Enter the message text',
