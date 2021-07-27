@@ -18,7 +18,19 @@
 {{
   govukDetails({
     summaryText: "Help with message content",
-    html: "This is some additional guidance about the type of content to be sent for a message."
+    html: "The length of message determines how much it costs to send. It is a good idea to keep the message as short as is reasonable and ideally no more than 145 characters (758 characters remaining). 145 characters costs 1.6 pence (plus VAT) where as 146 characters costs 3.2 pence (plus VAT).<br>All messages have the name of the Notify service prepended to them i.e. <strong>'DefraGrpAlert: '</strong>. Doing so helps users recognise and trust the messages. The number of characters available is reduced accordingly:" +
+  "<table class='govuk-table'>" +
+    "<caption class='table-heading govuk-visually-hidden'>Text message pricing</caption>" +
+    "<thead class='govuk-table__head'><tr><th scope='col' class='govuk-table__header'>Message length</th><th scope='col' class='govuk-table__header'>Charge</th></tr></thead>" +
+    "<tbody class='govuk-table__body'>" +
+        "<tr class='govuk-table__row'><td class='govuk-table__cell'>Up to 145 characters</td><td class='govuk-table__cell'>1 text message</td></tr>" +
+        "<tr class='govuk-table__row'><td class='govuk-table__cell'>Up to 291 characters</td><td class='govuk-table__cell'>2 text messages</td></tr>" +
+        "<tr class='govuk-table__row'><td class='govuk-table__cell'>Up to 444 characters</td><td class='govuk-table__cell'>3 text messages</td></tr>" +
+        "<tr class='govuk-table__row'><td class='govuk-table__cell'>Up to 597 characters</td><td class='govuk-table__cell'>4 text messages</td></tr>" +
+        "<tr class='govuk-table__row'><td class='govuk-table__cell'>Up to 750 characters</td><td class='govuk-table__cell'>5 text messages</td></tr>" +
+        "<tr class='govuk-table__row'><td class='govuk-table__cell'>Up to 903 characters</td><td class='govuk-table__cell'>6 text messages</td></tr>" +
+    "</tbody>" +
+  "</table>"
   })
 }}
 
@@ -78,11 +90,18 @@
         classes: "govuk-fieldset__legend--s"
       }
     },
-    classes: "govuk-!-margin-bottom-9",
     hint: {
       text: "These only apply if not sending to all organisations."
     },
     items: data.orgCheckboxes,
     errorMessage: errors.orgCodes
+  })
+}}
+
+{{
+  govukDetails({
+    summaryText: "Help with sending to organisations",
+    html: "Messages can be sent to all organisations or a subset. To send to a subset, ensure the 'No' option is selected and then select the required organisations.<br>The <strong>Undefined</strong> option represents unrecognised organisations encountered during the data import. This is likely to be a problem with the source data of user's profiles in Azure Active Directory.",
+    classes: "govuk-!-margin-bottom-9"
   })
 }}
