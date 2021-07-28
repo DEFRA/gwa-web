@@ -3,7 +3,7 @@ const boom = require('@hapi/boom')
 const { messageStates } = require('../constants')
 const addAuditEvent = require('../lib/messages/add-audit-event')
 const costOfMessageSend = require('../lib/messages/cost-of-message-send')
-const { updateMessage } = require('../lib/db')
+const { getUsers, updateMessage } = require('../lib/db')
 const getMessageRows = require('../lib/view/get-message-rows')
 const BaseModel = require('../lib/misc/model')
 const getPhoneNumbersToSendTo = require('../lib/messages/phone-numbers-to-send-to')
@@ -16,11 +16,6 @@ class Model extends BaseModel {}
 const routeId = 'message-send'
 const path = `/${routeId}/{messageId}`
 
-async function refreshUsers (request) {
-  await request.server.methods.db.getUsers.cache.drop()
-  return request.server.methods.db.getUsers()
-}
-
 module.exports = [
   {
     method: 'GET',
@@ -29,7 +24,7 @@ module.exports = [
       const { error, message } = await verifyMessageRequest(request, 'Sent messages can not be sent again.')
       if (error) { return error }
 
-      const users = await request.server.methods.db.getUsers()
+      const users = await getUsers()
 
       const phoneNumbersToSendTo = getPhoneNumbersToSendTo(users, message)
 
@@ -56,7 +51,7 @@ module.exports = [
       const { error, message } = await verifyMessageRequest(request, 'Sent messages can not be sent again.')
       if (error) { return error }
 
-      const users = await refreshUsers(request)
+      const users = await getUsers(request)
 
       const phoneNumbersToSendTo = getPhoneNumbersToSendTo(users, message)
       if (phoneNumbersToSendTo.length === 0) {

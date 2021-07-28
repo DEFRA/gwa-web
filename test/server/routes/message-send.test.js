@@ -40,16 +40,16 @@ describe('Message send route', () => {
   jest.mock('../../../server/lib/data/upload-contact-list')
   const uploadContactList = require('../../../server/lib/data/upload-contact-list')
   jest.mock('../../../server/lib/db')
-  const { getMessage, updateMessage } = require('../../../server/lib/db')
+  const { getMessage, getUsers, updateMessage } = require('../../../server/lib/db')
   const editTime = Date.now()
   Date.now = jest.fn(() => editTime)
 
   beforeEach(async () => {
     jest.clearAllMocks()
     server = await createServer()
-    server.methods.db.getUsers = jest.fn().mockResolvedValue(userList)
     server.methods.getNotifyStatusViewData = jest.fn().mockResolvedValue(notifyStatusViewData)
     getMessage.mockResolvedValue({ ...message })
+    getUsers.mockResolvedValue(userList)
   })
 
   afterEach(async () => {
@@ -260,8 +260,6 @@ describe('Message send route', () => {
     })
 
     test('uploads contact list, updates message and responds with 302 to the sent message when message has been sent', async () => {
-      const dropGetUsersMock = jest.fn()
-      server.methods.db.getUsers.cache = { drop: dropGetUsersMock }
       const dropGetSentMessagesMock = jest.fn()
       server.methods.db.getSentMessages.cache = { drop: dropGetSentMessagesMock }
       updateMessage.mockResolvedValue({ statusCode: 200 })
@@ -300,9 +298,8 @@ describe('Message send route', () => {
         ...message,
         state: updatedState
       }
-      expect(dropGetUsersMock).toHaveBeenCalled()
       expect(uploadContactList).toHaveBeenCalledWith(updatedMessage, contacts)
-      expect(dropGetUsersMock).toHaveBeenCalled()
+      expect(dropGetSentMessagesMock).toHaveBeenCalled()
       expect(updateMessage).toHaveBeenCalledWith({
         ...updatedMessage
       })
@@ -339,8 +336,7 @@ describe('Message send route', () => {
     })
 
     test('responds with 400 when no users to send message to', async () => {
-      server.methods.db.getUsers = jest.fn().mockResolvedValue([])
-      server.methods.db.getUsers.cache = { drop: jest.fn() }
+      getUsers.mockResolvedValue([])
 
       const res = await server.inject({
         method,
@@ -368,7 +364,6 @@ describe('Message send route', () => {
     })
 
     test('responds with 500 when problem updating message', async () => {
-      server.methods.db.getUsers.cache = { drop: jest.fn() }
       updateMessage.mockResolvedValue({ statusCode: 500 })
       uploadContactList.mockResolvedValue(true)
 
@@ -398,7 +393,6 @@ describe('Message send route', () => {
     })
 
     test('responds with 500 when problem uploading contact list', async () => {
-      server.methods.db.getUsers.cache = { drop: jest.fn() }
       updateMessage.mockResolvedValue({ statusCode: 200 })
       uploadContactList.mockResolvedValue(false)
 

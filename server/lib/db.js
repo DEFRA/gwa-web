@@ -107,10 +107,7 @@ async function getUser (id) {
 }
 
 /**
- * Get all users. This method is added to the web server via
- * [Server Methods](https://hapi.dev/tutorials/servermethods/?lang=en_US) to
- * improve performance.
- * It is accessible via `server.methods.db.getUsers`.
+ * Get all users.
  *
  * @returns {Array} all users.
  */
