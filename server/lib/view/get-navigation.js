@@ -1,7 +1,16 @@
 const { scopes } = require('../../permissions')
 const { navigation: { header } } = require('../../constants')
 
-module.exports = (ctx, view) => {
+/**
+ * Generates navigation to use in in
+ * [GOV.UK Header](https://design-system.service.gov.uk/components/header/)
+ * component, used in `layout.html`.
+ *
+ * @param {object} ctx object containing `auth` from te request.
+ * @param {string} navItem used to set which nav item will be active.
+ * @returns {Array} representing the navigation array.
+ */
+module.exports = (ctx, navItem) => {
   const { auth } = ctx
   const navigation = [header.home]
 
@@ -20,7 +29,7 @@ module.exports = (ctx, view) => {
   }
 
   navigation.forEach(n => {
-    n.active = n.text === view
+    n.active = n.text === navItem
   })
 
   return navigation

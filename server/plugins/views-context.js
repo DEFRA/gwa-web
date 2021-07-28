@@ -2,7 +2,7 @@ const { navigation: { header } } = require('../constants')
 const getNavigation = require('../lib/view/get-navigation')
 const { scopes } = require('../permissions')
 
-function getView (request) {
+function getNavItem (request) {
   const pathToMatch = `/${request.path.split('/')[1]}`
   if ([header.home.href].includes(pathToMatch)) {
     return header.home.text
@@ -44,9 +44,9 @@ module.exports = {
           ctx.auth = auth
           ctx.scopes = scopes
 
-          const view = getView(request)
+          const navItem = getNavItem(request)
 
-          if (view === header.messages.text) {
+          if (navItem === header.messages.text) {
             ctx.displayBanner = true
             ctx.notifyStatus = await request.server.methods.getNotifyStatusViewData()
           }
@@ -56,7 +56,7 @@ module.exports = {
             ctx.credentials = auth.credentials
           }
 
-          ctx.navigation = getNavigation(ctx, view)
+          ctx.navigation = getNavigation(ctx, navItem)
 
           response.source.context = ctx
         }
