@@ -1,5 +1,6 @@
-const { scopes } = require('../permissions')
 const { navigation: { header } } = require('../constants')
+const getNavigation = require('../lib/view/get-navigation')
+const { scopes } = require('../permissions')
 
 function getView (request) {
   const pathToMatch = `/${request.path.split('/')[1]}`
@@ -44,56 +45,18 @@ module.exports = {
           ctx.scopes = scopes
 
           const view = getView(request)
-          const navigation = [{
-            ...header.home,
-            active: view === header.home.text
-          }]
 
           if (view === header.messages.text) {
             ctx.displayBanner = true
             ctx.notifyStatus = await request.server.methods.getNotifyStatusViewData()
           }
 
-          if (auth.isAuthenticated) {
+          if (ctx.auth.isAuthenticated) {
             ctx.user = auth.credentials.user
             ctx.credentials = auth.credentials
-            navigation.push({
-              ...header.account,
-              active: view === header.account.text
-            })
-
-            const manageScope = ctx.credentials.scope.includes(scopes.data.manage)
-            if (manageScope) {
-              navigation.push({
-                ...header.data,
-                active: view === header.data.text
-              })
-              navigation.push({
-                ...header.systemStatus,
-                active: view === header.systemStatus.text
-              })
-            }
-
-            if (ctx.credentials.scope.includes(scopes.message.manage)) {
-              navigation.splice(-1, 0, {
-                ...header.messages,
-                active: view === header.messages.text
-              })
-            }
-
-            // if (manageScope) {
-            //   navigation.push({
-            //     ...header.systemStatus,
-            //     active: view === header.systemStatus.text
-            //   })
-            // }
-
-            navigation.push(header.signOut)
-          } else {
-            navigation.push(header.signIn)
           }
 
-          ctx.navigation = navigation
+          ctx.navigation = getNavigation(ctx, view)
 
           response.source.context = ctx
         }
