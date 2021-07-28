@@ -23,6 +23,7 @@ function getView (request) {
     return header.systemStatus.text
   }
 }
+
 /**
  * Adds an `onPreResponse` listener to apply
  * some common props to the view context.
@@ -67,21 +68,25 @@ module.exports = {
                 ...header.data,
                 active: view === header.data.text
               })
-            }
-
-            if (ctx.credentials.scope.includes(scopes.message.manage)) {
-              navigation.push({
-                ...header.messages,
-                active: view === header.messages.text
-              })
-            }
-
-            if (manageScope) {
               navigation.push({
                 ...header.systemStatus,
                 active: view === header.systemStatus.text
               })
             }
+
+            if (ctx.credentials.scope.includes(scopes.message.manage)) {
+              navigation.splice(-1, 0, {
+                ...header.messages,
+                active: view === header.messages.text
+              })
+            }
+
+            // if (manageScope) {
+            //   navigation.push({
+            //     ...header.systemStatus,
+            //     active: view === header.systemStatus.text
+            //   })
+            // }
 
             navigation.push(header.signOut)
           } else {
