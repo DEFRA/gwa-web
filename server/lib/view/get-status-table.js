@@ -3,8 +3,8 @@ const { formatDate } = require('../misc/helpers')
 const { dataExtractContainer, dataExtractStorageConnectionString, dataSourcesContainer, dataSourcesStorageConnectionString } = require('../../config')
 
 const fileMap = {
-  'aad-users.json': 'Azure Active Directory extract',
-  'aw-users.json': 'AirWatch extract'
+  'aad-users.json': 'Azure Active Directory',
+  'aw-users.json': 'AirWatch'
 }
 
 module.exports = async () => {
@@ -13,11 +13,12 @@ module.exports = async () => {
     getContainerBlobs(dataSourcesStorageConnectionString, dataSourcesContainer)
   ])
 
-  const head = [{ text: 'Data item' }, { text: 'Last modified' }]
+  const head = [{ text: 'Data item' }, { text: 'File' }, { text: 'Last modified' }]
   const rows = []
   rows.push(dataExtractBlobs.map(b => {
     return [
-      { text: fileMap[b.name] },
+      { text: `${fileMap[b.name]} extract` },
+      { text: b.name },
       { text: formatDate(b.properties.lastModified) }
     ]
   }))
@@ -26,6 +27,7 @@ module.exports = async () => {
     .map(b => {
       return [
         { text: `Upload for ${b.name.replace('.json', '')} (ALB)` },
+        { text: b.name },
         { text: formatDate(b.properties.lastModified) }
       ]
     }))
