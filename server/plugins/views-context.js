@@ -61,7 +61,8 @@ module.exports = {
               active: view === header.account.text
             })
 
-            if (ctx.credentials.scope.includes(scopes.data.manage)) {
+            const manageScope = ctx.credentials.scope.includes(scopes.data.manage)
+            if (manageScope) {
               navigation.push({
                 ...header.data,
                 active: view === header.data.text
@@ -75,7 +76,7 @@ module.exports = {
               })
             }
 
-            if (ctx.credentials.scope.includes(scopes.data.manage)) {
+            if (manageScope) {
               navigation.push({
                 ...header.systemStatus,
                 active: view === header.systemStatus.text
