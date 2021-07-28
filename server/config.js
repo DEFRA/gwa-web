@@ -8,6 +8,8 @@ const schema = Joi.object().keys({
   aadTenantId: Joi.string().guid(),
   contactListContainer: Joi.string().default('contact-list'),
   contactListStorageConnectionString: Joi.string().required(),
+  dataExtractContainer: Joi.string().default('data-extract'),
+  dataExtractStorageConnectionString: Joi.string().required(),
   dataSourcesContainer: Joi.string().default('data-sources'),
   dataSourcesStorageConnectionString: Joi.string().required(),
   db: Joi.object().keys({
@@ -27,6 +29,7 @@ const schema = Joi.object().keys({
   isLocal: Joi.boolean().default(false),
   forceHttps: Joi.boolean().required(),
   logoutRedirectUri: Joi.string().uri(),
+  notifyDashboardUri: Joi.string().uri(),
   phaseBannerHtml: Joi.string().required(),
   phaseBannerTag: Joi.string().required(),
   phoneNumbersContainer: Joi.string().default('phone-numbers'),
@@ -40,6 +43,8 @@ const config = {
   aadTenantId: process.env.AAD_TENANT_ID,
   contactListContainer: process.env.CONTACT_LIST_CONTAINER,
   contactListStorageConnectionString: process.env.CONTACT_LIST_STORAGE_CONNECTION_STRING,
+  dataExtractContainer: process.env.DATA_EXTRACT_CONTAINER,
+  dataExtractStorageConnectionString: process.env.DATA_EXTRACT_STORAGE_CONNECTION_STRING,
   dataSourcesContainer: process.env.DATA_SOURCES_CONTAINER,
   dataSourcesStorageConnectionString: process.env.DATA_SOURCES_STORAGE_CONNECTION_STRING,
   db: {
@@ -58,6 +63,7 @@ const config = {
   },
   forceHttps: process.env.FORCE_HTTPS,
   logoutRedirectUri: process.env.LOGOUT_REDIRECT_URI,
+  notifyDashboardUri: process.env.NOTIFY_DASHBOARD_URI,
   isLocal: process.env.NODE_ENV === 'local',
   phaseBannerHtml: process.env.PHASE_BANNER_HTML,
   phaseBannerTag: process.env.PHASE_BANNER_TAG,
