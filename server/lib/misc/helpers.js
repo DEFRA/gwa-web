@@ -86,7 +86,7 @@ function getMessageRows (messages) {
       const lastEvent = message.auditEvents.sort((e1, e2) => e2.time - e1.time)[0]
       return [
         { text: formatDate(message.lastUpdatedAt) },
-        { text: message.text.slice(0, 47) + (message.text.length > 47 ? ' ...' : '') },
+        { text: (message.text.length > 47 ? `${message.text.slice(0, 47)} ...` : message.text) },
         { html: `<a href="mailto:${lastEvent.user.id}">${lastEvent.user.id}</a>` },
         { html: `<a href='/message-view/${message.id}'>View</a>` }
       ]
