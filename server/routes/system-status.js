@@ -11,7 +11,7 @@ module.exports = [
       return h.view('system-status', { notifyDashboardUri, table })
     },
     options: {
-      auth: { access: { scope: [`+${scopes.message.manage}`] } }
+      auth: { access: { scope: [`+${scopes.data.manage}`] } }
     }
   }
 ]

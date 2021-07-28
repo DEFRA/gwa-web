@@ -73,6 +73,9 @@ module.exports = {
                 ...header.messages,
                 active: view === header.messages.text
               })
+            }
+
+            if (ctx.credentials.scope.includes(scopes.data.manage)) {
               navigation.push({
                 ...header.systemStatus,
                 active: view === header.systemStatus.text

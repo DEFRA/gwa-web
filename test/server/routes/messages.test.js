@@ -4,6 +4,7 @@ const generateMessages = require('../../helpers/generate-messages')
 const { auditEventTypes, messageStates, navigation } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
+const cleanUpTableText = require('../../helpers/clean-up-table-text')
 
 describe('Messages route', () => {
   const email = 'test@gwa.defra.co.uk'
@@ -16,10 +17,6 @@ describe('Messages route', () => {
 
   const sentTime = Date.now()
   Date.now = jest.fn(() => sentTime)
-
-  function cleanUpTableText (header) {
-    return header.trim().replace(/[\n\r\t]/g, '').replace(/ +/g, ' ')
-  }
 
   beforeEach(async () => {
     jest.clearAllMocks()

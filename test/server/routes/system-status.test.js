@@ -1,15 +1,20 @@
 const cheerio = require('cheerio')
+const cleanUpTableText = require('../../helpers/clean-up-table-text')
 const { navigation } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
 
-describe('Data manage route', () => {
+describe('System status route', () => {
   const email = 'test@gwa.defra.co.uk'
   const id = 'guid'
-  const url = '/data-manage'
+  const url = '/system-status'
   let server
 
+  jest.mock('../../../server/lib/view/get-status-table')
+  const getStatusTable = require('../../../server/lib/view/get-status-table')
+
   beforeEach(async () => {
+    jest.clearAllMocks()
     server = await createServer()
   })
 
@@ -53,9 +58,12 @@ describe('Data manage route', () => {
   })
 
   test.each([
-    { scope: [scopes.data.manage], buttonCount: 2 },
-    { scope: [scopes.data.manage, scopes.message.manage], buttonCount: 3 }
-  ])('responds with 200 when user has sufficient scope - admin', async ({ scope, buttonCount }) => {
+    { scope: [scopes.data.manage] },
+    { scope: [scopes.data.manage, scopes.message.manage] }
+  ])('responds with 200 when user has sufficient scope', async ({ scope }) => {
+    const head = [{ text: 'Data item' }, { text: 'File' }, { text: 'Last modified' }]
+    const rows = [[{ text: 'Data item extract' }, { text: 'extact.json' }, { text: Date.now().toLocaleString('en-GB') }]]
+    getStatusTable.mockResolvedValue({ head, rows })
     const res = await server.inject({
       method: 'GET',
       url,
@@ -78,18 +86,15 @@ describe('Data manage route', () => {
     expect(res.statusCode).toEqual(200)
 
     const $ = cheerio.load(res.payload)
-    expect($('.govuk-heading-xl').text()).toMatch('Manage data')
-    const button = $('.govuk-button')
-    expect(button).toHaveLength(buttonCount)
-    expect(button.eq(0).text()).toMatch('ALB data')
-    expect(button.eq(0).attr('href')).toEqual('/org-data')
-    expect(button.eq(1).text()).toMatch('Reference data')
-    expect(button.eq(1).attr('href')).toEqual('/data-reference')
-    if (scope.includes(scopes.message.manage)) {
-      expect(button.eq(2).text()).toMatch('Phone number data')
-      expect(button.eq(2).attr('href')).toEqual('/phone-numbers')
-    }
-    expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.data.text)
+    expect($('.govuk-heading-xl').text()).toMatch('System status')
+    expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.systemStatus.text)
     expect($('.govuk-phase-banner')).toHaveLength(0)
+    const headings = $('.govuk-heading-m')
+    expect(headings).toHaveLength(2)
+    expect(headings.eq(0).text()).toEqual('Data items')
+    expect(headings.eq(1).text()).toEqual('Notify service')
+    const table = $('table')
+    expect(cleanUpTableText($('thead tr', table).text())).toMatch(head.map(x => x.text).join(' '))
+    expect(cleanUpTableText($('tbody tr', table).text())).toMatch(rows[0].map(x => x.text).join(' '))
   })
 })
