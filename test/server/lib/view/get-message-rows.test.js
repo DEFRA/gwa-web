@@ -2,6 +2,7 @@ describe('Get message rows', () => {
   const { auditEventTypes, messageStates } = require('../../../../server/constants')
   // use the actual function to add audit events to message
   const addAuditEvent = require('../../../../server/lib/messages/add-audit-event')
+  const { formatDate } = require('../../../../server/lib/misc/helpers')
   const getMessageRows = require('../../../../server/lib/view/get-message-rows')
   const user = { id: 'create-user-id', companyName: 'companyName', givenName: 'givenName', surname: 'surname' }
 
@@ -39,12 +40,12 @@ describe('Get message rows', () => {
     expect(rows[4][1].text).toEqual(message.info)
     const createEvent = message.auditEvents.filter(e => e.type === auditEventTypes.create)[0]
     expect(rows[5][0].text).toEqual('Created at')
-    expect(rows[5][1].text).toEqual(new Date(createEvent.time).toLocaleString())
+    expect(rows[5][1].text).toEqual(formatDate(createEvent.time))
     expect(rows[6][0].text).toEqual('Created by')
     expect(rows[6][1].text).toEqual(createEvent.user.id)
     const lastEvent = message.auditEvents.sort((e1, e2) => e1.time - e2.time)[0]
     expect(rows[7][0].text).toEqual('Last updated at')
-    expect(rows[7][1].text).toEqual(new Date(lastEvent.time).toLocaleString())
+    expect(rows[7][1].text).toEqual(formatDate(lastEvent.time))
     expect(rows[8][0].text).toEqual('Last updated by')
     expect(rows[8][1].text).toEqual(lastEvent.user.id)
   }
@@ -116,7 +117,7 @@ describe('Get message rows', () => {
     expectStandardRows(messageRows, message)
     const sentEvent = message.auditEvents.filter(e => e.type === auditEventTypes.send)[0]
     expect(messageRows[9][0].text).toEqual('Sent at')
-    expect(messageRows[9][1].text).toEqual(new Date(sentEvent.time).toLocaleString())
+    expect(messageRows[9][1].text).toEqual(formatDate(sentEvent.time))
     expect(messageRows[10][0].text).toEqual('Sent by')
     expect(messageRows[10][1].text).toEqual(sentEvent.user.id)
     expect(messageRows[11][0].text).toEqual('Approx cost')
@@ -136,8 +137,8 @@ describe('Get message rows', () => {
     expect(messageRows[18][0].text).toEqual('Messages failed by Notify')
     expect(messageRows[18][1].text).toEqual(sentStats.notifyFailed)
     expect(messageRows[19][0].text).toEqual('First message sent at')
-    expect(messageRows[19][1].text).toEqual(new Date(sentStats.timeOfFirstSend).toLocaleString())
+    expect(messageRows[19][1].text).toEqual(formatDate(sentStats.timeOfFirstSend))
     expect(messageRows[20][0].text).toEqual('Last message sent at')
-    expect(messageRows[20][1].text).toEqual(new Date(sentStats.timeOfLastSend).toLocaleString())
+    expect(messageRows[20][1].text).toEqual(formatDate(sentStats.timeOfLastSend))
   })
 })

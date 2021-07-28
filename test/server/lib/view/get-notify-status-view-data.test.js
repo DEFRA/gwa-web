@@ -1,5 +1,5 @@
 describe('Notify status view data', () => {
-  const { getComponentTag, getServiceTag } = require('../../../../server/lib/misc/helpers')
+  const { formatDate, getComponentTag, getServiceTag } = require('../../../../server/lib/misc/helpers')
   const getNotifyStatusViewData = require('../../../../server/lib/view/get-notify-status-view-data')
   const mockResponse = require('../../../data/notify-summary-example.json')
 
@@ -45,7 +45,7 @@ describe('Notify status view data', () => {
       expect(c[1].html).toEqual(`<strong class="govuk-tag ${getComponentTag(status)}">${status}</strong>`)
     })
     expect(data).toHaveProperty('lastChecked')
-    expect(data.lastChecked).toEqual(new Date(lastCheckDate).toLocaleString())
+    expect(data.lastChecked).toEqual(formatDate(lastCheckDate))
   })
 
   test.each([
@@ -97,6 +97,6 @@ describe('Notify status view data', () => {
     expect(data.service.description).toEqual('Unknown')
     expect(data.service.tag).toEqual('govuk-tag--grey')
     expect(data.componentRows).toEqual([])
-    expect(data.lastChecked).toEqual(new Date(lastCheckDate).toLocaleString())
+    expect(data.lastChecked).toEqual(formatDate(lastCheckDate))
   })
 })

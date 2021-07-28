@@ -1,10 +1,11 @@
 const cheerio = require('cheerio')
 const { v4: uuid } = require('uuid')
+const cleanUpTableText = require('../../helpers/clean-up-table-text')
 const generateMessages = require('../../helpers/generate-messages')
 const { auditEventTypes, messageStates, navigation } = require('../../../server/constants')
 const createServer = require('../../../server/index')
+const { formatDate } = require('../../../server/lib/misc/helpers')
 const { scopes } = require('../../../server/permissions')
-const cleanUpTableText = require('../../helpers/clean-up-table-text')
 
 describe('Messages route', () => {
   const email = 'test@gwa.defra.co.uk'
@@ -186,19 +187,19 @@ describe('Messages route', () => {
 
       const msgCreatedRows = $('tbody tr', msgTables.eq(0))
       expect(msgCreatedRows).toHaveLength(createdMessages.length)
-      expect(cleanUpTableText(msgCreatedRows.text())).toMatch(`${new Date(createMessageBase.lastUpdatedAt).toLocaleString()} ${createMessageBase.text} ${edituser} View`)
+      expect(cleanUpTableText(msgCreatedRows.text())).toMatch(`${formatDate(createMessageBase.lastUpdatedAt)} ${createMessageBase.text} ${edituser} View`)
       expect($('a', msgCreatedRows).eq(0).attr('href')).toEqual(`mailto:${edituser}`)
       expect($('a', msgCreatedRows).eq(1).attr('href')).toEqual(`/message-view/${createMessageBase.id}`)
 
       const msgEditedRows = $('tbody tr', msgTables.eq(1))
       expect(msgEditedRows).toHaveLength(editedMessages.length)
-      expect(cleanUpTableText(msgEditedRows.text())).toMatch(`${new Date(editedMessageBase.lastUpdatedAt).toLocaleString()} ${editedMessageBase.text} ${edituser} View`)
+      expect(cleanUpTableText(msgEditedRows.text())).toMatch(`${formatDate(editedMessageBase.lastUpdatedAt)} ${editedMessageBase.text} ${edituser} View`)
       expect($('a', msgEditedRows).eq(0).attr('href')).toEqual(`mailto:${edituser}`)
       expect($('a', msgEditedRows).eq(1).attr('href')).toEqual(`/message-view/${editedMessageBase.id}`)
 
       const msgSentRows = $('tbody tr', msgTables.eq(2))
       expect(msgSentRows).toHaveLength(sentMessages.length)
-      expect(cleanUpTableText(msgSentRows.text())).toMatch(`${new Date(sentMessages[0].lastUpdatedAt).toLocaleString()} ${sentMessages[0].text} ${sentUser} View`)
+      expect(cleanUpTableText(msgSentRows.text())).toMatch(`${formatDate(sentMessages[0].lastUpdatedAt)} ${sentMessages[0].text} ${sentUser} View`)
       expect($('a', msgSentRows).eq(0).attr('href')).toEqual(`mailto:${sentUser}`)
       expect($('a', msgSentRows).eq(1).attr('href')).toEqual(`/message-view/${sentMessages[0].id}`)
     })

@@ -2,6 +2,7 @@ const cheerio = require('cheerio')
 const generateMessages = require('../../helpers/generate-messages')
 const { auditEventTypes, messages: { sentMessagePageSize }, messageStates, navigation } = require('../../../server/constants')
 const createServer = require('../../../server/index')
+const { formatDate } = require('../../../server/lib/misc/helpers')
 const { scopes } = require('../../../server/permissions')
 
 describe('Messages sent route', () => {
@@ -29,7 +30,7 @@ describe('Messages sent route', () => {
     expect(messageRows).toHaveLength(messagesOnPage.length)
     messageRows.each((i, row) => {
       const msg = messagesOnPage[i]
-      expect(cleanUpTableText($(row).text())).toMatch(`${new Date(msg.lastUpdatedAt).toLocaleString()} ${msg.text} ${sentUser} View`)
+      expect(cleanUpTableText($(row).text())).toMatch(`${formatDate(msg.lastUpdatedAt)} ${msg.text} ${sentUser} View`)
       expect($('a', row).eq(0).attr('href')).toEqual(`mailto:${sentUser}`)
       expect($('a', row).eq(1).attr('href')).toEqual(`/message-view/${msg.id}`)
     })

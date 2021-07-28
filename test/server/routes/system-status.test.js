@@ -3,6 +3,7 @@ const cleanUpTableText = require('../../helpers/clean-up-table-text')
 const { navigation } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
+const { formatDate } = require('../../../server/lib/misc/helpers')
 
 describe('System status route', () => {
   const email = 'test@gwa.defra.co.uk'
@@ -62,7 +63,7 @@ describe('System status route', () => {
     { scope: [scopes.data.manage, scopes.message.manage] }
   ])('responds with 200 when user has sufficient scope', async ({ scope }) => {
     const head = [{ text: 'Data item' }, { text: 'File' }, { text: 'Last modified' }]
-    const rows = [[{ text: 'Data item extract' }, { text: 'extact.json' }, { text: Date.now().toLocaleString('en-GB') }]]
+    const rows = [[{ text: 'Data item extract' }, { text: 'extact.json' }, { text: formatDate(Date.now()) }]]
     getStatusTable.mockResolvedValue({ head, rows })
     const res = await server.inject({
       method: 'GET',
