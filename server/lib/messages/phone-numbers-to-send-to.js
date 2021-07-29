@@ -27,7 +27,8 @@ function isMessageForSingleOfficeAndDoesPhoneNumberSubscribeToAllOfficesInTheAre
 module.exports = (users, message) => {
   const phoneNumbers = []
   users
-    .filter(x => x.active && message.orgCodes.includes(x.orgCode))
+    .filter(x => x.active)
+    .filter(x => message.allOrgs ? true : message.orgCodes.includes(x.orgCode))
     .forEach(user => {
       user.phoneNumbers.forEach(pn => {
         if (isMessageForAllOfficesAndIsPhoneNumberSubscribedToAtLeastOneOffice(message, pn) ||

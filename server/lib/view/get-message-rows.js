@@ -20,7 +20,7 @@ module.exports = (message, sentStats = {}) => {
   const rows = [
     [{ text: 'Message state' }, { text: message.state.toUpperCase() }],
     [{ text: 'Office location recipients' }, { text: message.allOffices ? 'All offices' : message.officeCodes.join(', ') }],
-    [{ text: 'Organisation recipients' }, { text: message.orgCodes.join(', ') }],
+    [{ text: 'Organisation recipients' }, { text: message.allOrgs ? 'All organisations' : message.orgCodes.join(', ') }],
     [{ text: 'Message text' }, { text: message.text }],
     [{ text: 'Additional information' }, { text: message.info }],
     [{ text: 'Created at' }, { text: getDate(createEvent.time) }],

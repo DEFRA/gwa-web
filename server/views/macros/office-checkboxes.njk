@@ -1,47 +1,58 @@
 {% from "govuk/components/accordion/macro.njk" import govukAccordion %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
 
 {% macro officeCheckboxes(id, data, errors) %}
-  <div class="govuk-form-group {{ 'govuk-form-group--error' if errors.officeCodes }}">
-    {% if data.allOfficeRadios %}
-      <h2 class="govuk-heading-m" id="officeCodes">Which office locations should the message be sent to?</h2>
-      <p>Selecting the option to send to all office locations will do just that. If you want more granular control all office locations within an area can have messages sent to them. This is done by selecting the first option within the area (the 'all' option). Should even more granular control be required, individual office locations can be selected within the area.</p>
-      <p class="govuk-!-margin-bottom-5">It is worth noting that the send to all office will override any selections made for the areas and likewise, if the all area option has been selected this will override any selections of individual offices.</p>
-      {{
-        govukRadios({
-          classes: 'govuk-radios--inline',
-          idPrefix: 'allOffices',
-          name: 'allOffices',
-          fieldset: {
-            legend: {
-              text: 'Do you want to send the message to all office locations?',
-              classes: 'govuk-fieldset__legend--s'
-            }
-          },
-          hint: {
-            text: 'This will override the selection of individual offices.'
-          },
-          items: data.allOfficeRadios,
-          errorMessage: errors.allOffices
-        })
-      }}
-  {% else %}
-    <h2 class="govuk-heading-m" id="officeCodes">Which office locations should this number be subscribed to?</h2>
-    <p>In order to select all of the individual office locations within an area select the first item in the list (the 'all' option). This will subscribe you to all of the notifications for offices in the area.</p>
-    <p class="govuk-!-margin-bottom-5">When the all option for an area is selected, any individual office location selections are overridden. If you wish to remove the subscription to all office locations within an area, ensure the all option is not selected and select the individual office locations required.</p>
-  {% endif %}
-
-    {% if errors.officeCodes.text %}
-      <span id="officeCodes-error" class="govuk-error-message">
-        <span class="govuk-visually-hidden">Error:</span> {{ errors.officeCodes.text }}
-      </span>
-    {% endif %}
-
+<div class="govuk-form-group {{ "govuk-form-group--error" if errors.officeCodes }}">
+  {% if data.allOfficeRadios %}
+    <h2 class="govuk-heading-m" id="officeCodes">Which office locations should the message be sent to?</h2>
     {{
-      govukAccordion({
-        id: id,
-        items: data.officeCheckboxes
+      govukRadios({
+        classes: "govuk-radios--inline",
+        idPrefix: "allOffices",
+        name: "allOffices",
+        fieldset: {
+          legend: {
+            text: "Do you want to send the message to all office locations?",
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        hint: {
+          text: "This will override the selection of individual areas."
+        },
+        items: data.allOfficeRadios,
+        errorMessage: errors.allOffices
       })
     }}
-  </div>
+
+    {{
+      govukDetails({
+        summaryText: "Help with sending to office locations",
+        html: "Messages can be sent to all office locations or a subset. To send to a subset, ensure the 'No' option is selected and then select the required office location areas, this includes all of the office locations within the area.<br>The <strong>Unassigned</strong> option represents unrecognised office locations encountered during the data import. This is likely to be a problem with the source data of user's profiles in Azure Active Directory.",
+        classes: "govuk-!-margin-bottom-9"
+      })
+    }}
+  {% else %}
+    <h2 class="govuk-heading-m" id="officeCodes">Which office locations should this number be subscribed to?</h2>
+    {{
+      govukDetails({
+        summaryText: "Help with subscribing to office locations",
+        html: "Any number of areas can be subscribed to, however, it is advisable to only subscribe to areas you travel to regularly."
+      })
+    }}
+  {% endif %}
+
+  {% if errors.officeCodes.text %}
+    <span id="officeCodes-error" class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span> {{ errors.officeCodes.text }}
+    </span>
+  {% endif %}
+
+  {{
+    govukAccordion({
+      id: id,
+      items: data.officeCheckboxes
+    })
+  }}
+</div>
 {% endmacro %}

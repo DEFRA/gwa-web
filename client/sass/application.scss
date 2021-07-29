@@ -27,8 +27,7 @@ $govuk-global-styles: true;
   background-color: govuk-shade($govuk-link-visited-colour, 10);
 }
 
-.govuk-header__logo,
-.govuk-footer__link.govuk-footer__copyright-logo {
+.govuk-header__logo {
   display: none;
 }
 

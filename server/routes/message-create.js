@@ -10,7 +10,7 @@ const { message: { failAction } } = require('../lib/route/fail-actions')
 const { message: { payload } } = require('../lib/route/validations')
 const generateOfficeCheckboxes = require('../lib/view/office-checkboxes')
 const generateOrganisationCheckboxes = require('../lib/view/organisation-checkboxes')
-const generateSendToAllOrgsRadios = require('../lib/view/send-to-all-radios')
+const sendToAllRadios = require('../lib/view/send-to-all-radios')
 
 class Model extends BaseModel {
   constructor (data, err) {
@@ -33,9 +33,10 @@ module.exports = [
       ])
       const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap)
       const orgCheckboxes = generateOrganisationCheckboxes(organisationList)
-      const allOfficeRadios = generateSendToAllOrgsRadios()
+      const allOfficeRadios = sendToAllRadios()
+      const allOrgRadios = sendToAllRadios()
 
-      return h.view(routeId, new Model({ allOfficeRadios, maxMessageLength, officeCheckboxes, orgCheckboxes }))
+      return h.view(routeId, new Model({ allOfficeRadios, allOrgRadios, maxMessageLength, officeCheckboxes, orgCheckboxes }))
     },
     options: {
       auth
@@ -46,10 +47,11 @@ module.exports = [
     path,
     handler: async (request, h) => {
       const { user } = request.auth.credentials
-      const { allOffices, info, officeCodes, orgCodes, text } = request.payload
+      const { allOffices, allOrgs, info, officeCodes, orgCodes, text } = request.payload
 
       const message = {
         allOffices,
+        allOrgs,
         id: uuid(),
         info: info?.trim(),
         officeCodes: [officeCodes ?? []].flat(),

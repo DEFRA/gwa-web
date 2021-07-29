@@ -1,8 +1,8 @@
-const BaseModel = require('../misc/model')
 const { getMappedErrors } = require('../misc/errors')
+const BaseModel = require('../misc/model')
 const generateOfficeCheckboxes = require('../view/office-checkboxes')
 const generateOrganisationCheckboxes = require('../view/organisation-checkboxes')
-const generateSendToAllOrgsRadios = require('../view/send-to-all-radios')
+const sendToAllRadios = require('../view/send-to-all-radios')
 const { errorMessages, textMessages: { maxMessageLength } } = require('../../constants')
 
 class Model extends BaseModel {
@@ -16,7 +16,7 @@ module.exports = {
     failAction: async (request, h, err, routeId) => {
       const errors = getMappedErrors(err, errorMessages)
 
-      let { allOffices, officeCodes, orgCodes } = request.payload
+      let { allOffices, allOrgs, officeCodes, orgCodes } = request.payload
       if (typeof (officeCodes) === 'string') {
         officeCodes = [officeCodes]
       }
@@ -29,9 +29,10 @@ module.exports = {
       ])
       const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, officeCodes)
       const orgCheckboxes = generateOrganisationCheckboxes(organisationList, orgCodes)
-      const allOfficeRadios = generateSendToAllOrgsRadios(allOffices)
+      const allOfficeRadios = sendToAllRadios(allOffices)
+      const allOrgRadios = sendToAllRadios(allOrgs)
 
-      return h.view(routeId, new Model({ ...request.payload, allOfficeRadios, maxMessageLength, officeCheckboxes, orgCheckboxes }, errors)).takeover()
+      return h.view(routeId, new Model({ ...request.payload, allOfficeRadios, allOrgRadios, maxMessageLength, officeCheckboxes, orgCheckboxes }, errors)).takeover()
     }
   }
 }
