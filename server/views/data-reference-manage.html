@@ -1,6 +1,7 @@
 {% extends 'form.html' %}
 
 {% set formEncType = 'multipart/form-data' %}
+{% set formSubmitButtonText = 'Upload' %}
 
 {% block beforeForm %}
   <h1 class="govuk-heading-xl">Manage {{ data.heading }} reference data</h1>
@@ -8,7 +9,7 @@
   <p class="govuk-body">{{ data.blurb | safe }}</p>
 
   <a href='/data-reference-download/{{ data.filename }}'
-     class='govuk-button govuk-button--start'
+     class='govuk-button'
      download='{{ data.download }}'>Download</a>
 {% endblock %}
 
@@ -27,10 +28,14 @@
       errorMessage: errors.file
     })
   }}
-{% endblock %}
 
-{% block button %}
-  {{ govukButton({ classes: 'govuk-button--start', text: 'Upload' }) }}
+  {{
+    govukButton({
+      text: "Cancel",
+      href: "/data-reference",
+      classes: "govuk-button--secondary"
+    })
+  }}
 {% endblock %}
 
 {% block afterForm %}

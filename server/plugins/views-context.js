@@ -12,7 +12,7 @@ function getNavItem (request) {
     return header.account.text
   }
 
-  if ([header.data.href, '/data-reference', '/data-reference-manage', '/phone-numbers', '/org-data', '/org-data-download', '/org-data-upload'].includes(pathToMatch)) {
+  if ([header.data.href, '/data-reference', '/data-reference-manage', '/phone-numbers', '/org-data', '/org-data-delete', '/org-data-download', '/org-data-upload'].includes(pathToMatch)) {
     return header.data.text
   }
 

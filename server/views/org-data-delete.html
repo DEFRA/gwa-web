@@ -1,12 +1,10 @@
 {% extends 'form.html' %}
 
-{% set formSubmitButtonText = 'Download' %}
+{% set formSubmitButtonText = 'Delete' %}
 
 {% block beforeForm %}
-  <h1 class="govuk-heading-l">Download users for an ALB</h1>
-  <p class="govuk-body">Download the current dataset of users held for the ALB.</p>
-  <p class="govuk-body">This can be used to check what records are held on file along with providing a basis to add additional users to.</p>
-  <p class="govuk-body">If there is no file available, a message will be shown.</p>
+  <h1 class="govuk-heading-l">Delete users for an ALB</h1>
+  <p class="govuk-body">Delete the current dataset of users held for the ALB.</p>
 
 {% endblock %}
 
@@ -16,7 +14,7 @@
       id: "orgCode",
       name: "orgCode",
       hint: {
-        text: "This is the organisation's data that will be downloaded"
+        text: "This is the organisation's data that will be deleted"
       },
       label: {
         text: 'Select organisation',
