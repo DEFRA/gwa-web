@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <h1 class="govuk-heading-l">Cookies</h1>
+    <p class="govuk-body">Cookies are small files saved on your phone, tablet or computer when you visit a website.</p>
+    <p class="govuk-body">We use cookies to make this site work.</p>
+
+    <h2 class="govuk-heading-m">Essential cookies</h2>
+    <p>Essential cookies keep your information secure while you use the service. We do not need to ask permission to use them.</p>
+
+    {{
+      govukTable({
+        classes: 'govuk-!-font-size-16',
+        head: [ { text: 'Name' }, { text: 'Purpose' }, { text: 'Expires' } ],
+        rows: [
+          [ { text: 'sid' }, { text: 'Provides authenication with Azure Active Directory.' }, { text: '30 minutes' } ],
+          [ { text: 'session' }, { text: 'Links the user and the authenication.' }, { text: 'Session' } ]
+        ]
+      })
+    }}
+
+{% endblock %}
