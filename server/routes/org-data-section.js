@@ -1,3 +1,4 @@
+const boom = require('@hapi/boom')
 const Joi = require('joi')
 const { scopes } = require('../permissions')
 const convertUsersJSONToCSV = require('../lib/data/convert-users-json-to-csv')
@@ -19,7 +20,11 @@ class Model extends BaseModel {
 
 const path = '/org-data-{section}'
 
+const validSections = ['delete', 'download']
 const auth = { access: { scope: [`+${scopes.data.manage}`] } }
+const paramValidation = Joi.object().keys({
+  section: Joi.string().valid(...validSections).required()
+})
 
 async function getOrgSelectList (request, orgCode) {
   const orgList = await request.server.methods.db.getOrganisationList()
@@ -32,7 +37,6 @@ module.exports = [
     path,
     handler: async (request, h) => {
       const { section } = request.params
-      console.log(request.params)
       const organisations = await getOrgSelectList(request)
 
       return h.view(`org-data-${section}`, new Model({ organisations }))
@@ -40,9 +44,7 @@ module.exports = [
     options: {
       auth,
       validate: {
-        params: Joi.object().keys({
-          section: Joi.string().valid('delete', 'download').required()
-        })
+        params: paramValidation
       }
     }
   },
@@ -74,11 +76,14 @@ module.exports = [
     options: {
       auth,
       validate: {
+        params: paramValidation,
         payload: Joi.object().keys({
           orgCode: Joi.string().required()
         }),
         failAction: async (request, h, err) => {
           const { section } = request.params
+          if (!validSections.includes(section)) { return boom.badRequest('Invalid request params input') }
+
           const organisations = await getOrgSelectList(request)
           const errors = getMappedErrors(err, errorMessages)
 
