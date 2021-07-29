@@ -77,7 +77,7 @@ describe('Org data route', () => {
     const $ = cheerio.load(res.payload)
     expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.data.text)
     expect($('.govuk-phase-banner')).toHaveLength(0)
-    expect($('.govuk-heading-xl').text()).toMatch('Manage ALB data')
+    expect($('.govuk-heading-l').text()).toMatch('Manage ALB data')
 
     const headings = $('.govuk-heading-m')
     expect(headings).toHaveLength(3)

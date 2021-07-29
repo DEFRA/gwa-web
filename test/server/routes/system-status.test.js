@@ -87,7 +87,7 @@ describe('System status route', () => {
     expect(res.statusCode).toEqual(200)
 
     const $ = cheerio.load(res.payload)
-    expect($('.govuk-heading-xl').text()).toMatch('System status')
+    expect($('.govuk-heading-l').text()).toMatch('System status')
     expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.systemStatus.text)
     expect($('.govuk-phase-banner')).toHaveLength(0)
     const headings = $('.govuk-heading-m')

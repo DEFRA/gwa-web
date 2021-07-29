@@ -75,7 +75,7 @@ describe('Data reference route', () => {
     expect(res.statusCode).toEqual(200)
 
     const $ = cheerio.load(res.payload)
-    expect($('.govuk-heading-xl').text()).toMatch('Manage reference data')
+    expect($('.govuk-heading-l').text()).toMatch('Manage reference data')
     const button = $('.govuk-button')
     expect(button).toHaveLength(3)
     expect(button.eq(0).text()).toMatch('Organisation list')
