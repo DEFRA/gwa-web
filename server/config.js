@@ -6,6 +6,7 @@ const schema = Joi.object().keys({
   aadClientId: Joi.string().guid(),
   aadClientSecret: Joi.string().required(),
   aadTenantId: Joi.string().guid(),
+  contactEmail: Joi.string().email().required(),
   contactListContainer: Joi.string().default('contact-list'),
   contactListStorageConnectionString: Joi.string().required(),
   dataExtractContainer: Joi.string().default('data-extract'),
@@ -34,13 +35,15 @@ const schema = Joi.object().keys({
   phaseBannerTag: Joi.string().required(),
   phoneNumbersContainer: Joi.string().default('phone-numbers'),
   phoneNumbersStorageConnectionString: Joi.string().required(),
-  serviceName: Joi.string().default('Group Wide Alert')
+  serviceName: Joi.string().default('Group Wide Alert'),
+  siteUri: Joi.string().uri()
 })
 
 const config = {
   aadClientId: process.env.AAD_CLIENT_ID,
   aadClientSecret: process.env.AAD_CLIENT_SECRET,
   aadTenantId: process.env.AAD_TENANT_ID,
+  contactEmail: process.env.CONTACT_EMAIL,
   contactListContainer: process.env.CONTACT_LIST_CONTAINER,
   contactListStorageConnectionString: process.env.CONTACT_LIST_STORAGE_CONNECTION_STRING,
   dataExtractContainer: process.env.DATA_EXTRACT_CONTAINER,
@@ -68,7 +71,8 @@ const config = {
   phaseBannerHtml: process.env.PHASE_BANNER_HTML,
   phaseBannerTag: process.env.PHASE_BANNER_TAG,
   phoneNumbersContainer: process.env.PHONE_NUMBERS_CONTAINER,
-  phoneNumbersStorageConnectionString: process.env.PHONE_NUMBERS_STORAGE_CONNECTION_STRING
+  phoneNumbersStorageConnectionString: process.env.PHONE_NUMBERS_STORAGE_CONNECTION_STRING,
+  siteUri: process.env.SITE_URI
 }
 
 const { error, value } = schema.validate(config)
