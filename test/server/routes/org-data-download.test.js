@@ -98,6 +98,7 @@ describe('Org data download route', () => {
       const buttons = $('.govuk-button')
       expect(buttons).toHaveLength(2)
       expect(buttons.eq(0).text()).toMatch('Cancel')
+      expect(buttons.eq(0).attr('href')).toMatch('/org-data')
       expect(buttons.eq(1).text()).toMatch('Download')
       expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.data.text)
       expect($('.govuk-phase-banner')).toHaveLength(0)
