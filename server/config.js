@@ -35,7 +35,8 @@ const schema = Joi.object().keys({
   phaseBannerTag: Joi.string().required(),
   phoneNumbersContainer: Joi.string().default('phone-numbers'),
   phoneNumbersStorageConnectionString: Joi.string().required(),
-  serviceName: Joi.string().default('Group Wide Alert')
+  serviceName: Joi.string().default('Group Wide Alert'),
+  siteUri: Joi.string().uri()
 })
 
 const config = {
@@ -70,7 +71,8 @@ const config = {
   phaseBannerHtml: process.env.PHASE_BANNER_HTML,
   phaseBannerTag: process.env.PHASE_BANNER_TAG,
   phoneNumbersContainer: process.env.PHONE_NUMBERS_CONTAINER,
-  phoneNumbersStorageConnectionString: process.env.PHONE_NUMBERS_STORAGE_CONNECTION_STRING
+  phoneNumbersStorageConnectionString: process.env.PHONE_NUMBERS_STORAGE_CONNECTION_STRING,
+  siteUri: process.env.SITE_URI
 }
 
 const { error, value } = schema.validate(config)

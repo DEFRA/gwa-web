@@ -21,3 +21,4 @@ process.env.PHASE_BANNER_HTML = envVars.phaseBannerHtml
 process.env.PHASE_BANNER_TAG = envVars.phaseBannerTag
 process.env.PHONE_NUMBERS_CONTAINER = envVars.phoneNumbersContainer
 process.env.PHONE_NUMBERS_STORAGE_CONNECTION_STRING = envVars.phoneNumbersStorageConnectionString
+process.env.SITE_URI = envVars.siteUri

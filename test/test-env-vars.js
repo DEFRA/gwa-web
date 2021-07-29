@@ -19,5 +19,6 @@ module.exports = {
   phaseBannerHtml: 'a message to show',
   phaseBannerTag: 'local',
   phoneNumbersContainer: 'phone-numbers-container',
-  phoneNumbersStorageConnectionString: 'phone-numbers-connection-string'
+  phoneNumbersStorageConnectionString: 'phone-numbers-connection-string',
+  siteUri: 'http://localhost:3000'
 }

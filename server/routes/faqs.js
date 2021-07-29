@@ -1,6 +1,6 @@
 const routeId = 'faqs'
 const path = `/${routeId}`
-const { contactEmail } = require('../config')
+const { contactEmail, siteUri } = require('../config')
 
 module.exports = [
   {
@@ -103,7 +103,7 @@ module.exports = [
             heading: { text: 'How do I log on to the system?' },
             content: {
               html: '<ul>' +
-                      '<li>Access to the system is via the following URL <a href="https://gwa-web-prd.azure.defra.cloud/">https://gwa-web-prd.azure.defra.cloud/</a></li>' +
+                      `<li>Access to the system is via the following URL <a href="${siteUri}">${siteUri}</a></li>` +
                       '<li>You will be identified through Active Directory Authentication on your Defra approved device and therefore will not require a userid or password to access the system.</li>' +
                       '<li>It is recommended that you add the above URL to your favourites within your browser or create a shortcut on your device Desktop.</li>' +
                     '</ul>'
