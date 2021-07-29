@@ -3,7 +3,7 @@ describe('Getting system status table', () => {
   const getStatusTable = require('../../../../server/lib/view/get-status-table')
 
   jest.mock('../../../../server/config')
-  const { dataExtractContainer, dataExtractStorageConnectionString, dataSourcesContainer, dataSourcesStorageConnectionString } = require('../../../../server/config')
+  const { dataExtractContainer, dataExtractStorageConnectionString, dataSourcesContainer, dataSourcesStorageConnectionString, phoneNumbersContainer, phoneNumbersStorageConnectionString } = require('../../../../server/config')
   jest.mock('../../../../server/lib/data/get-container-blobs')
   const getContainerBlobs = require('../../../../server/lib/data/get-container-blobs')
 
@@ -12,9 +12,10 @@ describe('Getting system status table', () => {
 
     await getStatusTable()
 
-    expect(getContainerBlobs).toHaveBeenCalledTimes(2)
+    expect(getContainerBlobs).toHaveBeenCalledTimes(3)
     expect(getContainerBlobs).toHaveBeenNthCalledWith(1, dataExtractStorageConnectionString, dataExtractContainer)
     expect(getContainerBlobs).toHaveBeenNthCalledWith(2, dataSourcesStorageConnectionString, dataSourcesContainer)
+    expect(getContainerBlobs).toHaveBeenNthCalledWith(3, phoneNumbersStorageConnectionString, phoneNumbersContainer)
   })
 
   test('table has head and rows', async () => {
@@ -38,6 +39,7 @@ describe('Getting system status table', () => {
     const files = [aadFile, awFile]
     getContainerBlobs.mockResolvedValueOnce(files)
     getContainerBlobs.mockResolvedValueOnce([])
+    getContainerBlobs.mockResolvedValueOnce([])
 
     const table = await getStatusTable()
 
@@ -57,6 +59,7 @@ describe('Getting system status table', () => {
     const files = [internalUsersFiles, albAbcFile, albXyzFile]
     getContainerBlobs.mockResolvedValueOnce([])
     getContainerBlobs.mockResolvedValueOnce(files)
+    getContainerBlobs.mockResolvedValueOnce([])
 
     const table = await getStatusTable()
 
@@ -67,5 +70,20 @@ describe('Getting system status table', () => {
     expect(table.rows[1][0].text).toEqual(`Upload for ${albXyzFile.name.replace('.json', '')} (ALB)`)
     expect(table.rows[1][1].text).toEqual(albXyzFile.name)
     expect(table.rows[1][2].text).toEqual(formatDate(albXyzFile.properties.lastModified))
+  })
+
+  test('rows for phone numer files are correct', async () => {
+    const phoneNumbersFile = createMockFileResponse('phone-numbers.csv')
+    const files = [phoneNumbersFile]
+    getContainerBlobs.mockResolvedValueOnce([])
+    getContainerBlobs.mockResolvedValueOnce([])
+    getContainerBlobs.mockResolvedValueOnce(files)
+
+    const table = await getStatusTable()
+
+    expect(table.rows).toHaveLength(files.length)
+    expect(table.rows[0][0].text).toEqual('Phone number list')
+    expect(table.rows[0][1].text).toEqual(phoneNumbersFile.name)
+    expect(table.rows[0][2].text).toEqual(formatDate(phoneNumbersFile.properties.lastModified))
   })
 })

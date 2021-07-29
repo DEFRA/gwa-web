@@ -1,6 +1,6 @@
 const getContainerBlobs = require('../data/get-container-blobs')
 const { formatDate } = require('../misc/helpers')
-const { dataExtractContainer, dataExtractStorageConnectionString, dataSourcesContainer, dataSourcesStorageConnectionString } = require('../../config')
+const { dataExtractContainer, dataExtractStorageConnectionString, dataSourcesContainer, dataSourcesStorageConnectionString, phoneNumbersContainer, phoneNumbersStorageConnectionString } = require('../../config')
 
 const fileMap = {
   'aad-users.json': 'Azure Active Directory',
@@ -8,9 +8,10 @@ const fileMap = {
 }
 
 module.exports = async () => {
-  const [dataExtractBlobs, dataSourceBlobs] = await Promise.all([
+  const [dataExtractBlobs, dataSourceBlobs, phoneNumberBlobs] = await Promise.all([
     getContainerBlobs(dataExtractStorageConnectionString, dataExtractContainer),
-    getContainerBlobs(dataSourcesStorageConnectionString, dataSourcesContainer)
+    getContainerBlobs(dataSourcesStorageConnectionString, dataSourcesContainer),
+    getContainerBlobs(phoneNumbersStorageConnectionString, phoneNumbersContainer)
   ])
 
   const head = [{ text: 'Data item' }, { text: 'File' }, { text: 'Last modified' }]
@@ -31,6 +32,13 @@ module.exports = async () => {
         { text: formatDate(b.properties.lastModified) }
       ]
     }))
+  rows.push(phoneNumberBlobs.map(b => {
+    return [
+      { text: 'Phone number list' },
+      { text: b.name },
+      { text: formatDate(b.properties.lastModified) }
+    ]
+  }))
 
   return {
     head,
