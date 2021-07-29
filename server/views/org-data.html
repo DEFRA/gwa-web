@@ -3,9 +3,19 @@
 {% block twoThirds %}
   <h1 class="govuk-heading-xl">Manage ALB data</h1>
 
-  <p>ALBs can be enrolled into the system by uploading a dataset of their users for them.</p>
-  <p>If the data provided by the ALB is a replacement of the existing data, uploading the new data is all that is needed.</p>
-  <p>However, there might be occasions where reviewing the existing dataset for an ALB is required. This is possible by downloading the dataset.</p>
+  <p>ALBs can be enrolled into the system by uploading a dataset of their users. The file uploaded replaces any existing file.</p>
+  <p>If the ALB no longer wants to be enrolled into the system their data can be deleted.</p>
+  <p>There may be occasions where the ALB data needs to be reviewed, this is possible by downloading the dataset.</p>
+
+  <h2 class="govuk-heading-m">Delete ALB data</h2>
+  <p class="govuk-body">Existing ALB data can be deleted from the system.</p>
+  {{
+    govukButton({
+      href: '/org-data-delete',
+      text: 'Delete ALB data',
+      isStartButton: true
+    })
+  }}
 
   <h2 class="govuk-heading-m">Download ALB data</h2>
   <p class="govuk-body">Existing ALB data can be downloaded for auditing and inspection purposes.</p>

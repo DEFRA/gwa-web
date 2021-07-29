@@ -1,0 +1,35 @@
+{% extends 'form.html' %}
+
+{% set formSubmitButtonText = 'Delete' %}
+
+{% block beforeForm %}
+  <h1 class="govuk-heading-l">Delete users for an ALB</h1>
+  <p class="govuk-body">Delete the current dataset of users held for the ALB.</p>
+
+{% endblock %}
+
+{% block form %}
+  {{
+    govukSelect({
+      id: "orgCode",
+      name: "orgCode",
+      hint: {
+        text: "This is the organisation's data that will be deleted"
+      },
+      label: {
+        text: 'Select organisation',
+        classes: "govuk-label--s"
+      },
+      items: data.organisations,
+      errorMessage: errors.orgCode
+    })
+  }}
+
+  {{
+    govukButton({
+      text: "Cancel",
+      href: "/org-data",
+      classes: "govuk-button--secondary"
+    })
+  }}
+{% endblock %}
