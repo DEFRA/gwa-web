@@ -1,5 +1,5 @@
 const fetch = require('node-fetch')
-const { getComponentTag, getServiceTag } = require('../misc/helpers')
+const { formatDate, getComponentTag, getServiceTag } = require('../misc/helpers')
 
 /**
  * Get the status summary of GOV.UK Notify.
@@ -51,6 +51,6 @@ module.exports = async () => {
       tag: getServiceTag(data.status.indicator)
     },
     componentRows,
-    lastChecked: new Date(data.lastChecked).toLocaleString()
+    lastChecked: formatDate(data.lastChecked)
   }
 }

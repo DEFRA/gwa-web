@@ -34,7 +34,7 @@ module.exports = {
         href: '/account'
       },
       data: {
-        text: 'Manage Data',
+        text: 'Manage data',
         href: '/data-manage'
       },
       home: {
@@ -52,6 +52,10 @@ module.exports = {
       signOut: {
         text: 'Sign out',
         href: '/logout'
+      },
+      systemStatus: {
+        text: 'System status',
+        href: '/system-status'
       }
     }
   },

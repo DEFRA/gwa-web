@@ -1,8 +1,11 @@
 describe('Permissions and scopes', () => {
   const { getPermissions, scopes } = require('../../server/permissions')
 
-  test('User role with no scopes is returned when no roles are supplied', () => {
-    const { roles, scope } = getPermissions()
+  test.each([
+    { inputRoles: undefined },
+    { inputRoles: JSON.stringify({ val: 'not-an-array' }) }
+  ])('User role with no scopes is returned when roles are supplied in unrecognised format', ({ inputRoles }) => {
+    const { roles, scope } = getPermissions(inputRoles)
 
     expect(roles).toHaveLength(1)
     expect(roles).toEqual(expect.arrayContaining(['User']))

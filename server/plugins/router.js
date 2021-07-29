@@ -22,6 +22,7 @@ const routes = [].concat(
   require('../routes/phone-numbers'),
   require('../routes/phone-numbers-download'),
   require('../routes/public'),
+  require('../routes/system-status'),
   require('../routes/status')
 )
 
