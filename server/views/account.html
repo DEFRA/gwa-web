@@ -1,7 +1,7 @@
 {% extends "two-thirds.html" %}
 
 {% block twoThirds %}
-  <h2 class="govuk-heading-l">Account</h2>
+  <h1 class="govuk-heading-l">Account</h1>
   {% set user = data.user %}
   <p>Name: <strong>{{ user.givenName }} {{ user.surname }}</strong></p>
   <p>Email: <strong>{{ user.id }}</strong></p>

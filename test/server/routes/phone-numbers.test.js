@@ -78,7 +78,7 @@ describe('Phone numbers route', () => {
     expect(res.statusCode).toEqual(200)
 
     const $ = cheerio.load(res.payload)
-    expect($('.govuk-heading-xl').text()).toMatch('Phone numbers')
+    expect($('.govuk-heading-l').text()).toMatch('Phone numbers')
     expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.data.text)
     expect($('.govuk-phase-banner')).toHaveLength(0)
 

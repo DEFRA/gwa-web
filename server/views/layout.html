@@ -116,7 +116,20 @@
 
 {% block footer %}
   {{
-    govukFooter({ })
+    govukFooter({
+      meta: {
+        items: [
+          {
+            href: '/cookies',
+            text: 'Cookies'
+          },
+          {
+            href: '/faqs',
+            text: 'FAQs'
+          }
+        ]
+      }
+    })
   }}
 {% endblock %}
 

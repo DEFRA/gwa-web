@@ -78,7 +78,7 @@ describe('Data manage route', () => {
     expect(res.statusCode).toEqual(200)
 
     const $ = cheerio.load(res.payload)
-    expect($('.govuk-heading-xl').text()).toMatch('Manage data')
+    expect($('.govuk-heading-l').text()).toMatch('Manage data')
     const button = $('.govuk-button')
     expect(button).toHaveLength(buttonCount)
     expect(button.eq(0).text()).toMatch('ALB data')

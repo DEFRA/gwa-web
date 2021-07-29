@@ -4,6 +4,7 @@ const routes = [].concat(
   require('../routes/contact-add'),
   require('../routes/contact-edit'),
   require('../routes/contact-remove'),
+  require('../routes/cookies'),
   require('../routes/data-manage'),
   require('../routes/data-reference'),
   require('../routes/data-reference-manage'),

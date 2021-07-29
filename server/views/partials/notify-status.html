@@ -4,13 +4,13 @@
   {% if notifyStatus.componentRows %}
     {{
       govukTable({
-      classes: 'govuk-!-font-size-16',
-      head: [
-        { text: 'Component' },
-        { text: 'Status' }
-      ],
-      rows: notifyStatus.componentRows
-    })
+        classes: 'govuk-!-font-size-16',
+        head: [
+          { text: 'Component' },
+          { text: 'Status' }
+        ],
+        rows: notifyStatus.componentRows
+      })
     }}
   {% endif %}
   <p class="govuk-!-font-size-16">

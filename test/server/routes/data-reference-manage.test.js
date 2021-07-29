@@ -92,7 +92,7 @@ describe('Data reference manage route', () => {
 
       const $ = cheerio.load(res.payload)
       const { download, filename, heading } = typeInfo[type]
-      expect($('.govuk-heading-xl').text()).toMatch(heading)
+      expect($('.govuk-heading-l').text()).toMatch(heading)
 
       const buttons = $('.govuk-button')
       expect(buttons).toHaveLength(3)

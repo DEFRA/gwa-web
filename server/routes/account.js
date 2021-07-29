@@ -5,16 +5,11 @@ const { getUser } = require('../lib/route/pre-handlers')
 class Model extends BaseModel {}
 
 function getPhoneNumbersForView (contact) {
+  const number = contact.number
   return [
-    {
-      text: contact.number
-    },
-    {
-      html: `subscribed to <b>${contact.subscribedTo?.length}</b> ${contact.subscribedTo?.length === 1 ? 'area' : 'areas'}`
-    },
-    {
-      html: `<a class="govuk-button govuk-button--secondary" href="/contact-edit/${encodeURIComponent(contact.id)}" style="margin-bottom: 0">Edit</a>`
-    }
+    { text: number },
+    { html: `subscribed to <b>${contact.subscribedTo?.length}</b> ${contact.subscribedTo?.length === 1 ? 'area' : 'areas'}` },
+    { html: `<a class="govuk-button govuk-button--secondary" href="/contact-edit/${encodeURIComponent(contact.id)}" style="margin-bottom: 0">Edit<span class="govuk-visually-hidden"> ${number}</span></a>` }
   ]
 }
 

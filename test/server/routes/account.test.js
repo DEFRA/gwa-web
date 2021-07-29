@@ -144,8 +144,8 @@ describe('Account route', () => {
 
     const buttons = $('.govuk-button')
     expect(buttons).toHaveLength(3)
-    expect(buttons.eq(0).text()).toEqual('Edit')
-    expect(buttons.eq(1).text()).toEqual('Edit')
+    expect(buttons.eq(0).text()).toEqual(`Edit ${userWithCorpAndPersonalNumber.phoneNumbers[0].number}`)
+    expect(buttons.eq(1).text()).toEqual(`Edit ${userWithCorpAndPersonalNumber.phoneNumbers[1].number}`)
     expect(buttons.eq(2).text()).toMatch('Sign out')
   })
 
@@ -175,8 +175,8 @@ describe('Account route', () => {
 
     const buttons = $('.govuk-button')
     expect(buttons).toHaveLength(4)
-    expect(buttons.eq(0).text()).toEqual('Edit')
-    expect(buttons.eq(1).text()).toEqual('Edit')
+    expect(buttons.eq(0).text()).toEqual(`Edit ${userWithTwoCorpNoPersonalNumbers.phoneNumbers[0].number}`)
+    expect(buttons.eq(1).text()).toEqual(`Edit ${userWithTwoCorpNoPersonalNumbers.phoneNumbers[1].number}`)
     expect(buttons.eq(2).text()).toMatch('Add new contact')
     expect(buttons.eq(3).text()).toMatch('Sign out')
     const accountOverview = $('.govuk-grid-column-two-thirds p')
