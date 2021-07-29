@@ -84,11 +84,12 @@ function getMessageRows (messages) {
   return messages
     .map(message => {
       const lastEvent = message.auditEvents.sort((e1, e2) => e2.time - e1.time)[0]
+      const lastUpdatedAt = formatDate(message.lastUpdatedAt)
       return [
-        { text: formatDate(message.lastUpdatedAt) },
+        { text: lastUpdatedAt },
         { text: (message.text.length > 47 ? `${message.text.slice(0, 47)} ...` : message.text) },
         { html: `<a href="mailto:${lastEvent.user.id}">${lastEvent.user.id}</a>` },
-        { html: `<a href='/message-view/${message.id}'>View</a>` }
+        { html: `<a href='/message-view/${encodeURIComponent(message.id)}'>View<span class="govuk-visually-hidden"> message last updated ${lastUpdatedAt}</span></a>` }
       ]
     })
 }
