@@ -20,7 +20,8 @@ function isMessageForSingleOfficeAndDoesPhoneNumberSubscribeToAllOfficesInTheAre
  * Get phone numbers (from the list of users), to send the message to based on
  * the criteria of the message.
  *
- * @param {Array} users list of users from which to extract phone numbers.
+ * @param {Array} users list of users from which to extract phone numbers, must
+ * contain properties - `active`, `orgCode`, `phoneNumbers`.
  * @param {object} message representing message specification.
  * @returns {Array} list of phone numbers to send the message to.
  */

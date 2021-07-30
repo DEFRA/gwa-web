@@ -154,7 +154,7 @@ describe('db functions', () => {
 
     expect(res).toEqual(data)
     expect(usersContainer.items.query).toBeCalledTimes(1)
-    expect(usersContainer.items.query).toBeCalledWith('SELECT * FROM c')
+    expect(usersContainer.items.query).toBeCalledWith('SELECT c.active, c.orgCode, c.phoneNumbers FROM c', { maxItemCount: 50000 })
     expect(usersContainer.items.query().fetchAll).toBeCalledTimes(1)
   })
 

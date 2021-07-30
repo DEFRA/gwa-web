@@ -107,34 +107,35 @@ async function getUser (id) {
 }
 
 /**
- * Get all users.
+ * Get selected properties (`active`, `orgCode`, `phoneNumbers`) for all users.
+ *
+ * The query is used to determine the phone numbers a message will be sent to
+ * and only requires the properties returned.
+ * The query sets the `maxItemCount` option to `50000` as this gave the best
+ * performance. The default option of `100` was taking ~17 seconds.
+ * Setting the value to `1000` reduced the duration, as did `10000`.
+ * After some experimentation `50000` proved the most performant. This is
+ * likely as it covers all items in the container.
+ * This should be the case for as long as this system runs.
+ * The query only returns selected properties as it reduces the duration of the
+ * query by >50% from ~1.7 seconds to ~0.7 seconds. The RU/s cost is also
+ * reduced.
  *
  * @returns {Array} all users.
  */
 async function getUsers () {
-  return (await usersContainer.items.query('SELECT * FROM c').fetchAll()).resources
+  return (await usersContainer.items.query('SELECT c.active, c.orgCode, c.phoneNumbers FROM c', { maxItemCount: 50000 }).fetchAll()).resources
 }
 
 /**
- * Save the message.
+ * Upsert the message.
  *
  * @param {object} message.
  * @returns {Promise} Promise representing
  * [ItemResponse](https://azuresdkdocs.blob.core.windows.net/$web/javascript/azure-cosmos/3.10.6/classes/itemresponse.html)
  */
-async function saveMessage (message) {
+async function upsertMessage (message) {
   return messagesContainer.items.upsert(message)
-}
-
-/**
- * Update a message.
- *
- * @param {object} message with an `id`.
- * @returns {Promise} Promise representing
- * [ItemResponse](https://azuresdkdocs.blob.core.windows.net/$web/javascript/azure-cosmos/3.10.6/classes/itemresponse.html)
- */
-async function updateMessage (message) {
-  return messagesContainer.item(message.id, message.id).replace(message)
 }
 
 /**
@@ -170,8 +171,7 @@ module.exports = {
   getStandardisedOfficeLocationMap,
   getUser,
   getUsers,
-  saveMessage,
-  updateMessage,
   updateReferenceData,
-  updateUser
+  updateUser,
+  upsertMessage
 }
