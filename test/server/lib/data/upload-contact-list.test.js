@@ -14,7 +14,6 @@ describe('Uploading contact list', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    jest.resetModules()
 
     uploadContactList = require('../../../../server/lib/data/upload-contact-list')
   })
