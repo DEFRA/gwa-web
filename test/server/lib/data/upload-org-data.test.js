@@ -18,7 +18,6 @@ describe('Uploading org data', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    jest.resetModules()
 
     uploadUserData = require('../../../../server/lib/data/upload-org-data')
   })

@@ -30,7 +30,6 @@ describe('Generate office checkboxes', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    jest.resetModules()
 
     generateOfficeCheckboxes = require('../../../../server/lib/view/office-checkboxes')
   })

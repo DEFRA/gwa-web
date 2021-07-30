@@ -13,7 +13,6 @@ describe('Downloading phone numbers', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    jest.resetModules()
 
     downloadPhoneNumbers = require('../../../../server/lib/data/download-phone-numbers')
   })

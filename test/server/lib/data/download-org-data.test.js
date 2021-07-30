@@ -15,7 +15,6 @@ describe('Download org data', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    jest.resetModules()
 
     downloadOrgData = require('../../../../server/lib/data/download-org-data')
   })
