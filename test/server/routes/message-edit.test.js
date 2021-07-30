@@ -37,7 +37,7 @@ describe('Message edit route', () => {
   Date.now = jest.fn(() => now)
 
   jest.mock('../../../server/lib/db')
-  const { getMessage, updateMessage } = require('../../../server/lib/db')
+  const { getMessage, upsertMessage } = require('../../../server/lib/db')
 
   const initialMessage = {
     auditEvents: [
@@ -245,7 +245,7 @@ describe('Message edit route', () => {
 
     test('responds with 500 when problem creating message', async () => {
       const payload = { allOffices: true, allOrgs: false, orgCodes: ['orgCode', 'another'], text: 'message to send' }
-      updateMessage.mockResolvedValue({ statusCode: 500 })
+      upsertMessage.mockResolvedValue({ statusCode: 500 })
       const res = await server.inject({
         method,
         url,
@@ -305,7 +305,7 @@ describe('Message edit route', () => {
     })
 
     test.each(validCases)('responds with 302 to /message-view when request is valid - test %#', async (payload) => {
-      updateMessage.mockResolvedValue({ statusCode: 200 })
+      upsertMessage.mockResolvedValue({ statusCode: 200 })
       const user = { id, email, companyName: 'companyName', surname: 'surname', givenName: 'givenName' }
       const res = await server.inject({
         method,
@@ -340,7 +340,7 @@ describe('Message edit route', () => {
         state: messageStates.edited
       }
       addAuditEvent(expectedMessage, user)
-      expect(updateMessage).toHaveBeenCalledWith(expectedMessage)
+      expect(upsertMessage).toHaveBeenCalledWith(expectedMessage)
     })
   })
 })

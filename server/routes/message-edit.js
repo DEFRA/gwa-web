@@ -2,15 +2,15 @@ const boom = require('@hapi/boom')
 const Joi = require('joi')
 
 const { errorMessages, textMessages: { maxMessageLength }, messageStates } = require('../constants')
-const { scopes } = require('../permissions')
-const { getMessage, updateMessage } = require('../lib/db')
-const addAuditEvent = require('../lib/messages/add-audit-event')
+const { getMessage } = require('../lib/db')
+const upsertMessge = require('../lib/messages/upsert-message')
 const BaseModel = require('../lib/misc/model')
 const { message: { failAction } } = require('../lib/route/fail-actions')
 const { message: { payload } } = require('../lib/route/validations')
 const generateOfficeCheckboxes = require('../lib/view/office-checkboxes')
 const generateOrganisationCheckboxes = require('../lib/view/organisation-checkboxes')
 const sendToAllRadios = require('../lib/view/send-to-all-radios')
+const { scopes } = require('../permissions')
 
 class Model extends BaseModel {
   constructor (data, err) {
@@ -82,9 +82,8 @@ module.exports = [
       message.orgCodes = [orgCodes].flat()
       message.state = messageStates.edited
       message.text = text?.trim()
-      addAuditEvent(message, user)
 
-      const res = await updateMessage(message)
+      const res = await upsertMessge(message, user)
       if (res.statusCode !== 200) {
         return boom.internal('Problem updating message.', res)
       }

@@ -2,15 +2,14 @@ const boom = require('@hapi/boom')
 const { v4: uuid } = require('uuid')
 
 const { errorMessages, textMessages: { maxMessageLength }, messageStates } = require('../constants')
-const { scopes } = require('../permissions')
-const { saveMessage } = require('../lib/db')
-const addAuditEvent = require('../lib/messages/add-audit-event')
+const upsertMessage = require('../lib/messages/upsert-message')
 const BaseModel = require('../lib/misc/model')
 const { message: { failAction } } = require('../lib/route/fail-actions')
 const { message: { payload } } = require('../lib/route/validations')
 const generateOfficeCheckboxes = require('../lib/view/office-checkboxes')
 const generateOrganisationCheckboxes = require('../lib/view/organisation-checkboxes')
 const sendToAllRadios = require('../lib/view/send-to-all-radios')
+const { scopes } = require('../permissions')
 
 class Model extends BaseModel {
   constructor (data, err) {
@@ -59,8 +58,7 @@ module.exports = [
         text: text?.trim(),
         state: messageStates.created
       }
-      addAuditEvent(message, user)
-      const res = await saveMessage(message)
+      const res = await upsertMessage(message, user)
       if (res.statusCode !== 201) {
         return boom.internal('Problem creating message.', res)
       }

@@ -40,7 +40,7 @@ describe('Message send route', () => {
   jest.mock('../../../server/lib/data/upload-contact-list')
   const uploadContactList = require('../../../server/lib/data/upload-contact-list')
   jest.mock('../../../server/lib/db')
-  const { getMessage, getUsers, updateMessage } = require('../../../server/lib/db')
+  const { getMessage, getUsers, upsertMessage } = require('../../../server/lib/db')
   const editTime = Date.now()
   Date.now = jest.fn(() => editTime)
 
@@ -225,7 +225,7 @@ describe('Message send route', () => {
     test('uploads contact list, updates message and responds with 302 to the sent message when message has been sent', async () => {
       const dropGetSentMessagesMock = jest.fn()
       server.methods.db.getSentMessages.cache = { drop: dropGetSentMessagesMock }
-      updateMessage.mockResolvedValue({ statusCode: 200 })
+      upsertMessage.mockResolvedValue({ statusCode: 200 })
       uploadContactList.mockResolvedValue(true)
 
       const res = await server.inject({
@@ -263,7 +263,7 @@ describe('Message send route', () => {
       }
       expect(uploadContactList).toHaveBeenCalledWith(updatedMessage, contacts)
       expect(dropGetSentMessagesMock).toHaveBeenCalled()
-      expect(updateMessage).toHaveBeenCalledWith({
+      expect(upsertMessage).toHaveBeenCalledWith({
         ...updatedMessage
       })
     })
@@ -327,7 +327,7 @@ describe('Message send route', () => {
     })
 
     test('responds with 500 when problem updating message', async () => {
-      updateMessage.mockResolvedValue({ statusCode: 500 })
+      upsertMessage.mockResolvedValue({ statusCode: 500 })
       uploadContactList.mockResolvedValue(true)
 
       const res = await server.inject({
@@ -356,7 +356,7 @@ describe('Message send route', () => {
     })
 
     test('responds with 500 when problem uploading contact list', async () => {
-      updateMessage.mockResolvedValue({ statusCode: 200 })
+      upsertMessage.mockResolvedValue({ statusCode: 200 })
       uploadContactList.mockResolvedValue(false)
 
       const res = await server.inject({
