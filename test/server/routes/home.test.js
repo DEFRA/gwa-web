@@ -117,11 +117,13 @@ describe('Home route', () => {
     expect(headings.eq(1).text()).toMatch('Data managers can:')
 
     const buttons = $('.govuk-button')
-    expect(buttons).toHaveLength(2)
+    expect(buttons).toHaveLength(3)
     expect(buttons.eq(0).text()).toMatch('Account')
     expect(buttons.eq(0).attr('href')).toEqual('/account')
     expect(buttons.eq(1).text()).toMatch('Manage data')
     expect(buttons.eq(1).attr('href')).toEqual('/data-manage')
+    expect(buttons.eq(2).text()).toMatch('System status')
+    expect(buttons.eq(2).attr('href')).toEqual('/system-status')
   })
 
   test('responds with 200 when user with Administrator role scope is logged in', async () => {
@@ -174,9 +176,9 @@ describe('Home route', () => {
     expect(buttons.eq(0).attr('href')).toEqual('/account')
     expect(buttons.eq(1).text()).toMatch('Manage data')
     expect(buttons.eq(1).attr('href')).toEqual('/data-manage')
-    expect(buttons.eq(2).text()).toMatch('Messages')
-    expect(buttons.eq(2).attr('href')).toEqual('/messages')
-    expect(buttons.eq(3).text()).toMatch('System status')
-    expect(buttons.eq(3).attr('href')).toEqual('/system-status')
+    expect(buttons.eq(2).text()).toMatch('System status')
+    expect(buttons.eq(2).attr('href')).toEqual('/system-status')
+    expect(buttons.eq(3).text()).toMatch('Messages')
+    expect(buttons.eq(3).attr('href')).toEqual('/messages')
   })
 })
