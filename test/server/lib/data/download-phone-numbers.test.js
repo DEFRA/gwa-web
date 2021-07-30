@@ -8,7 +8,10 @@ describe('Downloading phone numbers', () => {
   config.phoneNumbersStorageConnectionString = phoneNumbersStorageConnectionString
 
   let mockDownload
-  const mockBlockBlobClient = jest.fn(() => { return { download: mockDownload } })
+  let mockExists
+  const mockBlockBlobClient = jest.fn(() => {
+    return { download: mockDownload, exists: mockExists }
+  })
   jest.mock('@azure/storage-blob', () => { return { BlockBlobClient: mockBlockBlobClient } })
 
   let downloadPhoneNumbers
@@ -27,11 +30,22 @@ describe('Downloading phone numbers', () => {
     const fileContents = 'phone number\n07700 111111'
     mockDownload = jest.fn().mockResolvedValue(mockDownloadFn(fileContents, encoding))
     mockBlockBlobClient.prototype.download = mockDownload
+    mockExists = jest.fn().mockResolvedValue(true)
+    mockBlockBlobClient.prototype.exists = mockExists
 
     const res = await downloadPhoneNumbers()
 
     expect(mockBlockBlobClient).toHaveBeenCalledTimes(1)
     expect(mockBlockBlobClient).toHaveBeenCalledWith(phoneNumbersStorageConnectionString, phoneNumbersContainer, 'phone-numbers.csv')
     expect(res).toEqual(fileContents)
+  })
+
+  test('undefined is returned when no file exists', async () => {
+    mockExists = jest.fn().mockResolvedValue(false)
+    mockBlockBlobClient.prototype.exists = mockExists
+
+    const res = await downloadPhoneNumbers()
+
+    expect(res).toBeUndefined()
   })
 })
