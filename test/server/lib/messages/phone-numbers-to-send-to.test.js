@@ -223,4 +223,34 @@ describe('Get phone numbers to send to', () => {
     expect(phoneNumbers).toHaveLength(1)
     expect(phoneNumbers[0]).toEqual(users[0].phoneNumbers[0].number)
   })
+
+  test('no duplciated phone numbers are returned', () => {
+    const number = '07777111111'
+    const users = [{
+      active: true,
+      orgCode: 'ABC',
+      phoneNumbers: [{
+        number,
+        subscribedTo: ['ANY:anything']
+      }]
+    }, {
+      active: true,
+      orgCode: 'ABC',
+      phoneNumbers: [{
+        number,
+        subscribedTo: ['ANY:anything']
+      }]
+    }]
+    const message = {
+      allOffices: true,
+      allOrgs: false,
+      officeCodes: [],
+      orgCodes: ['ABC']
+    }
+
+    const phoneNumbers = getPhoneNumbersToSendTo(users, message)
+
+    expect(phoneNumbers).toHaveLength(1)
+    expect(phoneNumbers[0]).toEqual(number)
+  })
 })

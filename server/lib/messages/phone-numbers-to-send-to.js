@@ -17,12 +17,12 @@ function isMessageForSingleOfficeAndDoesPhoneNumberSubscribeToAllOfficesInTheAre
 }
 
 /**
- * Get phone numbers (from the list of users), to send the message to based on
- * the criteria of the message.
+ * Get all unique phone numbers (from the list of users), to send the message
+ * to based on the criteria of the message.
  *
- * @param {Array} users list of users from which to extract phone numbers, must
- * contain properties - `active`, `orgCode`, `phoneNumbers`.
- * @param {object} message representing message specification.
+ * @param {Array} users from which to extract phone numbers, must contain
+ * properties - `active`, `orgCode`, `phoneNumbers`.
+ * @param {object} message including send criteria.
  * @returns {Array} list of phone numbers to send the message to.
  */
 module.exports = (users, message) => {
@@ -40,5 +40,5 @@ module.exports = (users, message) => {
         }
       })
     })
-  return phoneNumbers
+  return [...new Set(phoneNumbers).values()]
 }
