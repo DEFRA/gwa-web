@@ -40,5 +40,5 @@ module.exports = (users, message) => {
         }
       })
     })
-  return [...new Set(phoneNumbers).values()]
+  return [...new Set(phoneNumbers)]
 }
