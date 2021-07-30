@@ -1,5 +1,4 @@
-const { BlockBlobClient } = require('@azure/storage-blob')
-const streamToBuffer = require('../misc/stream-to-buffer')
+const downloadBlob = require('./download-blob')
 const { dataSourcesContainer, dataSourcesStorageConnectionString } = require('../../config')
 
 /**
@@ -12,12 +11,5 @@ const { dataSourcesContainer, dataSourcesStorageConnectionString } = require('..
  * there is no file.
  */
 module.exports = async orgCode => {
-  const client = new BlockBlobClient(dataSourcesStorageConnectionString, dataSourcesContainer, `${orgCode}.json`)
-
-  if (await (client.exists())) {
-    const downloadBlobResponse = await client.download()
-    return (await streamToBuffer(downloadBlobResponse.readableStreamBody)).toString()
-  } else {
-    return undefined
-  }
+  return downloadBlob(dataSourcesStorageConnectionString, dataSourcesContainer, `${orgCode}.json`)
 }

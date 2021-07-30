@@ -3,9 +3,10 @@ describe('Getting container blobs', () => {
   const connectionString = 'connection-string'
   const container = 'container'
 
+  const mockExists = jest.fn()
   let mockListBlobsFlat
   const mockContainerClient = jest.fn(() => {
-    return { listBlobsFlat: mockListBlobsFlat }
+    return { exists: mockExists, listBlobsFlat: mockListBlobsFlat }
   })
   jest.mock('@azure/storage-blob', () => {
     return { ContainerClient: mockContainerClient }
@@ -15,7 +16,16 @@ describe('Getting container blobs', () => {
     getContainerBlobs = require('../../../../server/lib/data/get-container-blobs')
   })
 
+  test('returns empty array when container does not exist', async () => {
+    mockExists.mockResolvedValue(false)
+
+    const blobs = await getContainerBlobs(connectionString, container)
+
+    expect(blobs).toEqual([])
+  })
+
   test('container client is created correctly and returns empty array when there are no blobs', async () => {
+    mockExists.mockResolvedValue(true)
     mockListBlobsFlat = async function * listBlobsFlatIterable () { }
 
     const blobs = await getContainerBlobs(connectionString, container)
@@ -26,6 +36,7 @@ describe('Getting container blobs', () => {
   })
 
   test('blobs are returned when there are some', async () => {
+    mockExists.mockResolvedValue(true)
     const mockFileOne = { name: 'mock-file-one' }
     const mockFileTwo = { name: 'mock-file-two' }
     mockListBlobsFlat = async function * listBlobsFlatIterable () {

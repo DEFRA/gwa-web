@@ -1,9 +1,13 @@
-const { BlockBlobClient } = require('@azure/storage-blob')
+const downloadBlob = require('./download-blob')
 const { phoneNumbersContainer, phoneNumbersStorageConnectionString } = require('../../config')
-const streamToBuffer = require('../misc/stream-to-buffer')
 
+/**
+ * Downloads the `phone-numbers.csv` file from the `phone-numbers` blob
+ * storage container. If the file doesn't exist `undefined` is returned.
+ *
+ * @returns {string} representing the content of the file or `undefined` if
+ * there is no file.
+ */
 module.exports = async () => {
-  const client = new BlockBlobClient(phoneNumbersStorageConnectionString, phoneNumbersContainer, 'phone-numbers.csv')
-  const downloadBlobResponse = await client.download()
-  return (await streamToBuffer(downloadBlobResponse.readableStreamBody)).toString()
+  return downloadBlob(phoneNumbersStorageConnectionString, phoneNumbersContainer, 'phone-numbers.csv')
 }
