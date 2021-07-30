@@ -1,9 +1,9 @@
+const { dataExtractContainer, dataExtractStorageConnectionString, dataSourcesContainer, dataSourcesStorageConnectionString, phoneNumbersContainer, phoneNumbersFile, phoneNumbersStorageConnectionString } = require('../../../../server/config')
+
 describe('Getting system status table', () => {
   const { formatDate } = require('../../../../server/lib/misc/helpers')
   const getStatusTable = require('../../../../server/lib/view/get-status-table')
 
-  jest.mock('../../../../server/config')
-  const { dataExtractContainer, dataExtractStorageConnectionString, dataSourcesContainer, dataSourcesStorageConnectionString, phoneNumbersContainer, phoneNumbersStorageConnectionString } = require('../../../../server/config')
   jest.mock('../../../../server/lib/data/get-container-blobs')
   const getContainerBlobs = require('../../../../server/lib/data/get-container-blobs')
 
@@ -73,8 +73,8 @@ describe('Getting system status table', () => {
   })
 
   test('rows for phone numer files are correct', async () => {
-    const phoneNumbersFile = createMockFileResponse('phone-numbers.csv')
-    const files = [phoneNumbersFile]
+    const phoneNumbersFileRes = createMockFileResponse(phoneNumbersFile)
+    const files = [phoneNumbersFileRes]
     getContainerBlobs.mockResolvedValueOnce([])
     getContainerBlobs.mockResolvedValueOnce([])
     getContainerBlobs.mockResolvedValueOnce(files)
@@ -83,7 +83,7 @@ describe('Getting system status table', () => {
 
     expect(table.rows).toHaveLength(files.length)
     expect(table.rows[0][0].text).toEqual('Phone number list')
-    expect(table.rows[0][1].text).toEqual(phoneNumbersFile.name)
-    expect(table.rows[0][2].text).toEqual(formatDate(phoneNumbersFile.properties.lastModified))
+    expect(table.rows[0][1].text).toEqual(phoneNumbersFileRes.name)
+    expect(table.rows[0][2].text).toEqual(formatDate(phoneNumbersFileRes.properties.lastModified))
   })
 })

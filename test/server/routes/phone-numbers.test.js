@@ -1,7 +1,8 @@
 const cheerio = require('cheerio')
+const { phoneNumbersContainer, phoneNumbersFile, phoneNumbersStorageConnectionString } = require('../../../server/config')
+const { navigation } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
-const { navigation } = require('../../../server/constants')
 
 describe('Phone numbers route', () => {
   const email = 'test@gwa.defra.co.uk'
@@ -9,7 +10,11 @@ describe('Phone numbers route', () => {
   const url = '/phone-numbers'
   let server
 
+  jest.mock('../../../server/lib/data/check-file-exists')
+  const checkFileExists = require('../../../server/lib/data/check-file-exists')
+
   beforeEach(async () => {
+    jest.clearAllMocks()
     server = await createServer()
   })
 
@@ -55,7 +60,11 @@ describe('Phone numbers route', () => {
     expect($('.govuk-body').text()).toEqual('Insufficient scope')
   })
 
-  test('responds with 200 when user has sufficient scope - admin', async () => {
+  test.each([
+    { fileExists: true },
+    { fileExists: false }
+  ])('responds with 200 when user has sufficient scope - admin', async ({ fileExists }) => {
+    checkFileExists.mockResolvedValueOnce(fileExists)
     const res = await server.inject({
       method: 'GET',
       url,
@@ -83,11 +92,18 @@ describe('Phone numbers route', () => {
     expect($('.govuk-phase-banner')).toHaveLength(0)
 
     const buttons = $('.govuk-button')
-    expect(buttons).toHaveLength(2)
     expect(buttons.eq(0).text()).toMatch('Cancel')
     expect(buttons.eq(0).attr('href')).toEqual('/data-manage')
-    expect(buttons.eq(1).text()).toMatch('Download')
-    expect(buttons.eq(1).attr('href')).toEqual('/phone-numbers-download')
-    expect(buttons.eq(1).attr('download')).toEqual('phone-numbers.csv')
+    if (fileExists) {
+      expect(buttons).toHaveLength(2)
+      expect(buttons.eq(1).text()).toMatch('Download')
+      expect(buttons.eq(1).attr('href')).toEqual('/phone-numbers-download')
+      expect(buttons.eq(1).attr('download')).toEqual(phoneNumbersFile)
+    } else {
+      expect(buttons).toHaveLength(1)
+    }
+
+    expect(checkFileExists).toBeCalledTimes(1)
+    expect(checkFileExists).toHaveBeenCalledWith(phoneNumbersStorageConnectionString, phoneNumbersContainer, phoneNumbersFile)
   })
 })

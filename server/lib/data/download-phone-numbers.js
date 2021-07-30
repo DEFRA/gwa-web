@@ -1,13 +1,13 @@
 const downloadBlob = require('./download-blob')
-const { phoneNumbersContainer, phoneNumbersStorageConnectionString } = require('../../config')
+const { phoneNumbersContainer, phoneNumbersFile, phoneNumbersStorageConnectionString } = require('../../config')
 
 /**
- * Downloads the `phone-numbers.csv` file from the `phone-numbers` blob
+ * Downloads the `phoneNumbersFile` file from the `phoneNumbers` blob
  * storage container. If the file doesn't exist `undefined` is returned.
  *
  * @returns {string} representing the content of the file or `undefined` if
  * there is no file.
  */
 module.exports = async () => {
-  return downloadBlob(phoneNumbersStorageConnectionString, phoneNumbersContainer, 'phone-numbers.csv')
+  return downloadBlob(phoneNumbersStorageConnectionString, phoneNumbersContainer, phoneNumbersFile)
 }

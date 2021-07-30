@@ -3,8 +3,8 @@
 {% block twoThirds %}
   <h1 class="govuk-heading-l">Phone numbers</h1>
   <p>If there is a problem sending messages from this system, it is possible to import a list of phone numbers directly into GOV.UK Notify via the <a href="https://www.notifications.service.gov.uk/features#bulk-sending">bulk sending</a> feature.</p>
-  <p>The latest set of phone numbers for active users can be downloaded below. If no file is downloaded there is no file available for download.</p>
-  <p>View the <a href="/system-status">system status</a> page to check the last time the file was updated, if it is not listed the file does not exist.</p>
+  <p>The latest set of phone numbers for active users can be downloaded below. If there is no download button, there is no file available for download.</p>
+  <p>View the <a href="/system-status">system status</a> page to check the last time the file was updated. If there is no file listed, it does not exist.</p>
 
   {{
     govukButton({
@@ -14,7 +14,9 @@
     })
   }}
 
-  <a href='/phone-numbers-download'
-     class='govuk-button'
-     download='phone-numbers.csv'>Download</a>
+  {% if fileExists %}
+    <a href='/phone-numbers-download'
+       class='govuk-button'
+       download='phone-numbers.csv'>Download</a>
+  {% endif %}
 {% endblock %}

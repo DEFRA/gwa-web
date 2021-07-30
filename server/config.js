@@ -34,6 +34,7 @@ const schema = Joi.object().keys({
   phaseBannerHtml: Joi.string().required(),
   phaseBannerTag: Joi.string().required(),
   phoneNumbersContainer: Joi.string().default('phone-numbers'),
+  phoneNumbersFile: Joi.string().default('phone-numbers.csv'),
   phoneNumbersStorageConnectionString: Joi.string().required(),
   serviceName: Joi.string().default('Group Wide Alert'),
   siteUri: Joi.string().uri()
