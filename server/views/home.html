@@ -46,6 +46,7 @@
       <ul class="govuk-list govuk-list--bullet">
         <li>Manage the reference data of the service</li>
         <li>Upload and download user data for ALBs</li>
+        <li>Check the status of the system</li>
       </ul>
       {{
         govukButton({
@@ -54,28 +55,27 @@
           isStartButton: true
         })
       }}
+      <br>
+      {{
+        govukButton({
+          text: "System status",
+          href: "/system-status",
+          isStartButton: true
+        })
+      }}
       {% endif %}
 
       {% if role === roles.Administrator %}
       <h2 class="govuk-heading-m">Administrators can:</h2>
+      <p>Do everything a Data Manager can do, and in addtion:</p>
       <ul class="govuk-list govuk-list--bullet">
         <li>Create, edit, review and send SMS messages to Defra staff</li>
         <li>Download a list of phone numbers for use as a contingency measure</li>
-        <li>Check the status of the system</li>
       </ul>
       {{
         govukButton({
           text: "Messages",
           href: "/messages",
-          isStartButton: true
-        })
-      }}
-      <br>
-
-      {{
-        govukButton({
-          text: "System status",
-          href: "/system-status",
           isStartButton: true
         })
       }}
