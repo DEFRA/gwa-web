@@ -1,25 +1,20 @@
 const boom = require('@hapi/boom')
 
 const { messageStates } = require('../constants')
-const addAuditEvent = require('../lib/messages/add-audit-event')
-const costOfMessageSend = require('../lib/messages/cost-of-message-send')
-const { updateMessage } = require('../lib/db')
-const getMessageRows = require('../lib/view/get-message-rows')
-const BaseModel = require('../lib/misc/model')
-const getPhoneNumbersToSendTo = require('../lib/messages/phone-numbers-to-send-to')
-const { messageOptions } = require('../lib/route/options')
 const uploadContactList = require('../lib/data/upload-contact-list')
+const { getUsers } = require('../lib/db')
+const costOfMessageSend = require('../lib/messages/cost-of-message-send')
+const getPhoneNumbersToSendTo = require('../lib/messages/phone-numbers-to-send-to')
+const upsertMessage = require('../lib/messages/upsert-message')
+const BaseModel = require('../lib/misc/model')
+const getMessageRows = require('../lib/view/get-message-rows')
+const { messageOptions } = require('../lib/route/options')
 const verifyMessageRequest = require('../lib/route/verify-message-request')
 
 class Model extends BaseModel {}
 
 const routeId = 'message-send'
 const path = `/${routeId}/{messageId}`
-
-async function refreshUsers (request) {
-  await request.server.methods.db.getUsers.cache.drop()
-  return request.server.methods.db.getUsers()
-}
 
 module.exports = [
   {
@@ -29,19 +24,12 @@ module.exports = [
       const { error, message } = await verifyMessageRequest(request, 'Sent messages can not be sent again.')
       if (error) { return error }
 
-      const users = await request.server.methods.db.getUsers()
+      const users = await getUsers()
 
       const phoneNumbersToSendTo = getPhoneNumbersToSendTo(users, message)
 
       message.contactCount = phoneNumbersToSendTo.length
       message.cost = costOfMessageSend(message)
-      message.state = messageStates.edited
-      const { user } = request.auth.credentials
-      addAuditEvent(message, user)
-      const res = await updateMessage(message)
-      if (res.statusCode !== 200) {
-        return boom.internal('Problem updating message.', res)
-      }
 
       const messageRows = getMessageRows(message)
 
@@ -56,7 +44,7 @@ module.exports = [
       const { error, message } = await verifyMessageRequest(request, 'Sent messages can not be sent again.')
       if (error) { return error }
 
-      const users = await refreshUsers(request)
+      const users = await getUsers(request)
 
       const phoneNumbersToSendTo = getPhoneNumbersToSendTo(users, message)
       if (phoneNumbersToSendTo.length === 0) {
@@ -73,8 +61,7 @@ module.exports = [
       }
 
       const { user } = request.auth.credentials
-      addAuditEvent(message, user)
-      const res = await updateMessage(message)
+      const res = await upsertMessage(message, user)
       if (res.statusCode !== 200) {
         return boom.internal('Problem sending message.', res)
       }

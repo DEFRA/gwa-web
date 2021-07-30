@@ -1,7 +1,7 @@
 const hapi = require('@hapi/hapi')
 
 const config = require('./config')
-const { getAreaToOfficeMap, getOrganisationList, getStandardisedOfficeLocationMap, getUsers } = require('./lib/db')
+const { getAreaToOfficeMap, getOrganisationList, getStandardisedOfficeLocationMap } = require('./lib/db')
 const getNotifyStatusViewData = require('./lib/view/get-notify-status-view-data')
 const getSentMessages = require('./lib/data/get-sent-messages')
 
@@ -32,8 +32,6 @@ async function createServer () {
   server.method('db.getOrganisationList', getOrganisationList, { cache: { expiresIn: 60 * 60 * 1000, generateTimeout: 10 * 1000 } })
   // Office locations change infrequently. Expire cache hourly. Query _should_ take < 2 seconds, allows 10 seconds before error.
   server.method('db.getStandardisedOfficeLocationMap', getStandardisedOfficeLocationMap, { cache: { expiresIn: 60 * 60 * 1000, generateTimeout: 10 * 1000 } })
-  // Users are scheduled to refresh weekly. Expire cache daily. Query _should_ take ~10 seconds, allows 3x before error.
-  server.method('db.getUsers', getUsers, { cache: { expiresAt: '00:05', generateTimeout: 30 * 1000 } })
   // Notify status doesn't change frequently but is important to be up to date. Expire cache every 5 minutes. Query _should_ take < 2 seconds, allows 10 seconds before error.
   server.method('getNotifyStatusViewData', getNotifyStatusViewData, { cache: { expiresIn: 5 * 60 * 1000, generateTimeout: 10 * 1000 } })
   // Messages are sent infrequently. Expire cache daily. Query _should_ take < 1 second, allow 10 seconds before error.

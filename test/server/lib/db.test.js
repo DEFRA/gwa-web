@@ -154,34 +154,20 @@ describe('db functions', () => {
 
     expect(res).toEqual(data)
     expect(usersContainer.items.query).toBeCalledTimes(1)
-    expect(usersContainer.items.query).toBeCalledWith('SELECT * FROM c')
+    expect(usersContainer.items.query).toBeCalledWith('SELECT c.active, c.orgCode, c.phoneNumbers FROM c', { maxItemCount: 50000 })
     expect(usersContainer.items.query().fetchAll).toBeCalledTimes(1)
   })
 
-  test('saveMessage', async () => {
+  test('upsertMessage', async () => {
     const data = { a: 1 }
     const message = { id: 'id' }
     msgUpsertMock.mockResolvedValue(data)
 
-    const res = await db.saveMessage(message)
+    const res = await db.upsertMessage(message)
 
     expect(res).toEqual(data)
     expect(messagesContainer.items.upsert).toBeCalledTimes(1)
     expect(messagesContainer.items.upsert).toBeCalledWith(message)
-  })
-
-  test('updateMessage', async () => {
-    const data = { a: 1 }
-    const message = { id: 'id' }
-    msgReplaceMock.mockResolvedValue(data)
-
-    const res = await db.updateMessage(message)
-
-    expect(res).toEqual(data)
-    expect(messagesContainer.item).toBeCalledTimes(1)
-    expect(messagesContainer.item).toBeCalledWith(message.id, message.id)
-    expect(messagesContainer.item().replace).toBeCalledTimes(1)
-    expect(messagesContainer.item().replace).toBeCalledWith(message)
   })
 
   test('updateUser', async () => {
