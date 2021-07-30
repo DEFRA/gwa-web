@@ -1,12 +1,7 @@
 const mockDownloadFn = require('../../../helpers/mock-download')
-const { phoneNumbersContainer, phoneNumbersStorageConnectionString } = require('../../../test-env-vars')
+const { phoneNumbersContainer, phoneNumbersFile, phoneNumbersStorageConnectionString } = require('../../../../server/config')
 
 describe('Downloading phone numbers', () => {
-  jest.mock('../../../../server/config')
-  const config = require('../../../../server/config')
-  config.phoneNumbersContainer = phoneNumbersContainer
-  config.phoneNumbersStorageConnectionString = phoneNumbersStorageConnectionString
-
   let mockDownload
   let mockExists
   const mockBlockBlobClient = jest.fn(() => {
@@ -36,7 +31,7 @@ describe('Downloading phone numbers', () => {
     const res = await downloadPhoneNumbers()
 
     expect(mockBlockBlobClient).toHaveBeenCalledTimes(1)
-    expect(mockBlockBlobClient).toHaveBeenCalledWith(phoneNumbersStorageConnectionString, phoneNumbersContainer, 'phone-numbers.csv')
+    expect(mockBlockBlobClient).toHaveBeenCalledWith(phoneNumbersStorageConnectionString, phoneNumbersContainer, phoneNumbersFile)
     expect(res).toEqual(fileContents)
   })
 

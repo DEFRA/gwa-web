@@ -1,12 +1,7 @@
 const mockDownloadFn = require('../../../helpers/mock-download')
-const { dataSourcesContainer, dataSourcesStorageConnectionString } = require('../../../test-env-vars')
+const { dataSourcesContainer, dataSourcesStorageConnectionString } = require('../../../../server/config')
 
 describe('Download org data', () => {
-  jest.mock('../../../../server/config')
-  const config = require('../../../../server/config')
-  config.dataSourcesContainer = dataSourcesContainer
-  config.dataSourcesStorageConnectionString = dataSourcesStorageConnectionString
-
   let mockDownload
   let mockExists
   const mockBlockBlobClient = jest.fn(() => {
