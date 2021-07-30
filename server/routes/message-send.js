@@ -30,13 +30,6 @@ module.exports = [
 
       message.contactCount = phoneNumbersToSendTo.length
       message.cost = costOfMessageSend(message)
-      message.state = messageStates.edited
-      const { user } = request.auth.credentials
-      addAuditEvent(message, user)
-      const res = await updateMessage(message)
-      if (res.statusCode !== 200) {
-        return boom.internal('Problem updating message.', res)
-      }
 
       const messageRows = getMessageRows(message)
 

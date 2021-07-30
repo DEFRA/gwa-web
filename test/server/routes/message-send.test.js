@@ -124,36 +124,7 @@ describe('Message send route', () => {
       expect($('.govuk-body').text()).toEqual(error)
     })
 
-    test('responds with 500 when user message update fails', async () => {
-      updateMessage.mockResolvedValue({ statusCode: 500 })
-      const res = await server.inject({
-        method,
-        url,
-        auth: {
-          credentials: {
-            user: {
-              id,
-              email,
-              displayName: 'test gwa',
-              raw: {
-                roles: JSON.stringify([])
-              }
-            },
-            scope: [scopes.message.manage]
-          },
-          strategy: 'azuread'
-        }
-      })
-
-      expect(res.statusCode).toEqual(500)
-
-      const $ = cheerio.load(res.payload)
-      expect($('.govuk-body').text()).toEqual('Please try again later.')
-    })
-
-    test('responds with 200 and updates message when user has sufficient scope', async () => {
-      updateMessage.mockResolvedValue({ statusCode: 200 })
-
+    test('responds with 200 when user has sufficient scope', async () => {
       const res = await server.inject({
         method,
         url,
@@ -177,14 +148,6 @@ describe('Message send route', () => {
 
       const cost = 0.016
       const contactCount = 1
-      const updatedState = 'edited'
-      expect(updateMessage).toHaveBeenCalledWith({
-        cost,
-        contactCount,
-        lastUpdatedAt: editTime,
-        ...message,
-        state: updatedState
-      })
 
       const $ = cheerio.load(res.payload)
       expect($('.govuk-heading-l').text()).toMatch('Send message')
@@ -195,7 +158,7 @@ describe('Message send route', () => {
       const rows = $('.govuk-table .govuk-table__row', mainContent)
       expect(rows).toHaveLength(9)
       expect($('th', rows.eq(0)).text()).toMatch('Message state')
-      expect($('td', rows.eq(0)).text()).toMatch(updatedState.toUpperCase())
+      expect($('td', rows.eq(0)).text()).toMatch(initialState.toUpperCase())
       expect($('th', rows.eq(1)).text()).toMatch('Office location recipients')
       expect($('td', rows.eq(1)).text()).toMatch('All offices')
       expect($('th', rows.eq(2)).text()).toMatch('Organisation recipients')
@@ -209,9 +172,9 @@ describe('Message send route', () => {
       expect($('th', rows.eq(6)).text()).toMatch('Created by')
       expect($('td', rows.eq(6)).text()).toMatch(createUser)
       expect($('th', rows.eq(7)).text()).toMatch('Last updated at')
-      expect($('td', rows.eq(7)).text()).toMatch(formatDate(editTime))
+      expect($('td', rows.eq(7)).text()).toMatch(formatDate(updateTime))
       expect($('th', rows.eq(8)).text()).toMatch('Last updated by')
-      expect($('td', rows.eq(8)).text()).toMatch(id)
+      expect($('td', rows.eq(8)).text()).toMatch(edituser)
       const buttons = $('.govuk-button')
       expect(buttons).toHaveLength(2)
       expect(buttons.eq(0).text()).toMatch('Cancel')
