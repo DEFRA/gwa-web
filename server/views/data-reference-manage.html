@@ -3,6 +3,9 @@
 {% set formEncType = 'multipart/form-data' %}
 {% set formSubmitButtonText = 'Upload' %}
 
+{% block back %}
+{% endblock %}
+
 {% block beforeForm %}
   <h1 class="govuk-heading-l">Manage {{ data.heading }} reference data</h1>
   <p class="govuk-body">Download the current version of the reference data, edit it and upload the edited version of the file.</p>
