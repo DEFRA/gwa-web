@@ -127,6 +127,15 @@ async function getUsers () {
   return (await usersContainer.items.query('SELECT c.active, c.orgCode, c.phoneNumbers FROM c', { maxItemCount: 50000 }).fetchAll()).resources
 }
 
+/**
+ * Get user stats to be displayed on the system status page. Returns the list
+ * of orgs with the number of active and inactive users.
+ *
+ * @returns {Array} query result with each item containing properties:
+ * * active
+ * * count
+ * * orgCode
+ */
 async function getUserStats () {
   return (await usersContainer.items.query('SELECT c.active, COUNT(c.orgCode) as count, c.orgCode FROM c GROUP BY c.orgCode, c.active').fetchAll()).resources
 }
