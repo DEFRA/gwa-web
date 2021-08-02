@@ -9,6 +9,14 @@
 {% block form %}
   {% include './partials/message-content.html' %}
   {{ officeCheckboxes('message-edit-' + data.id, data, errors) }}
+
+  {{
+    govukButton({
+      text: "Cancel",
+      href: "/message-view/" + data.id,
+      classes: "govuk-button--secondary"
+    })
+  }}
 {% endblock %}
 
 {% block oneThird %}

@@ -1,5 +1,11 @@
 {% extends "two-thirds.html" %}
 
+{% block back %}
+  <div>
+    {{ govukBackLink({ text: "Back to Manage data", href: "/data-manage" }) }}
+  </div>
+{% endblock %}
+
 {% block twoThirds %}
   <h1 class="govuk-heading-l">Manage reference data</h1>
   <p>There are several reference data items that can be managed. Each one will provide the ability to download the reference data in a CSV file which can then be edited and uploaded.</p>

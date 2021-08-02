@@ -105,9 +105,11 @@
       })
     }}
   {% endif %}
-  <div class="no">
-    {{ govukBackLink({ text: "Back", href: "javascript:history.back()" }) }}
-  </div>
+  {% block back %}
+    <div class="no">
+      {{ govukBackLink({ text: "Back", href: "javascript:history.back()" }) }}
+    </div>
+  {% endblock %}
 {% endblock %}
 
 {% block content %}
