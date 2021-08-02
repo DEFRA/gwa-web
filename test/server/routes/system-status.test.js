@@ -11,8 +11,8 @@ describe('System status route', () => {
   const url = '/system-status'
   let server
 
-  jest.mock('../../../server/lib/view/get-status-table')
-  const getStatusTable = require('../../../server/lib/view/get-status-table')
+  jest.mock('../../../server/lib/view/get-data-items-table')
+  const getStatusTable = require('../../../server/lib/view/get-data-items-table')
 
   beforeEach(async () => {
     jest.clearAllMocks()

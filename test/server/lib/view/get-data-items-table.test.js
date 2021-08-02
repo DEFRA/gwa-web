@@ -1,8 +1,8 @@
 const { dataExtractContainer, dataExtractStorageConnectionString, dataSourcesContainer, dataSourcesStorageConnectionString, phoneNumbersContainer, phoneNumbersFile, phoneNumbersStorageConnectionString } = require('../../../../server/config')
 
-describe('Getting system status table', () => {
+describe('Getting data items status table', () => {
   const { formatDate } = require('../../../../server/lib/misc/helpers')
-  const getStatusTable = require('../../../../server/lib/view/get-status-table')
+  const getDataItemsTable = require('../../../../server/lib/view/get-data-items-table')
 
   jest.mock('../../../../server/lib/data/get-container-blobs')
   const getContainerBlobs = require('../../../../server/lib/data/get-container-blobs')
@@ -10,7 +10,7 @@ describe('Getting system status table', () => {
   test('request to get data is correct', async () => {
     getContainerBlobs.mockResolvedValue([])
 
-    await getStatusTable()
+    await getDataItemsTable()
 
     expect(getContainerBlobs).toHaveBeenCalledTimes(3)
     expect(getContainerBlobs).toHaveBeenNthCalledWith(1, dataExtractStorageConnectionString, dataExtractContainer)
@@ -21,7 +21,7 @@ describe('Getting system status table', () => {
   test('table has head and rows', async () => {
     getContainerBlobs.mockResolvedValue([])
 
-    const table = await getStatusTable()
+    const table = await getDataItemsTable()
 
     expect(table).toHaveProperty('head')
     expect(table.head).toEqual([{ text: 'Data item' }, { text: 'File' }, { text: 'Last modified' }])
@@ -41,7 +41,7 @@ describe('Getting system status table', () => {
     getContainerBlobs.mockResolvedValueOnce([])
     getContainerBlobs.mockResolvedValueOnce([])
 
-    const table = await getStatusTable()
+    const table = await getDataItemsTable()
 
     expect(table.rows).toHaveLength(files.length)
     expect(table.rows[0][0].text).toEqual('Azure Active Directory extract')
@@ -61,7 +61,7 @@ describe('Getting system status table', () => {
     getContainerBlobs.mockResolvedValueOnce(files)
     getContainerBlobs.mockResolvedValueOnce([])
 
-    const table = await getStatusTable()
+    const table = await getDataItemsTable()
 
     expect(table.rows).toHaveLength(files.length - 1)
     expect(table.rows[0][0].text).toEqual(`Upload for ${albAbcFile.name.replace('.json', '')} (ALB)`)
@@ -79,7 +79,7 @@ describe('Getting system status table', () => {
     getContainerBlobs.mockResolvedValueOnce([])
     getContainerBlobs.mockResolvedValueOnce(files)
 
-    const table = await getStatusTable()
+    const table = await getDataItemsTable()
 
     expect(table.rows).toHaveLength(files.length)
     expect(table.rows[0][0].text).toEqual('Phone number list')
