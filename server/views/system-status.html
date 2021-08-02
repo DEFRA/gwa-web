@@ -7,9 +7,15 @@
   <h1 class="govuk-heading-l">System status</h1>
 
   <h2 class="govuk-heading-m">Data items</h2>
-  <p>Below is a list of data items and the last time they were modified.</p>
+  <p>The table shows a list of data items and the last time they were modified.</p>
   {{
-    govukTable(table)
+    govukTable(dataItemsTable)
+  }}
+
+  <h2 class="govuk-heading-m">User stats</h2>
+  <p>The table shows a list of organisations and a count of their active and inactive users in the system.</p>
+  {{
+    govukTable(userStatsTable)
   }}
 
   <h2 class="govuk-heading-m">Notify service</h2>

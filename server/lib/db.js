@@ -127,6 +127,10 @@ async function getUsers () {
   return (await usersContainer.items.query('SELECT c.active, c.orgCode, c.phoneNumbers FROM c', { maxItemCount: 50000 }).fetchAll()).resources
 }
 
+async function getUserStats () {
+  return (await usersContainer.items.query('SELECT c.active, COUNT(c.orgCode) as count, c.orgCode FROM c GROUP BY c.orgCode, c.active').fetchAll()).resources
+}
+
 /**
  * Upsert the message.
  *
@@ -171,6 +175,7 @@ module.exports = {
   getStandardisedOfficeLocationMap,
   getUser,
   getUsers,
+  getUserStats,
   updateReferenceData,
   updateUser,
   upsertMessage

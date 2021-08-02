@@ -158,6 +158,18 @@ describe('db functions', () => {
     expect(usersContainer.items.query().fetchAll).toBeCalledTimes(1)
   })
 
+  test('getUserStats', async () => {
+    const data = [{ orgCode: 'DEFRA', active: true, count: 10 }]
+    usersFetchAllMock.mockResolvedValue({ resources: data })
+
+    const res = await db.getUserStats()
+
+    expect(res).toEqual(data)
+    expect(usersContainer.items.query).toBeCalledTimes(1)
+    expect(usersContainer.items.query).toBeCalledWith('SELECT c.active, COUNT(c.orgCode) as count, c.orgCode FROM c GROUP BY c.orgCode, c.active')
+    expect(usersContainer.items.query().fetchAll).toBeCalledTimes(1)
+  })
+
   test('upsertMessage', async () => {
     const data = { a: 1 }
     const message = { id: 'id' }

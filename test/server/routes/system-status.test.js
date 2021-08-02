@@ -12,7 +12,9 @@ describe('System status route', () => {
   let server
 
   jest.mock('../../../server/lib/view/get-data-items-table')
-  const getStatusTable = require('../../../server/lib/view/get-data-items-table')
+  const getDataItemsTable = require('../../../server/lib/view/get-data-items-table')
+  jest.mock('../../../server/lib/view/get-user-stats-table')
+  const getUserStatsTable = require('../../../server/lib/view/get-user-stats-table')
 
   beforeEach(async () => {
     jest.clearAllMocks()
@@ -62,9 +64,12 @@ describe('System status route', () => {
     { scope: [scopes.data.manage] },
     { scope: [scopes.data.manage, scopes.message.manage] }
   ])('responds with 200 when user has sufficient scope', async ({ scope }) => {
-    const head = [{ text: 'Data item' }, { text: 'File' }, { text: 'Last modified' }]
-    const rows = [[{ text: 'Data item extract' }, { text: 'extact.json' }, { text: formatDate(Date.now()) }]]
-    getStatusTable.mockResolvedValue({ head, rows })
+    const dataItemsHead = [{ text: 'Data item' }, { text: 'File' }, { text: 'Last modified' }]
+    const dataItemsRows = [[{ text: 'Data item extract' }, { text: 'extact.json' }, { text: formatDate(Date.now()) }]]
+    getDataItemsTable.mockResolvedValue({ head: dataItemsHead, rows: dataItemsRows })
+    const userStatsHead = [{ text: 'Organisation' }, { text: 'Active users' }, { text: 'Inactive users' }]
+    const userStatsRows = [[{ text: 'DEFRA' }, { text: '1' }, { text: '0' }]]
+    getUserStatsTable.mockResolvedValue({ head: userStatsHead, rows: userStatsRows })
     const res = await server.inject({
       method: 'GET',
       url,
@@ -91,11 +96,15 @@ describe('System status route', () => {
     expect($('.govuk-header__navigation-item--active').text()).toMatch(navigation.header.systemStatus.text)
     expect($('.govuk-phase-banner')).toHaveLength(0)
     const headings = $('.govuk-heading-m')
-    expect(headings).toHaveLength(2)
+    expect(headings).toHaveLength(3)
     expect(headings.eq(0).text()).toEqual('Data items')
-    expect(headings.eq(1).text()).toEqual('Notify service')
-    const table = $('table')
-    expect(cleanUpTableText($('thead tr', table).text())).toMatch(head.map(x => x.text).join(' '))
-    expect(cleanUpTableText($('tbody tr', table).text())).toMatch(rows[0].map(x => x.text).join(' '))
+    expect(headings.eq(1).text()).toEqual('User stats')
+    expect(headings.eq(2).text()).toEqual('Notify service')
+    const tables = $('table')
+    expect(tables).toHaveLength(2)
+    expect(cleanUpTableText($('thead tr', tables.eq(0)).text())).toMatch(dataItemsHead.map(x => x.text).join(' '))
+    expect(cleanUpTableText($('tbody tr', tables.eq(0)).text())).toMatch(dataItemsRows[0].map(x => x.text).join(' '))
+    expect(cleanUpTableText($('thead tr', tables.eq(1)).text())).toMatch(userStatsHead.map(x => x.text).join(' '))
+    expect(cleanUpTableText($('tbody tr', tables.eq(1)).text())).toMatch(userStatsRows[0].map(x => x.text).join(' '))
   })
 })
