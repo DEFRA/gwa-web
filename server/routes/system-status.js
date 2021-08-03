@@ -1,14 +1,18 @@
 const { notifyDashboardUri } = require('../config')
 const { scopes } = require('../permissions')
-const getStatusTable = require('../lib/view/get-status-table')
+const getDataItemsTable = require('../lib/view/get-data-items-table')
+const getUserStatsTable = require('../lib/view/get-user-stats-table')
 
 module.exports = [
   {
     method: 'GET',
     path: '/system-status',
     handler: async (request, h) => {
-      const table = await getStatusTable()
-      return h.view('system-status', { notifyDashboardUri, table })
+      const [dataItemsTable, userStatsTable] = await Promise.all([
+        getDataItemsTable(),
+        getUserStatsTable()
+      ])
+      return h.view('system-status', { notifyDashboardUri, dataItemsTable, userStatsTable })
     },
     options: {
       auth: { access: { scope: [`+${scopes.data.manage}`] } }
