@@ -9,122 +9,121 @@
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_gwa-web&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=DEFRA_gwa-web)
 [![Known Vulnerabilities](https://snyk.io/test/github/defra/gwa-web/badge.svg)](https://snyk.io/test/github/defra/gwa-web)
 
-> Web app for sending messages and administering users for group wide alerts.
+> Web app for sending messages, managing data and administering users for group
+> wide alerts.
 
-The web contains functionality for both the creation and initiation of the
-sending of messages to groups of people and the ability for users to login and
-add additional phone numbers to their profile.
+The web app contains functionality to:
+
+* create and send messages to groups of people
+* manage data used within the system
+* administer phone numbers and the groups they are subscribed to
+
+There are three roles within the app:
+
+* User
+* DataManager
+* Administrator
+
+All users are a `User`. A user can login to the application if they have an
+active account within the Defra Azure Active Directory (AAD). Although the
+login mechanism will work, for the user to be able to access their account they
+must also have an active record within the application's DB. More information
+is available [here](#user-data).
+
+`DataManager` and `Administrator` require the user to belong to an AAD group
+that has been setup to map to the roles. More information is available
+[here](#user-roles).
+
+Broadly speaking, a DataManager can perform data related actions such as
+managing the reference data, uploading new organisation data.
+
+An Administrator can do everything a DataManager can and in addition has access
+to the message creation, editing and sending functionality.
 
 ## Running the application
 
-First install the dependencies and build the application using:
+The are a number of prerequisites required for the application to be
+usable, see [prerequisites](#prerequisites).
 
-```cmd
-npm i
-npm run build
-```
+Once the prerequisites are completed, install the dependencies (`npm install`)
+and generate the CSS (`npm run build`).
 
-Currently this will just build the `govuk-frontend` sass but may be extended to include other build tasks as needed (e.g. client-side js using browserify or webpack etc.)
+This will build the application's sass assets including those from
+[`govuk-frontend`](https://www.npmjs.com/package/govuk-frontend).
 
-Now the application is ready to run:
+The application should now be ready to run with `npm run start`. Check the
+server is running by pointing your browser to
+[localhost:3000](http://localhost:3000).
 
-`npm run start`
+Running `npm run start:watch` will start the application using
+[nodemon](https://www.npmjs.com/package/nodemon) which is useful when making
+changes to the application.
 
-Check the server is running by pointing your browser to
-[http://localhost:3000](http://localhost:3000).
+### Prerequisites
 
-## Config - TODO (update)
+The application requires the following:
 
-The configuration file for the server is found at `server/config.js`.
-This is where to put any config and all config should be read from the environment.
-The final config object should be validated using joi and the application should not start otherwise.
+* Access to a
+  [Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/introduction)
+  account
+* An Azure Active Directory application, created via the
+  [registration process](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
+* Access to
+  [Azure Storage](https://docs.microsoft.com/en-us/azure/storage/common/storage-introduction).
+  This could be an actual account or
+  [Azurite](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite),
+  a storage emulator
 
-## Plugins - TODO (update)
+An example `.env` file exists in the root directory -
+[.env.example](.env.example). Once the prerequisites are complete, create a
+copy of the file and rename it to `.env`, then add the appropriate values to
+the variables.
 
-hapi has a powerful plugin system and all server code should be loaded in a plugin.
+#### Reference data
 
-Plugins live in the `server/plugins` directory.
+There are a number of reference data items used within the application. Each
+item should be available within the DB, in the `reference-data` container. The
+best source of the data is to get a copy of it from an already running system
+as the data changes overtime. Failing that, the initial data files are
+available within the infrastructure repository. The items required are:
 
-## Logging - TODO (update)
+* `areaToOfficeMap`
+* `organisationList`
+* `organisatioMap`
+* `standardisedOfficeLocationMap`
 
-The [hapi-pino](https://github.com/pinojs/hapi-pino) plugin is included and configured in `server/plugins/logging`
+#### User data
 
-## Views - TODO (update)
+Ideally, the DB will be populated with data from the ETL functions, however,
+all that is needed for a user to be able to login is to have a record in the
+`users` container that is active. The easiest way to create the record is to
+fill out the placeholder below and add it to the container via the portal.
 
-The [vison](https://github.com/hapijs/vision) plugin is used for template rendering support.
-
-The template engine used in nunjucks inline with the GDS Design System with support for view caching, layouts, partials and helpers.
-
-## Static files - TODO (update)
-
-The [Inert](https://github.com/hapijs/inert) plugin is used for static file and directory handling in hapi.js.
-Put all static assets in `server/public/static`.
-
-Any build output should write to `server/public/build`. This path is in the `.gitignore` and is therefore not checked into source control.
-
-## Routes - TODO (update)
-
-Incoming requests are handled by the server via routes.
-Each route describes an HTTP endpoint with a path, method, and other properties.
-
-Routes are found in the `server/routes` directory and loaded using the `server/plugins/router.js` plugin.
-
-Hapi supports registering routes individually or in a batch.
-Each route file can therefore export a single route object or an array of route objects.
-
-A single route looks like this:
-
-```js
+```json
 {
-  method: 'GET',
-  path: '/hello-world',
-  options: {
-    handler: (request, h) => {
-      return 'hello world'
-    }
-  }
+  "givenName": "givenName",
+  "surname": "surname",
+  "officeLocation": "Unknown",
+  "officeCode": "UNK:Unknown",
+  "orgCode": "DEFRA",
+  "orgName": "Department for Environment, Food and Rural Affairs",
+  "phoneNumbers": [ ],
+  "active": true,
+  "id": "givenName.surname@org.gov.uk",
 }
 ```
 
-There are lots of [route options](http://hapijs.com/api#route-options), here's the documentation on [hapi routes](http://hapijs.com/tutorials/routing)
+#### User roles
 
-## Tasks - TODO (update)
-
-Build tasks are created using simple shell scripts or node.js programs.
-The default ones are found in the `bin` directory.
-
-The task runner is simply `npm` using `npm-scripts`.
-
-We chose to use this for simplicity but there's nothing to stop you adding `gulp`, `grunt` or another task runner if you prefer.
-
-The predefined tasks are:
-
-- `npm run build` (Runs all build sub-tasks)
-- `npm run build:css` (Builds the client-side sass)
-- `npm run lint` (Runs the lint task using standard.js)
-- `npm run unit-test` (Runs the `lab` tests in the `/test` folder)
-- `npm test` (Runs the `lint` task then the `unit-tests`)
-
-### Resources - TODO (update)
-
-For more information around using `npm-scripts` as a build tool:
-
-- http://substack.net/task_automation_with_npm_run
-- http://ponyfoo.com/articles/choose-grunt-gulp-or-npm
-- http://blog.keithcirkel.co.uk/why-we-should-stop-using-grunt/
-- http://blog.keithcirkel.co.uk/how-to-use-npm-as-a-build-tool/
-
-## Testing - TODO (update)
-
-[lab](https://github.com/hapijs/lab) and [code](https://github.com/hapijs/code) are used for unit testing.
-
-See the `/test` folder for more information.
-
-## Linting - TODO (update)
-
-[standard.js](http://standardjs.com/) is used to lint both the server-side and client-side javascript code.
-
-It's defined as a build task and can be run using `npm run lint`.
+By default a user has a role of `User`. In order for a user to have the
+additional roles of `Administrator` and `DataManager` they must be configured
+in AAD. In the non-development versions of the application an AAD group is
+mapped to the role, however, this is not strictly necessary and is done for
+ease of administration. When working with a development AAD app
+registration it is easier to map a user directly to the role.
+The creation of roles in the AAD app and how to assign users to roles is
+covered in Azure documentation found
+[here](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-add-app-roles-in-azure-ad-apps).
 
 ## License
 

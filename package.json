@@ -45,7 +45,7 @@
     "Steve Hunt <steven.hunt@defra.gov.uk>"
   ],
   "devDependencies": {
-    "@types/jest": "^26.0.23",
+    "@types/jest": "^27.0.0",
     "cheerio": "^1.0.0-rc.9",
     "form-data": "^4.0.0",
     "get-stream": "^6.0.1",
