@@ -16,7 +16,7 @@ The web app contains functionality to:
 
 * create and send messages to groups of people
 * manage data used within the system
-* administer phone numbers and the groups they are subscribed tool
+* administer phone numbers and the groups they are subscribed to
 
 There are three roles within the app:
 
@@ -25,11 +25,14 @@ There are three roles within the app:
 * Administrator
 
 All users are a `User`. A user can login to the application if they have an
-active account within the Defra Azure Active Directory (AAD). This account is
-used as the login credentials.
+active account within the Defra Azure Active Directory (AAD). Although the
+login mechanism will work, for the user to be able to access their account they
+must also have an active record within the application's DB. More information
+is available [here](#user-data).
 
 `DataManager` and `Administrator` require the user to belong to an AAD group
-that has been setup to map to the roles.
+that has been setup to map to the roles. More information is available
+[here](#user-roles).
 
 Broadly speaking, a DataManager can perform data related actions such as
 managing the reference data, uploading new organisation data.
@@ -39,25 +42,18 @@ to the message creation, editing and sending functionality.
 
 ## Running the application
 
-The are a number of prerequisite setup steps required for the application to be
-usable, see [prerequisites](#prerequisites) below.
+The are a number of prerequisites required for the application to be
+usable, see [prerequisites](#prerequisites).
 
-Once the prerequisites are completed, install the dependencies for the
-application and generate the CSS using:
+Once the prerequisites are completed, install the dependencies (`npm install`)
+and generate the CSS (`npm run build`).
 
-```cmd
-npm i
-npm run build
-```
+This will build the application's sass assets including those from
+[`govuk-frontend`](https://www.npmjs.com/package/govuk-frontend).
 
-This will build the application's sass assets using from the `govuk-frontend`.
-
-Now the application is ready to run:
-
-`npm run start`
-
-Check the server is running by pointing your browser to
-[http://localhost:3000](http://localhost:3000).
+The application should now be ready to run with `npm run start`. Check the
+server is running by pointing your browser to
+[localhost:3000](http://localhost:3000).
 
 Running `npm run start:watch` will start the application using
 [nodemon](https://www.npmjs.com/package/nodemon) which is useful when making
@@ -81,14 +77,15 @@ The application requires the following:
 An example `.env` file exists in the root directory -
 [.env.example](.env.example). Once the prerequisites are complete, create a
 copy of the file and rename it to `.env`, then add the appropriate values to
-the variables. The application should start up successfully.
+the variables.
 
 #### Reference data
 
 There are a number of reference data items used within the application. Each
 item should be available within the DB, in the `reference-data` container. The
 best source of the data is to get a copy of it from an already running system
-as the data will change overtime. The items required are:
+as the data changes overtime. Failing that, the initial data files are
+available within the infrastructure repository. The items required are:
 
 * `areaToOfficeMap`
 * `organisationList`
@@ -119,13 +116,14 @@ fill out the placeholder below and add it to the container via the portal.
 #### User roles
 
 By default a user has a role of `User`. In order for a user to have the
-additional roles of `Administrator` and `DataManager` the must be configured in
-the Azure Active Directory Application. This can be done by following the
-guidance
+additional roles of `Administrator` and `DataManager` they must be configured
+in AAD. In the non-development versions of the application an AAD group is
+mapped to the role, however, this is not strictly necessary and is done for
+ease of administration. When working with a development AAD app
+registration it is easier to map a user directly to the role.
+The creation of roles in the AAD app and how to assign users to roles is
+covered in Azure documentation found
 [here](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-add-app-roles-in-azure-ad-apps).
-The guidance also explains how to assign users to roles in the application.
-Once configured, the web application will provide access to routes based on the
-roles the user has.
 
 ## License
 
