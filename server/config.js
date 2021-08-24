@@ -36,7 +36,7 @@ const schema = Joi.object().keys({
   phoneNumbersContainer: Joi.string().default('phone-numbers'),
   phoneNumbersFile: Joi.string().default('phone-numbers.csv'),
   phoneNumbersStorageConnectionString: Joi.string().required(),
-  serviceName: Joi.string().default('Group Wide Alert'),
+  serviceName: Joi.string().default('Defra Group Text Alerts'),
   siteUri: Joi.string().uri()
 })
 
