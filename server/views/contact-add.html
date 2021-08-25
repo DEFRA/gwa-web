@@ -23,8 +23,13 @@
       errorMessage: errors.mobile
     })
   }}
+  {{
+    govukWarningText({
+    html: "Please note, by entering your personal phone number into the system, you are accepting that Defra group will issue business continuity and security event-related text alerts to you, either company-wide or based on your selected area preferences.<br><br>You have the option at any time to change your area preferences and/or remove your personal phone number from the system should you no longer wish receive these alerts to your personal device.",
+    iconFallbackTet: "Warning"
+    })
+  }}
 {% endblock %}
-
 {% block afterForm %}
   {{
     govukButton({
