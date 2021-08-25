@@ -1,6 +1,6 @@
 const routeId = 'faqs'
 const path = `/${routeId}`
-const { contactEmail, siteUri } = require('../config')
+const { siteUri } = require('../config')
 
 module.exports = [
   {

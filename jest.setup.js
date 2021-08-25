@@ -3,7 +3,6 @@ const envVars = require('./test/test-env-vars')
 process.env.AAD_TENANT_ID = envVars.aadTenantId
 process.env.AAD_CLIENT_ID = envVars.aadClientId
 process.env.AAD_CLIENT_SECRET = envVars.aadClientSecret
-process.env.CONTACT_EMAIL = envVars.contactEmail
 process.env.CONTACT_LIST_CONTAINER = envVars.contactListContainer
 process.env.CONTACT_LIST_STORAGE_CONNECTION_STRING = envVars.contactListStorageConnectionString
 process.env.DATA_EXTRACT_CONTAINER = envVars.dataExtractContainer

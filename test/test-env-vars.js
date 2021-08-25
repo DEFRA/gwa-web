@@ -2,7 +2,6 @@ module.exports = {
   aadClientId: 'b8707d91-d57b-421e-8b6e-33d453a888df',
   aadClientSecret: 'b8707d91-d57b-421e-8b6e-33d453a888df',
   aadTenantId: 'b8707d91-d57b-421e-8b6e-33d453a888df',
-  contactEmail: 'noreply@defra.gov.uk',
   contactListContainer: 'contact-list-container',
   contactListStorageConnectionString: 'contact-list-connection-string',
   dataExtractContainer: 'data-extract-container',
