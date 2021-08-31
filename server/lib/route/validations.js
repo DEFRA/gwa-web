@@ -8,17 +8,12 @@ module.exports = {
   message: {
     payload: Joi.object().keys({
       allOffices: Joi.boolean().required(),
-      allOrgs: Joi.boolean().required(),
       officeCodes: Joi.alternatives().when('allOffices', {
         is: false,
         then: officeCodesRule.required(),
         otherwise: officeCodesRule
       }),
-      orgCodes: Joi.alternatives().when('allOrgs', {
-        is: false,
-        then: orgCodesRule.required(),
-        otherwise: orgCodesRule
-      }),
+      orgCodes: orgCodesRule.required(),
       text: Joi.string().trim().max(maxMessageLength).required(),
       info: Joi.string().trim().max(maxInfoLength).allow('').empty('')
     })

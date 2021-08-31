@@ -49,7 +49,6 @@ describe('Message edit route', () => {
     officeCodes: [areaOfficeCode],
     state,
     allOffices: true,
-    allOrgs: false,
     text,
     info
   }
@@ -163,9 +162,6 @@ describe('Message edit route', () => {
       const formGroups = $('.govuk-form-group')
       expect($('textarea', formGroups.eq(0)).text()).toMatch(text)
       expect($('textarea', formGroups.eq(1)).text()).toMatch(info)
-      const allOrgsRadio = $('input[name="allOrgs"]:checked')
-      expect(allOrgsRadio).toHaveLength(1)
-      expect(allOrgsRadio.val()).toEqual('false')
       const orgCheckboxesInput = $('input[name="orgCodes"]:checked')
       expect(orgCheckboxesInput).toHaveLength(1)
       expect(orgCheckboxesInput.val()).toEqual(orgCode)
@@ -244,7 +240,7 @@ describe('Message edit route', () => {
     })
 
     test('responds with 500 when problem creating message', async () => {
-      const payload = { allOffices: true, allOrgs: false, orgCodes: ['orgCode', 'another'], text: 'message to send' }
+      const payload = { allOffices: true, orgCodes: ['orgCode', 'another'], text: 'message to send' }
       upsertMessage.mockResolvedValue({ statusCode: 500 })
       const res = await server.inject({
         method,
@@ -276,7 +272,7 @@ describe('Message edit route', () => {
       { messageId: undefined, message: undefined, status: 404, error: 'Not Found' },
       { messageId: 'unique', message: { state: 'sent' }, status: 400, error: 'Sent messages can not be edited.' }
     ])('responds with errors when problem with message', async ({ messageId, message, status, error }) => {
-      const payload = { messageId, allOffices: true, allOrgs: false, orgCodes: ['orgCode', 'another'], text: 'message to send' }
+      const payload = { messageId, allOffices: true, orgCodes: ['orgCode', 'another'], text: 'message to send' }
       getMessage.mockResolvedValueOnce(message)
       const res = await server.inject({
         method,

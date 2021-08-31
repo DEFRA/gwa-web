@@ -174,7 +174,7 @@ describe('Message creation route', () => {
     })
 
     test('responds with 500 when problem creating message', async () => {
-      const payload = { allOffices: true, allOrgs: true, orgCodes: ['orgCode', 'another'], text: 'message to send' }
+      const payload = { allOffices: true, orgCodes: ['orgCode', 'another'], text: 'message to send' }
       upsertMessage.mockResolvedValue({ statusCode: 500 })
       const res = await server.inject({
         method,
@@ -230,7 +230,6 @@ describe('Message creation route', () => {
 
       const expectedMessage = {
         allOffices: payload.allOffices,
-        allOrgs: payload.allOrgs,
         id: expect.stringMatching(uuidRegex),
         info: payload.info?.trim(),
         officeCodes: [payload.officeCodes ?? []].flat(),

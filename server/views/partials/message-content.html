@@ -61,37 +61,15 @@
 
 <h2 class="govuk-heading-m" id="officeCodes">Which organisations should the message be sent to?</h2>
 {{
-  govukRadios({
-    classes: "govuk-radios--inline",
-    idPrefix: "allOrgs",
-    name: "allOrgs",
-    fieldset: {
-      legend: {
-        text: "Do you want to send the message to all organisations?",
-        classes: "govuk-fieldset__legend--s"
-      }
-    },
-    hint: {
-      text: "This will override the selection of individual organisations."
-    },
-    items: data.allOrgRadios,
-    errorMessage: errors.allOrgs
-  })
-}}
-
-{{
   govukCheckboxes({
     id: "orgCodes",
     name: "orgCodes",
     fieldset: {
       legend: {
         idPrefix: "orgCodes",
-        text: "Select the individual organisations to send the message to",
+        text: "Select the organisations to send the message to",
         classes: "govuk-fieldset__legend--s"
       }
-    },
-    hint: {
-      text: "These only apply if not sending to all organisations."
     },
     items: data.orgCheckboxes,
     errorMessage: errors.orgCodes
@@ -101,7 +79,7 @@
 {{
   govukDetails({
     summaryText: "Help with sending to organisations",
-    html: "Messages can be sent to all organisations or a subset. To send to a subset, ensure the 'No' option is selected and then select the required organisations.<br>The <strong>Undefined</strong> option represents unrecognised organisations encountered during the data import. This is likely to be a problem with the source data of user's profiles in Azure Active Directory.",
+    html: "Messages can be sent to any selection of organisations required.<br>The <strong>Undefined</strong> option represents unrecognised organisations encountered during the data import. This is likely to be a problem with the source data of user's profiles in Azure Active Directory.",
     classes: "govuk-!-margin-bottom-9"
   })
 }}

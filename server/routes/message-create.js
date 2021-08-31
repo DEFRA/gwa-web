@@ -33,9 +33,8 @@ module.exports = [
       const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap)
       const orgCheckboxes = generateOrganisationCheckboxes(organisationList)
       const allOfficeRadios = sendToAllRadios()
-      const allOrgRadios = sendToAllRadios()
 
-      return h.view(routeId, new Model({ allOfficeRadios, allOrgRadios, maxMessageLength, officeCheckboxes, orgCheckboxes }))
+      return h.view(routeId, new Model({ allOfficeRadios, maxMessageLength, officeCheckboxes, orgCheckboxes }))
     },
     options: {
       auth
@@ -46,11 +45,10 @@ module.exports = [
     path,
     handler: async (request, h) => {
       const { user } = request.auth.credentials
-      const { allOffices, allOrgs, info, officeCodes, orgCodes, text } = request.payload
+      const { allOffices, info, officeCodes, orgCodes, text } = request.payload
 
       const message = {
         allOffices,
-        allOrgs,
         id: uuid(),
         info: info?.trim(),
         officeCodes: [officeCodes ?? []].flat(),

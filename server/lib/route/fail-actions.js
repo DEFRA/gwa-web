@@ -16,7 +16,7 @@ module.exports = {
     failAction: async (request, h, err, routeId) => {
       const errors = getMappedErrors(err, errorMessages)
 
-      let { allOffices, allOrgs, officeCodes, orgCodes } = request.payload
+      let { allOffices, officeCodes, orgCodes } = request.payload
       if (typeof (officeCodes) === 'string') {
         officeCodes = [officeCodes]
       }
@@ -30,9 +30,8 @@ module.exports = {
       const officeCheckboxes = generateOfficeCheckboxes(areaToOfficeMap, officeCodes)
       const orgCheckboxes = generateOrganisationCheckboxes(organisationList, orgCodes)
       const allOfficeRadios = sendToAllRadios(allOffices)
-      const allOrgRadios = sendToAllRadios(allOrgs)
 
-      return h.view(routeId, new Model({ ...request.payload, allOfficeRadios, allOrgRadios, maxMessageLength, officeCheckboxes, orgCheckboxes }, errors)).takeover()
+      return h.view(routeId, new Model({ ...request.payload, allOfficeRadios, maxMessageLength, officeCheckboxes, orgCheckboxes }, errors)).takeover()
     }
   }
 }
