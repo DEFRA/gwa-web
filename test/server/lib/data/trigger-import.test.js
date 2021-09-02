@@ -15,8 +15,6 @@ describe('Triggering import', () => {
   })
 
   let triggerImport
-  const now = Date.now()
-  Date.now = jest.fn(() => now)
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -33,7 +31,7 @@ describe('Triggering import', () => {
     expect(mockBlockBlobClient).toHaveBeenCalledTimes(1)
     expect(mockBlockBlobClient).toHaveBeenCalledWith(dataSourcesStorageConnectionString, dataSourcesContainer, 'trigger.json')
     expect(mockUpload).toHaveBeenCalledTimes(1)
-    const data = JSON.stringify({ now: now.toString() })
+    const data = JSON.stringify([])
     expect(mockUpload).toHaveBeenCalledWith(data, data.length, { blobHTTPHeaders: { blobContentType: 'application/json' } })
     expect(res).toBe(true)
   })
