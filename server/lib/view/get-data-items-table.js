@@ -21,7 +21,7 @@ async function getDataExtractBlobsAsRows () {
 async function getDataSourceBlobsAsRows () {
   const blobs = await getContainerBlobs(dataSourcesStorageConnectionString, dataSourcesContainer)
   return blobs
-    .filter(b => b.name !== 'internal-users.json')
+    .filter(b => !(b.name === 'internal-users.json' || b.name === 'trigger.json'))
     .map(b => {
       return [
         { text: `Upload for ${b.name.replace('.json', '')} (ALB)` },
