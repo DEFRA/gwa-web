@@ -19,6 +19,7 @@ describe('Data reference manage route', () => {
   const triggerImport = require('../../../server/lib/data/trigger-import')
 
   beforeEach(async () => {
+    jest.resetAllMocks()
     server = await createServer()
   })
 
@@ -293,6 +294,8 @@ describe('Data reference manage route', () => {
       expect($('.govuk-body').text()).toMatch(`The reference data for ${typeInfo[type].heading} was successfully updated with the data from ${filename}.`)
       if (type === types.orgList) {
         expect(triggerImport).toHaveBeenCalledTimes(1)
+      } else {
+        expect(triggerImport).toHaveBeenCalledTimes(0)
       }
     })
 
