@@ -1,8 +1,8 @@
 const path = require('path')
 const nunjucks = require('nunjucks')
-const config = require('../config')
-const constants = require('../constants')
-const pkg = require('../../package.json')
+const { isLocal, phaseBannerHtml, phaseBannerTag } = require('../config')
+const { serviceName } = require('../constants')
+const { version } = require('../../package.json')
 
 module.exports = {
   plugin: require('@hapi/vision'),
@@ -31,14 +31,14 @@ module.exports = {
     },
     path: '../views',
     relativeTo: __dirname,
-    isCached: !config.isLocal,
+    isCached: !isLocal,
     context: {
-      appVersion: pkg.version,
+      appVersion: version,
       assetPath: '/assets',
-      serviceName: constants.serviceName,
-      pageTitle: `${constants.serviceName}`,
-      phaseBannerTag: config.phaseBannerTag,
-      phaseBannerHtml: config.phaseBannerHtml
+      pageTitle: serviceName,
+      phaseBannerHtml,
+      phaseBannerTag,
+      serviceName
     }
   }
 }
