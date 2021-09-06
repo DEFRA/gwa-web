@@ -84,5 +84,6 @@ module.exports = {
     additionalMessageIncrement: 153,
     maxMessageLength: 918 - notifyServiceNameLength,
     maxInfoLength: 2000
-  }
+  },
+  triggerFilename: 'trigger.json'
 }

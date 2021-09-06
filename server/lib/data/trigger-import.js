@@ -1,5 +1,6 @@
 const { BlockBlobClient } = require('@azure/storage-blob')
 const { dataSourcesContainer, dataSourcesStorageConnectionString } = require('../../config')
+const { triggerFilename } = require('../../constants')
 
 /**
  * Uploads a file to the 'data-sources' blob storage container. The sole
@@ -12,7 +13,7 @@ const { dataSourcesContainer, dataSourcesStorageConnectionString } = require('..
  */
 module.exports = async () => {
   const data = JSON.stringify([])
-  const client = new BlockBlobClient(dataSourcesStorageConnectionString, dataSourcesContainer, 'trigger.json')
+  const client = new BlockBlobClient(dataSourcesStorageConnectionString, dataSourcesContainer, triggerFilename)
   const res = await client.upload(data, data.length, { blobHTTPHeaders: { blobContentType: 'application/json' } })
   return res.errorCode === undefined
 }

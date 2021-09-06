@@ -1,6 +1,7 @@
 const getContainerBlobs = require('../data/get-container-blobs')
 const { formatDate } = require('../misc/helpers')
 const { dataExtractContainer, dataExtractStorageConnectionString, dataSourcesContainer, dataSourcesStorageConnectionString, phoneNumbersContainer, phoneNumbersStorageConnectionString } = require('../../config')
+const { triggerFilename } = require('../../constants')
 
 const fileMap = {
   'aad-users.json': 'Azure Active Directory',
@@ -21,7 +22,7 @@ async function getDataExtractBlobsAsRows () {
 async function getDataSourceBlobsAsRows () {
   const blobs = await getContainerBlobs(dataSourcesStorageConnectionString, dataSourcesContainer)
   return blobs
-    .filter(b => !(b.name === 'internal-users.json' || b.name === 'trigger.json'))
+    .filter(b => !(b.name === 'internal-users.json' || b.name === triggerFilename))
     .map(b => {
       return [
         { text: `Upload for ${b.name.replace('.json', '')} (ALB)` },
