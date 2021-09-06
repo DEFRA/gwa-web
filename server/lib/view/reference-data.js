@@ -20,14 +20,17 @@ const typeInfo = {
   },
   [types.orgList]: {
     id: referenceData.organisationList,
-    blurb: 'The downloaded file will include columns: <strong>orgName</strong>, <strong>orgCode</strong>, <strong>active</strong> and <strong>core</strong>.' +
-    '<br><strong>active</strong>, in combination with <strong>core</strong> determines if the organisation is available as an option for <a href="/org-data-upload" class="govuk-link">uploading data to</a>. Organisations set as <strong>core=true</strong> will not appear in the list and therefore can not have files uploaded to act as their data source.' +
-    '<br><strong>active</strong>, on its own determines whether the organisation appears in the list of organisations to send messages to.' +
-    '<br>This data is unlikely to need to change frequently. Scenarios that would require changes to the data include:' +
-    '<ul class="govuk-list govuk-list--bullet">' +
-    '<li>Adding a new organisation</li>' +
-    '<li>Setting an organsation to active in order to upload data</li>' +
-    '</ul>',
+    blurb: '<p>When the file is uploaded an import of user data will be triggered. This will normally complete within 10 minutes and is confirmed upon receipt of the \'import report\' email or checking the time the \'phone-numbers.csv\' file was last modified on the <a href="/system-status">system status</a> page.</p>' +
+      '<p>The downloaded file will include columns: <strong>orgName</strong>, <strong>orgCode</strong>, <strong>active</strong> and <strong>core</strong>.</p>' +
+      '<p><strong>active</strong>, in combination with <strong>core</strong> determines if the organisation is available as an option for <a href="/org-data-upload">uploading data to</a>. Organisations set as <strong>core=true</strong> will not appear in the list and therefore can not have files uploaded to act as their data source.</p>' +
+      '<p><strong>active</strong>, on its own determines whether the organisation appears in the list of organisations to send messages to.<br>It also determines if users of that organisation are active within the system. When an organisation is set to inactive all users of that organisation will be unable to login to the system or receive messages.</p>' +
+    '<p>' +
+      'This data is unlikely to need to change frequently. Scenarios that would require changes to the data include:' +
+      '<ul class="govuk-list govuk-list--bullet">' +
+        '<li>Adding a new organisation</li>' +
+        '<li>Changing an organsation\'s active state</li>' +
+      '</ul>' +
+    '</p>',
     download: 'organisation-list-reference-data.csv',
     filename: 'org-list',
     heading: 'organisation list',

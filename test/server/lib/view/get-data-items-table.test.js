@@ -1,4 +1,5 @@
-const { dataExtractContainer, dataExtractStorageConnectionString, dataSourcesContainer, dataSourcesStorageConnectionString, phoneNumbersContainer, phoneNumbersFile, phoneNumbersStorageConnectionString } = require('../../../../server/config')
+const { dataExtractContainer, dataExtractStorageConnectionString, dataSourcesContainer, dataSourcesStorageConnectionString, phoneNumbersContainer, phoneNumbersStorageConnectionString } = require('../../../../server/config')
+const { phoneNumbersFilename } = require('../../../../server/constants')
 
 describe('Getting data items status table', () => {
   const { formatDate } = require('../../../../server/lib/misc/helpers')
@@ -56,14 +57,15 @@ describe('Getting data items status table', () => {
     const internalUsersFiles = createMockFileResponse('internal-users.json')
     const albAbcFile = createMockFileResponse('ABC.json')
     const albXyzFile = createMockFileResponse('XYZ.json')
-    const files = [internalUsersFiles, albAbcFile, albXyzFile]
+    const triggerFile = createMockFileResponse('trigger.json')
+    const files = [internalUsersFiles, albAbcFile, albXyzFile, triggerFile]
     getContainerBlobs.mockResolvedValueOnce([])
     getContainerBlobs.mockResolvedValueOnce(files)
     getContainerBlobs.mockResolvedValueOnce([])
 
     const table = await getDataItemsTable()
 
-    expect(table.rows).toHaveLength(files.length - 1)
+    expect(table.rows).toHaveLength(files.length - 2)
     expect(table.rows[0][0].text).toEqual(`Upload for ${albAbcFile.name.replace('.json', '')} (ALB)`)
     expect(table.rows[0][1].text).toEqual(albAbcFile.name)
     expect(table.rows[0][2].text).toEqual(formatDate(albAbcFile.properties.lastModified))
@@ -73,7 +75,7 @@ describe('Getting data items status table', () => {
   })
 
   test('rows for phone numer files are correct', async () => {
-    const phoneNumbersFileRes = createMockFileResponse(phoneNumbersFile)
+    const phoneNumbersFileRes = createMockFileResponse(phoneNumbersFilename)
     const files = [phoneNumbersFileRes]
     getContainerBlobs.mockResolvedValueOnce([])
     getContainerBlobs.mockResolvedValueOnce([])

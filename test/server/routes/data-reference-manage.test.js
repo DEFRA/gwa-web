@@ -15,8 +15,11 @@ describe('Data reference manage route', () => {
 
   jest.mock('../../../server/lib/data/update-reference-data')
   const updateReferenceData = require('../../../server/lib/data/update-reference-data')
+  jest.mock('../../../server/lib/data/trigger-import')
+  const triggerImport = require('../../../server/lib/data/trigger-import')
 
   beforeEach(async () => {
+    jest.resetAllMocks()
     server = await createServer()
   })
 
@@ -259,6 +262,7 @@ describe('Data reference manage route', () => {
     test.each(routes)('responds with 200 when CSV file is uploaded - %o', async ({ type }) => {
       mockServerMethods(type, { orgCode })
       updateReferenceData.mockResolvedValue({ statusCode: 200 })
+      triggerImport.mockResolvedValue({ statusCode: 200 })
       const filename = `${type}.csv`
       const form = new FormData()
       form.append('file', Readable.from(`${typeInfo[type].headers.join()}\n${input[type]}`), { filename })
@@ -288,6 +292,11 @@ describe('Data reference manage route', () => {
 
       expect($('.govuk-heading-l').text()).toMatch('Reference data upload succeeded')
       expect($('.govuk-body').text()).toMatch(`The reference data for ${typeInfo[type].heading} was successfully updated with the data from ${filename}.`)
+      if (type === types.orgList) {
+        expect(triggerImport).toHaveBeenCalledTimes(1)
+      } else {
+        expect(triggerImport).toHaveBeenCalledTimes(0)
+      }
     })
 
     test.each(routes)('responds with 500 when update for reference data is not 200 - %o', async ({ type }) => {

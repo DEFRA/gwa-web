@@ -64,6 +64,7 @@ module.exports = {
     unmappedOfficeLocation: 'Unmapped office location'
   },
   orgDataFileHeaders: ['emailAddress', 'givenName', 'surname', 'officeLocation', 'phoneNumber'],
+  phoneNumbersFilename: 'phone-numbers.csv',
   phoneNumberTypes: {
     corporate: 'corporate',
     personal: 'personal'
@@ -74,6 +75,7 @@ module.exports = {
     organisationMap: 'organisationMap',
     standardisedOfficeLocationMap: 'standardisedOfficeLocationMap'
   },
+  serviceName: 'Defra Group Text Alerts',
   textMessages: {
     // Notify can prepend the message with the name of the service, an option
     // that has been turned on as it helps people to identify the sms sender.
@@ -84,5 +86,6 @@ module.exports = {
     additionalMessageIncrement: 153,
     maxMessageLength: 918 - notifyServiceNameLength,
     maxInfoLength: 2000
-  }
+  },
+  triggerFilename: 'trigger.json'
 }

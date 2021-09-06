@@ -2,10 +2,11 @@ const boom = require('@hapi/boom')
 const Joi = require('joi')
 
 const { scopes } = require('../permissions')
-const BaseModel = require('../lib/misc/model')
 const convertReferenceDataCsvToJson = require('../lib/data/convert-reference-data-csv-to-json')
-const { types, typeInfo } = require('../lib/view/reference-data')
+const triggerImport = require('../lib/data/trigger-import')
 const updateReferenceData = require('../lib/data/update-reference-data')
+const BaseModel = require('../lib/misc/model')
+const { types, typeInfo } = require('../lib/view/reference-data')
 
 const errorMessages = {
   file: {
@@ -24,14 +25,18 @@ const auth = { access: { scope: [`+${scopes.data.manage}`] } }
 
 const path = '/data-reference-manage/{type}'
 
-async function dropItemFromServerCache (request, type) {
+async function postDataUpdateActions (request, type) {
   switch (type) {
     case types.officeLocations:
       return Promise.all([
         request.server.methods.db.getAreaToOfficeMap.cache.drop(),
-        request.server.methods.db.getStandardisedOfficeLocationMap.cache.drop()])
+        request.server.methods.db.getStandardisedOfficeLocationMap.cache.drop()
+      ])
     case types.orgList:
-      return request.server.methods.db.getOrganisationList.cache.drop()
+      return Promise.all([
+        request.server.methods.db.getOrganisationList.cache.drop(),
+        triggerImport()
+      ])
   }
 }
 
@@ -79,7 +84,7 @@ module.exports = [
         return boom.internal(`Problem uploading ${types[type]} reference data for file ${filename}.`, err)
       }
 
-      await dropItemFromServerCache(request, type)
+      await postDataUpdateActions(request, type)
       return h.view('data-reference-upload-results', new Model({ filename, heading: typeInfo[type].heading }))
     },
     options: {
