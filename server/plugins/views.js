@@ -1,6 +1,7 @@
 const path = require('path')
 const nunjucks = require('nunjucks')
 const config = require('../config')
+const constants = require('../constants')
 const pkg = require('../../package.json')
 
 module.exports = {
@@ -34,8 +35,8 @@ module.exports = {
     context: {
       appVersion: pkg.version,
       assetPath: '/assets',
-      serviceName: config.serviceName,
-      pageTitle: `${config.serviceName}`,
+      serviceName: constants.serviceName,
+      pageTitle: `${constants.serviceName}`,
       phaseBannerTag: config.phaseBannerTag,
       phaseBannerHtml: config.phaseBannerHtml
     }

@@ -1,6 +1,6 @@
 const cheerio = require('cheerio')
-const { phoneNumbersContainer, phoneNumbersFile, phoneNumbersStorageConnectionString } = require('../../../server/config')
-const { navigation } = require('../../../server/constants')
+const { phoneNumbersContainer, phoneNumbersStorageConnectionString } = require('../../../server/config')
+const { navigation, phoneNumbersFilename } = require('../../../server/constants')
 const createServer = require('../../../server/index')
 const { scopes } = require('../../../server/permissions')
 
@@ -98,12 +98,12 @@ describe('Phone numbers route', () => {
       expect(buttons).toHaveLength(2)
       expect(buttons.eq(1).text()).toMatch('Download')
       expect(buttons.eq(1).attr('href')).toEqual('/phone-numbers-download')
-      expect(buttons.eq(1).attr('download')).toEqual(phoneNumbersFile)
+      expect(buttons.eq(1).attr('download')).toEqual(phoneNumbersFilename)
     } else {
       expect(buttons).toHaveLength(1)
     }
 
     expect(checkFileExists).toBeCalledTimes(1)
-    expect(checkFileExists).toHaveBeenCalledWith(phoneNumbersStorageConnectionString, phoneNumbersContainer, phoneNumbersFile)
+    expect(checkFileExists).toHaveBeenCalledWith(phoneNumbersStorageConnectionString, phoneNumbersContainer, phoneNumbersFilename)
   })
 })

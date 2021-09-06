@@ -1,5 +1,6 @@
 const mockDownloadFn = require('../../../helpers/mock-download')
-const { phoneNumbersContainer, phoneNumbersFile, phoneNumbersStorageConnectionString } = require('../../../../server/config')
+const { phoneNumbersContainer, phoneNumbersStorageConnectionString } = require('../../../../server/config')
+const { phoneNumbersFilename } = require('../../../../server/constants')
 
 describe('Downloading phone numbers', () => {
   let mockDownload
@@ -30,7 +31,7 @@ describe('Downloading phone numbers', () => {
     const res = await downloadPhoneNumbers()
 
     expect(mockBlockBlobClient).toHaveBeenCalledTimes(1)
-    expect(mockBlockBlobClient).toHaveBeenCalledWith(phoneNumbersStorageConnectionString, phoneNumbersContainer, phoneNumbersFile)
+    expect(mockBlockBlobClient).toHaveBeenCalledWith(phoneNumbersStorageConnectionString, phoneNumbersContainer, phoneNumbersFilename)
     expect(res).toEqual(fileContents)
   })
 

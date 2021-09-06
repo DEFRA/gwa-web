@@ -1,4 +1,5 @@
-const { dataExtractContainer, dataExtractStorageConnectionString, dataSourcesContainer, dataSourcesStorageConnectionString, phoneNumbersContainer, phoneNumbersFile, phoneNumbersStorageConnectionString } = require('../../../../server/config')
+const { dataExtractContainer, dataExtractStorageConnectionString, dataSourcesContainer, dataSourcesStorageConnectionString, phoneNumbersContainer, phoneNumbersStorageConnectionString } = require('../../../../server/config')
+const { phoneNumbersFilename } = require('../../../../server/constants')
 
 describe('Getting data items status table', () => {
   const { formatDate } = require('../../../../server/lib/misc/helpers')
@@ -74,7 +75,7 @@ describe('Getting data items status table', () => {
   })
 
   test('rows for phone numer files are correct', async () => {
-    const phoneNumbersFileRes = createMockFileResponse(phoneNumbersFile)
+    const phoneNumbersFileRes = createMockFileResponse(phoneNumbersFilename)
     const files = [phoneNumbersFileRes]
     getContainerBlobs.mockResolvedValueOnce([])
     getContainerBlobs.mockResolvedValueOnce([])
