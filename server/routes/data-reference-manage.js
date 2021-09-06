@@ -2,11 +2,11 @@ const boom = require('@hapi/boom')
 const Joi = require('joi')
 
 const { scopes } = require('../permissions')
-const BaseModel = require('../lib/misc/model')
 const convertReferenceDataCsvToJson = require('../lib/data/convert-reference-data-csv-to-json')
-const { types, typeInfo } = require('../lib/view/reference-data')
 const triggerImport = require('../lib/data/trigger-import')
 const updateReferenceData = require('../lib/data/update-reference-data')
+const BaseModel = require('../lib/misc/model')
+const { types, typeInfo } = require('../lib/view/reference-data')
 
 const errorMessages = {
   file: {
